@@ -1,7 +1,7 @@
 # MigrationRulesMiner
 
 [![Build Status](https://travis-ci.org/olekscode/MigrationRulesMiner.svg?branch=master)](https://travis-ci.org/olekscode/MigrationRulesMiner)
-[![Build status](https://ci.appveyor.com/api/projects/status/r25rfpbcq9xin235?svg=true)](https://ci.appveyor.com/project/olekscode/MigrationRulesMiner)
+[![Build status](https://ci.appveyor.com/api/projects/status/ify7vkcfe4a5gp6b?svg=true)](https://ci.appveyor.com/project/olekscode/migrationrulesminer)
 [![Coverage Status](https://coveralls.io/repos/github/olekscode/MigrationRulesMiner/badge.svg?branch=master)](https://coveralls.io/github/olekscode/MigrationRulesMiner?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/olekscode/MigrationRulesMiner/master/LICENSE)
 
