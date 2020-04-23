@@ -6,7 +6,9 @@ Class {
 		'branch',
 		'fromCommit',
 		'toCommit',
-		'commits'
+		'commits',
+		'failedCommits',
+		'diffs'
 	],
 	#category : #MigrationRulesMiner
 }
@@ -22,9 +24,32 @@ MigrationRulesMiner >> branchNamed: aBranchName [
 	branch := repository branchNamed: aBranchName.
 ]
 
+{ #category : #'as yet unclassified' }
+MigrationRulesMiner >> calculateDiffs [
+	failedCommits := OrderedCollection new.
+	diffs := OrderedCollection new.
+
+	commits
+		do: [ :commit |
+			[ diffs add: (commit diffTo: commit parent) ]
+				on: Exception
+				do: [ failedCommits add: commit ] ]
+		displayingProgress: [ :commit | commit id ].
+]
+
 { #category : #accessing }
 MigrationRulesMiner >> commits [ 
 	^ commits
+]
+
+{ #category : #accessing }
+MigrationRulesMiner >> diffs [
+	^ diffs
+]
+
+{ #category : #accessing }
+MigrationRulesMiner >> failedCommits [
+	^ failedCommits
 ]
 
 { #category : #accessing }
