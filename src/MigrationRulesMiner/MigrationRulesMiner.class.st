@@ -37,6 +37,29 @@ MigrationRulesMiner >> calculateDiffs [
 		displayingProgress: [ :commit | commit id ].
 ]
 
+{ #category : #'as yet unclassified' }
+MigrationRulesMiner >> collectMethodModifications [
+	| packageNodes classNodes methodNodes methodOperations methodModifications |
+	
+	packageNodes := diffs flatCollect: [ :diff |
+		diff tree children first children ].
+	
+	classNodes := packageNodes flatCollect: [ :node |
+		node children ].
+	
+	methodNodes := classNodes flatCollect: [ :node |
+		node children ].
+	
+	methodOperations := methodNodes collect: [ :node | node value ].
+	
+	methodModifications := methodOperations select: [ :op |
+		op isModification and: [ 
+			op definition isMethodDefinition and: [ 
+				op oldNode isMethodDefinition ] ] ].
+	
+	^ methodModifications
+]
+
 { #category : #accessing }
 MigrationRulesMiner >> commits [ 
 	^ commits
@@ -50,6 +73,11 @@ MigrationRulesMiner >> diffs [
 { #category : #accessing }
 MigrationRulesMiner >> failedCommits [
 	^ failedCommits
+]
+
+{ #category : #'as yet unclassified' }
+MigrationRulesMiner >> filterEmptyDiffs [
+	diffs := diffs reject: [ :diff | diff tree isEmptyNode ].
 ]
 
 { #category : #accessing }
