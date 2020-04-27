@@ -130,6 +130,11 @@ MRChangeHistory >> repository [
 ]
 
 { #category : #accessing }
+MRChangeHistory >> repository: aRepository [
+	repository := aRepository
+]
+
+{ #category : #accessing }
 MRChangeHistory >> repositoryNamed: aRepositoryName [
 	repository := IceRepository registry
 		detect: [ :repo | repo name = aRepositoryName ]
