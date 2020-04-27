@@ -7,10 +7,10 @@ Class {
 { #category : #tests }
 MigrationRulesMinerTest >> testBranchNamed [
 	| repositoryName branchName miner |
-	repositoryName := 'MigrationRulesMiner'.
+	repositoryName := #MRAprioriMiner.
 	branchName := 'master'.
 	
-	miner := MigrationRulesMiner new
+	miner := MRAprioriMiner new
 		repositoryNamed: repositoryName;
 		branchNamed: branchName;
 		yourself.
@@ -23,7 +23,7 @@ MigrationRulesMinerTest >> testBranchNamed [
 MigrationRulesMinerTest >> testBranchNamedNoRepository [	
 	self
 		should: [
-			MigrationRulesMiner new
+			MRAprioriMiner new
 				branchNamed: 'master';
 				yourself ]
 		raise: Error.
@@ -32,9 +32,9 @@ MigrationRulesMinerTest >> testBranchNamedNoRepository [
 { #category : #tests }
 MigrationRulesMinerTest >> testRepositoryNamed [
 	| repositoryName miner |
-	repositoryName := 'MigrationRulesMiner'.
+	repositoryName := #MRAprioriMiner.
 	
-	miner := MigrationRulesMiner new
+	miner := MRAprioriMiner new
 		repositoryNamed: repositoryName;
 		yourself.
 	

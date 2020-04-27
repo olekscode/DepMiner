@@ -20,10 +20,6 @@ MRMessageSendCollectingVisitor >> messageSends [
 
 { #category : #visiting }
 MRMessageSendCollectingVisitor >> visitMessageNode: aNode [
-	messageSends add: (
-		MRMessageSend new
-			astNode: aNode;
-			yourself).
-			
+	messageSends add: aNode.
 	super visitMessageNode: aNode.
 ]
