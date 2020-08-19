@@ -29,3 +29,25 @@ spec
 If you are new to baselines and Metacello, check out the [Baselines](https://github.com/pharo-open-documentation/pharo-wiki/blob/master/General/Baselines.md) tutorial on Pharo Wiki.
 
 ## How to use it?
+
+```Smalltalk
+repository := IceRepository registry
+   detect: [ :repo | repo name = 'APriori' ].
+
+changeHistory := MRChangeHistory new
+   repository: repository;
+   branchNamed: 'master';
+   fromCommitId: '14164de82d938df2cc98186fa0225a49fe7c98e0';
+   toCommitId: '3206cc82d9991e2acdd10916247c114e1b173e77';
+   yourself.
+	
+changeHistory loadCommits.
+changeHistory calculateDiffs.
+changeHistory extractMethodChanges.
+	
+aprioriMiner := MRAprioriMiner new
+   changeHistory: changeHistory;
+   yourself.
+	
+rules := aprioriMiner mineRulesWithSupport: 0.1.
+```
