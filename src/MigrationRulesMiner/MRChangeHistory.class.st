@@ -116,6 +116,7 @@ MRChangeHistory >> loadCommits [
 		
 	commits := OrderedCollection new.
 	commitWalk commitsDo: [ :commit | commits add: commit ].
+	commits add: toCommit.
 	
 ]
 
