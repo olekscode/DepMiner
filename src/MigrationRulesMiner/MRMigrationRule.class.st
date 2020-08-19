@@ -29,6 +29,16 @@ MRMigrationRule >> consequent: anObject [
 	consequent := anObject
 ]
 
+{ #category : #printing }
+MRMigrationRule >> printOn: aStream [
+	aStream
+		nextPut: ${;
+		nextPutAll: (', ' join: antecedent);
+		nextPutAll: '} => {';
+		nextPutAll: (', ' join: consequent);
+		nextPut: $}.
+]
+
 { #category : #accessing }
 MRMigrationRule >> support [
 	^ support

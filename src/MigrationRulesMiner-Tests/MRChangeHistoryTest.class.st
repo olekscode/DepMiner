@@ -43,16 +43,19 @@ MRChangeHistoryTest >> testBranch [
 { #category : #tests }
 MRChangeHistoryTest >> testCalculateDiffs [
 	"Should calculate diffs between every two subsequent commits"
-	| diffs |
+	| diffs diff |
 	changeHistory loadCommits.
 	changeHistory calculateDiffs.
 	
 	diffs := changeHistory diffs.
 	
-	self assert: diffs size equals: 10.
+	self assert: diffs size equals: 9.
 	
-	diffs do: [ :each |
-		self assert: each class equals: IceDiff ].
+	1 to: 9 do: [ :i |
+		diff := diffs at: i.
+		self assert: diff class equals: IceDiff.
+		self assert: diff sourceVersion equals: (changeHistory commits at: i).
+		self assert: diff targetVersion equals: (changeHistory commits at: i+1). ].
 ]
 
 { #category : #tests }

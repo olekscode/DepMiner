@@ -27,15 +27,17 @@ MRChangeHistory >> branchNamed: aBranchName [
 
 { #category : #'as yet unclassified' }
 MRChangeHistory >> calculateDiffs [
+	| commit |
 	failedCommits := OrderedCollection new.
 	diffs := OrderedCollection new.
 
-	commits
-		do: [ :commit |
+	(1 to: commits size - 1)
+		do: [ :i |
+			commit := commits at: i.
 			[ diffs add: (commit diffTo: commit parent) ]
 				on: Exception
 				do: [ failedCommits add: commit ] ]
-		displayingProgress: [ :commit | commit id ].
+		displayingProgress: [ :i | i asString, ' / ', commits size asString ].
 ]
 
 { #category : #accessing }
