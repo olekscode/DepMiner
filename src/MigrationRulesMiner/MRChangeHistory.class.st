@@ -52,9 +52,12 @@ MRChangeHistory >> diffs [
 
 { #category : #'as yet unclassified' }
 MRChangeHistory >> extractMethodChanges [
-	| packageNodes classNodes methodNodes methodOperations |
+	| nonEmptyDiffs packageNodes classNodes methodNodes methodOperations |
 	
-	packageNodes := diffs flatCollect: [ :diff |
+	nonEmptyDiffs := diffs reject: [ :diff |
+		diff tree isEmptyNode ].
+	
+	packageNodes := nonEmptyDiffs flatCollect: [ :diff |
 		diff tree children first children ].
 	
 	classNodes := packageNodes flatCollect: [ :node |
