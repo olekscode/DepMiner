@@ -2,7 +2,9 @@ Class {
 	#name : #MRAprioriMiner,
 	#superclass : #Object,
 	#instVars : [
-		'changeHistory'
+		'changeHistory',
+		'transactions',
+		'apriori'
 	],
 	#category : #MigrationRulesMiner
 }
@@ -60,18 +62,17 @@ MRAprioriMiner >> collectMessageSendsFrom: anAst [
 MRAprioriMiner >> collectTransactions [
 	| changes |
 	changes := self collectMessageSendChanges.
-	^ changes collect: [ :each | each asAprioriTransaction ].
+	transactions := changes collect: [ :each | each asAprioriTransaction ].
 ]
 
 { #category : #'as yet unclassified' }
-MRAprioriMiner >> mineRulesWithSupport: aSupportThreshold [ 
-	| transactions transactionsSource apriori rules |
-	transactions := self collectTransactions.
+MRAprioriMiner >> mineRulesWithMinSupport: aSupportThreshold [ 
+	| transactionsSource rules |
 	
 	transactionsSource := APrioriTransactionsArray from: transactions.
 	apriori := APriori forTransactions: transactionsSource.
 
-	apriori minSupport: aSupportThreshold.
+	apriori minCount: aSupportThreshold.
 	apriori findFrequentItemsets.
 	apriori calculateItemsetMetrics: { APrioriSupportMetric }.
 	

@@ -15,6 +15,6 @@ APrioriItemset >> asMigrationRule [
 	^ MRMigrationRule new
 		antecedent: deletedMessageSends asSet;
 		consequent: addedMessageSends asSet;
-		support: self support;
+		support: self count;
 		yourself.
 ]
