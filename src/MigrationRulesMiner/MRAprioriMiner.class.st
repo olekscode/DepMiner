@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'changeHistory',
 		'transactions',
-		'apriori'
+		'apriori',
+		'rules'
 	],
 	#category : #MigrationRulesMiner
 }
@@ -66,20 +67,57 @@ MRAprioriMiner >> collectTransactions [
 ]
 
 { #category : #'as yet unclassified' }
-MRAprioriMiner >> mineRulesWithMinSupport: aSupportThreshold [ 
-	| transactionsSource rules |
+MRAprioriMiner >> convertAssociationRulesToMigrationRules: aCollectionOfRules [
+	| antecedent consequent |
+	
+	^ aCollectionOfRules collect: [ :rule |
+		antecedent := rule key collect: [ :each |
+			each copyFrom: 14 to: each size - 1 ].
+		
+		consequent := rule value collect: [ :each |
+			each copyFrom: 12 to: each size - 1 ].
+		
+		MRMigrationRule new
+			antecedent: antecedent;
+			consequent: consequent;
+			count: rule count;
+			confidence: rule confidence;
+			lift: rule lift;
+			yourself ].
+]
+
+{ #category : #'as yet unclassified' }
+MRAprioriMiner >> filterAssociationRules: aCollectionOfRules [
+	| filteredRules |
+	
+	filteredRules := aCollectionOfRules reject: [ :rule |
+		rule key isEmpty or:
+		rule value isEmpty ].
+	
+	filteredRules := filteredRules select: [ :rule |
+		(rule key allSatisfy: [ :each | each beginsWith: 'deleted' ]) and: [
+			rule value allSatisfy: [ :each | each beginsWith: 'added' ] ] ].
+	
+	^ filteredRules 
+]
+
+{ #category : #'as yet unclassified' }
+MRAprioriMiner >> mineRulesWithMinCount: aCountThreshold [ 
+	| transactionsSource |
 	
 	transactionsSource := APrioriTransactionsArray from: transactions.
 	apriori := APriori forTransactions: transactionsSource.
 
-	apriori minCount: aSupportThreshold.
+	apriori minCount: aCountThreshold.
 	apriori findFrequentItemsets.
-	apriori calculateItemsetMetrics: { APrioriSupportMetric }.
+	apriori buildAssociationRules.
 	
-	rules := apriori frequentItemsets collect: [ :each | each asMigrationRule ].
+	apriori calculateAssociationRuleMetrics: { 
+		APrioriCountMetric .
+		APrioriConfidenceMetric .
+		APrioriLiftMetric }.
 	
-	^ rules reject: [ :each |
-		each antecedent isEmpty or:
-		each consequent isEmpty ].
+	rules := self filterAssociationRules: apriori associationRules.
+	rules := self convertAssociationRulesToMigrationRules: rules.
 
 ]
