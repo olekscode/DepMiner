@@ -48,6 +48,7 @@ changeHistory extractMethodChanges.
 aprioriMiner := MRAprioriMiner new
    changeHistory: changeHistory;
    yourself.
-	
-rules := aprioriMiner mineRulesWithSupport: 0.1.
+
+aprioriMiner collectTransactions.
+aprioriMiner mineRulesWithMinCount: 4.
 ```
