@@ -21,7 +21,7 @@ MRAutomatableMigrationRule >> generateTransformationRuleExpressionFrom: aSelecto
 	numberOfArguments = 1 ifTrue: [ 
 		^ '`@rec ', aSelector, '`@arg' ].
 	
-	^ '`@rec ', ' ' join: (((aSelector splitOn: $:) copyFrom: 1 to: numberOfArguments) withIndexCollect: [ :selectorPart :i | selectorPart, ': `@arg', i asString ]).
+	^ '`@rec ', (' ' join: (((aSelector splitOn: $:) copyFrom: 1 to: numberOfArguments) withIndexCollect: [ :selectorPart :i | selectorPart, ': `@arg', i asString ])).
 ]
 
 { #category : #initialization }
