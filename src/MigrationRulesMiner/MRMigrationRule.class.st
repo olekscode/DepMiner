@@ -51,6 +51,11 @@ MRMigrationRule >> count: anObject [
 	count := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+MRMigrationRule >> generateTransformationRule [
+	
+]
+
 { #category : #accessing }
 MRMigrationRule >> lift [
 	^ lift

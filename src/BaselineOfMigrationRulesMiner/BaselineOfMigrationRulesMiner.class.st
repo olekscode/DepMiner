@@ -12,9 +12,13 @@ BaselineOfMigrationRulesMiner >> baseline: spec [
 		spec
 			baseline: 'APriori'
 			with: [ spec repository: 'github://pharo-ai/APriori/src' ].
+			
+		spec
+			baseline: 'PharoDeprecationsCollector'
+			with: [ spec repository: 'github://olekscode/PharoDeprecationsCollector/src' ].
 				
 		"Packages"
 		spec 
-			package: 'MigrationRulesMiner' with: [ spec requires: #('APriori') ];
+			package: 'MigrationRulesMiner' with: [ spec requires: #('APriori' 'PharoDeprecationsCollector') ];
 			package: 'MigrationRulesMiner-Tests' with: [ spec requires: #('MigrationRulesMiner') ] ]
 ]
