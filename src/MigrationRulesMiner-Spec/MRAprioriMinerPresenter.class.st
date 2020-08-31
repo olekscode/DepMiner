@@ -12,13 +12,12 @@ Class {
 
 { #category : #specs }
 MRAprioriMinerPresenter class >> defaultSpec [
-	^ SpGridLayout new
-		add: 'Min count' at: 1@1;
-		add: #minCountSelect at: 2@1;
+	^ SpBoxLayout newVertical
 		add: (SpBoxLayout newHorizontal
-			addLast: #mineRulesButton;
-			yourself)
-		at: 1@2 span: 2@1;
+			add: 'Min count' width: self labelWidth;
+			add: #minCountSelect;
+			yourself);
+		add: #mineRulesButton height: self buttonHeight;
 		yourself.
 ]
 
@@ -28,12 +27,19 @@ MRAprioriMinerPresenter >> changeHistory: anObject [
 ]
 
 { #category : #initialization }
+MRAprioriMinerPresenter >> connectPresenters [
+	mineRulesButton action: [ self mineRules ]
+]
+
+{ #category : #initialization }
 MRAprioriMinerPresenter >> initializePresenters [ 
 	minCountSelect := self newNumberInput.
 	
 	mineRulesButton := self newButton
 		label: 'Mine rules';
 		yourself.
+
+	self enabled: false.
 ]
 
 { #category : #accessing }

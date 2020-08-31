@@ -14,19 +14,24 @@ Class {
 
 { #category : #specs }
 MRCommitLoaderPresenter class >> defaultSpec [
-	^ SpGridLayout new
-		add: 'Repository' at: 1@1;
-		add: #repositorySelect at: 2@1;
-		add: 'Branch' at: 1@2;
-		add: #branchSelect at: 2@2;
-		add: 'From commit' at: 1@3;
-		add: #fromCommitSelect at: 2@3;
-		add: 'To commit' at: 1@4;
-		add: #toCommitSelect at: 2@4;
+	^ SpBoxLayout newVertical
 		add: (SpBoxLayout newHorizontal
-			addLast: #loadCommitsButton;
-			yourself)
-		at: 1@5 span: 2@1;
+			add: 'Repository' width: self labelWidth;
+			add: #repositorySelect;
+			yourself) height: self inputTextHeight;
+		add: (SpBoxLayout newHorizontal
+			add: 'Branch' width: self labelWidth;
+			add: #branchSelect;
+			yourself) height: self inputTextHeight;
+		add: (SpBoxLayout newHorizontal
+			add: 'From commit' width: self labelWidth;
+			add: #fromCommitSelect;
+			yourself) height: self inputTextHeight;
+		add: (SpBoxLayout newHorizontal
+			add: 'To commit' width: self labelWidth;
+			add: #toCommitSelect;
+			yourself) height: self inputTextHeight;
+		add: #loadCommitsButton height: self buttonHeight;
 		yourself.
 ]
 
@@ -51,7 +56,6 @@ MRCommitLoaderPresenter >> connectPresenters [
 	
 	repositorySelect whenSelectedItemChangedDo: [ :repo |
 		branchSelect
-			enabled: true;
 			items: repo allBranches;
 			display: [ :branch | branch name ] ].
 ]
@@ -74,10 +78,8 @@ MRCommitLoaderPresenter >> initializePresenters [
 		yourself.
 		
 	branchSelect := self newDropList.
-	fromCommitSelect := self newDropList.
-	toCommitSelect := self newDropList.
-	
-	branchSelect enabled: false.
+	fromCommitSelect := self newTextInput.
+	toCommitSelect := self newTextInput.
 	
 	loadCommitsButton := self newButton
 		label: 'Load commits';
@@ -88,12 +90,11 @@ MRCommitLoaderPresenter >> initializePresenters [
 MRCommitLoaderPresenter >> loadCommits [
 	| repository |
 	
-	repository := IceRepository registry detect: [ :repo |
-		(repo name = repositorySelect text) and: [ repo isValid ] ].
+	repository := repositorySelect selectedItem.
 
 	changeHistory := MRChangeHistory new
    		repository: repository;
-		branchNamed: branchSelect text;
+		branchNamed: branchSelect selectedItem name;
 		fromCommitId: fromCommitSelect text;
 		toCommitId: toCommitSelect text;
 		yourself.
