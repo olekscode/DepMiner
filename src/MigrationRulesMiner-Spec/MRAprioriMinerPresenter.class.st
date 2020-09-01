@@ -5,7 +5,8 @@ Class {
 		'minCountSelect',
 		'mineRulesButton',
 		'changeHistory',
-		'rules'
+		'aprioriMiner',
+		'parent'
 	],
 	#category : #'MigrationRulesMiner-Spec'
 }
@@ -33,13 +34,13 @@ MRAprioriMinerPresenter >> connectPresenters [
 
 { #category : #initialization }
 MRAprioriMinerPresenter >> initializePresenters [ 
-	minCountSelect := self newNumberInput.
+	minCountSelect := self newNumberInput
+		minimum: 1;
+		yourself.
 	
 	mineRulesButton := self newButton
 		label: 'Mine rules';
 		yourself.
-
-	self enabled: false.
 ]
 
 { #category : #accessing }
@@ -50,6 +51,17 @@ MRAprioriMinerPresenter >> minCountSelect [
 { #category : #accessing }
 MRAprioriMinerPresenter >> minCountSelect: anObject [
 	minCountSelect := anObject
+]
+
+{ #category : #'as yet unclassified' }
+MRAprioriMinerPresenter >> mineRules [
+	aprioriMiner := MRAprioriMiner new
+		changeHistory: changeHistory;
+		yourself.
+		
+	aprioriMiner collectTransactions.
+	aprioriMiner mineRulesWithMinCount: minCountSelect number.
+	parent rules: aprioriMiner rules.
 ]
 
 { #category : #accessing }
@@ -63,6 +75,6 @@ MRAprioriMinerPresenter >> mineRulesButton: anObject [
 ]
 
 { #category : #accessing }
-MRAprioriMinerPresenter >> rules [
-	^ rules
+MRAprioriMinerPresenter >> parent: anObject [
+	parent := anObject
 ]

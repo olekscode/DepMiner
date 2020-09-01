@@ -7,7 +7,8 @@ Class {
 		'fromCommitSelect',
 		'toCommitSelect',
 		'loadCommitsButton',
-		'changeHistory'
+		'changeHistory',
+		'parent'
 	],
 	#category : #'MigrationRulesMiner-Spec'
 }
@@ -102,6 +103,8 @@ MRCommitLoaderPresenter >> loadCommits [
 	changeHistory loadCommits.
 	changeHistory calculateDiffs.
 	changeHistory extractMethodChanges.
+	
+	parent changeHistory: changeHistory.
 ]
 
 { #category : #accessing }
@@ -112,6 +115,11 @@ MRCommitLoaderPresenter >> loadCommitsButton [
 { #category : #accessing }
 MRCommitLoaderPresenter >> loadCommitsButton: anObject [
 	loadCommitsButton := anObject
+]
+
+{ #category : #accessing }
+MRCommitLoaderPresenter >> parent: anObject [
+	parent := anObject
 ]
 
 { #category : #accessing }

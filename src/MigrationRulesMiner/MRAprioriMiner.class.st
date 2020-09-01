@@ -121,3 +121,8 @@ MRAprioriMiner >> mineRulesWithMinCount: aCountThreshold [
 	rules := self convertAssociationRulesToMigrationRules: rules.
 
 ]
+
+{ #category : #accessing }
+MRAprioriMiner >> rules [
+	^ rules
+]

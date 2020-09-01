@@ -82,6 +82,18 @@ MRRulesPagePresenter >> rulesTable: anObject [
 	rulesTable := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+MRRulesPagePresenter >> showRules: aCollectionOfRules [
+	rulesTable
+		items: aCollectionOfRules;
+		addColumn: (SpStringTableColumn
+			title: 'Antecedent'
+			evaluated: [ :each | ' ' join: each antecedent ]);
+		addColumn: (SpStringTableColumn
+			title: 'Consequent'
+			evaluated: [ :each | ' ' join: each consequent ]).
+]
+
 { #category : #accessing }
 MRRulesPagePresenter >> sortingTable [
 	^ sortingTable

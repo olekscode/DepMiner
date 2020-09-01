@@ -6,7 +6,9 @@ Class {
 		'aprioriMiner',
 		'rulesNotebook',
 		'allRulesPage',
-		'automatableRulesPage'
+		'automatableRulesPage',
+		'changeHistory',
+		'rules'
 	],
 	#category : #'MigrationRulesMiner-Spec'
 }
@@ -51,6 +53,12 @@ MRMigrationRulesBrowser >> aprioriMiner: anObject [
 ]
 
 { #category : #accessing }
+MRMigrationRulesBrowser >> changeHistory: anObject [
+	changeHistory := anObject.
+	aprioriMiner changeHistory: anObject.
+]
+
+{ #category : #accessing }
 MRMigrationRulesBrowser >> commitLoader [
 	^ commitLoader
 ]
@@ -67,8 +75,13 @@ MRMigrationRulesBrowser >> initialExtent [
 
 { #category : #initialization }
 MRMigrationRulesBrowser >> initializeWidgets [
-	commitLoader := MRCommitLoaderPresenter new.
-	aprioriMiner := MRAprioriMinerPresenter new.
+	commitLoader := MRCommitLoaderPresenter new
+		parent: self;
+		yourself.
+		
+	aprioriMiner := MRAprioriMinerPresenter new
+		parent: self;
+		yourself.
 	
 	allRulesPage := self newNotebookPage
 		title: 'All rules';
@@ -83,6 +96,12 @@ MRMigrationRulesBrowser >> initializeWidgets [
 		addPage: allRulesPage;
 		addPage: automatableRulesPage;
 		yourself.
+]
+
+{ #category : #accessing }
+MRMigrationRulesBrowser >> rules: anObject [
+	rules := anObject.
+	allRulesPage retrievePresenter showRules: anObject.
 ]
 
 { #category : #accessing }
