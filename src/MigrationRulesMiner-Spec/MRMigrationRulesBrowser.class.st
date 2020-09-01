@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'commitLoader',
 		'aprioriMiner',
-		'rulesNotebook',
+		'firstTable',
+		'secondTable',
 		'allRulesPage',
 		'automatableRulesPage',
 		'changeHistory',
@@ -20,7 +21,8 @@ MRMigrationRulesBrowser class >> defaultSpec [
 			add: #commitLoader;
 			add: #aprioriMiner height: 80;
 			yourself) width: 300;
-		add: #rulesNotebook;
+		add: #firstTable;
+		add: #secondTable;
 		yourself.
 ]
 
@@ -68,6 +70,16 @@ MRMigrationRulesBrowser >> commitLoader: anObject [
 	commitLoader := anObject
 ]
 
+{ #category : #accessing }
+MRMigrationRulesBrowser >> firstTable [
+	^ firstTable
+]
+
+{ #category : #accessing }
+MRMigrationRulesBrowser >> firstTable: anObject [
+	firstTable := anObject
+]
+
 { #category : #TOREMOVE }
 MRMigrationRulesBrowser >> initialExtent [
 	^ 1300@600
@@ -82,36 +94,47 @@ MRMigrationRulesBrowser >> initializeWidgets [
 	aprioriMiner := MRAprioriMinerPresenter new
 		parent: self;
 		yourself.
-	
-	allRulesPage := self newNotebookPage
-		title: 'All rules';
-		presenterProvider: [ MRRulesPagePresenter new ]
-		yourself.
 		
-	automatableRulesPage := self newNotebookPage
-		title: 'Automatable rules';
-		yourself.
-	
-	rulesNotebook := self newNotebook
-		addPage: allRulesPage;
-		addPage: automatableRulesPage;
-		yourself.
+	firstTable := self newTable.
+	secondTable := self newTable.
 ]
 
 { #category : #accessing }
 MRMigrationRulesBrowser >> rules: anObject [
 	rules := anObject.
-	allRulesPage retrievePresenter showRules: anObject.
+	self showRules.
 ]
 
 { #category : #accessing }
-MRMigrationRulesBrowser >> rulesNotebook [
-	^ rulesNotebook
+MRMigrationRulesBrowser >> secondTable [
+	^ secondTable
 ]
 
 { #category : #accessing }
-MRMigrationRulesBrowser >> rulesNotebook: anObject [
-	rulesNotebook := anObject
+MRMigrationRulesBrowser >> secondTable: anObject [
+	secondTable := anObject
+]
+
+{ #category : #'as yet unclassified' }
+MRMigrationRulesBrowser >> showRules [
+	firstTable
+		columns: { };
+		items: rules;
+		addColumn: (SpStringTableColumn
+			title: 'Antecedent'
+			evaluated: [ :each | ' ' join: each antecedent ]);
+		addColumn: (SpStringTableColumn
+			title: 'Consequent'
+			evaluated: [ :each | ' ' join: each consequent ]);
+		addColumn: (SpStringTableColumn
+			title: 'Count'
+			evaluated: [ :each | each count ]);
+		addColumn: (SpStringTableColumn 
+			title: 'Confidence'
+			evaluated: [ :each | each confidence asFloat ]);
+		addColumn: (SpStringTableColumn
+			title: 'Lift'
+			evaluated: [ :each | each lift asFloat ]).
 ]
 
 { #category : #TOREMOVE }
