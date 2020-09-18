@@ -10,12 +10,13 @@ Class {
 		'changeHistory',
 		'parent'
 	],
-	#category : #'MigrationRulesMiner-Spec'
+	#category : #'MigrationRulesMiner-Spec-View'
 }
 
 { #category : #specs }
 MRCommitLoaderPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
+		spacing: 2;
 		add: (SpBoxLayout newHorizontal
 			add: 'Repository' width: self labelWidth;
 			add: #repositorySelect;
@@ -57,8 +58,9 @@ MRCommitLoaderPresenter >> connectPresenters [
 	
 	repositorySelect whenSelectedItemChangedDo: [ :repo |
 		branchSelect
-			items: repo allBranches;
-			display: [ :branch | branch name ] ].
+			items: repo localBranches;
+			display: [ :branch | branch name ];
+			resetSelection ].
 ]
 
 { #category : #accessing }

@@ -9,14 +9,16 @@ Class {
 		'allRulesPage',
 		'automatableRulesPage',
 		'changeHistory',
-		'rules'
+		'rules',
+		'toolbar'
 	],
-	#category : #'MigrationRulesMiner-Spec'
+	#category : #'MigrationRulesMiner-Spec-View'
 }
 
 { #category : #specs }
 MRMigrationRulesBrowser class >> defaultSpec [
 	^ SpBoxLayout newHorizontal
+		spacing: 2;
 		add: (SpBoxLayout newVertical
 			add: #commitLoader;
 			add: #aprioriMiner height: 80;
@@ -24,6 +26,11 @@ MRMigrationRulesBrowser class >> defaultSpec [
 		add: #firstTable;
 		add: #secondTable;
 		yourself.
+]
+
+{ #category : #accessing }
+MRMigrationRulesBrowser class >> defaultTitle [
+	^ 'Migration Rules Miner'
 ]
 
 { #category : #'world menu' }
@@ -45,6 +52,11 @@ MRMigrationRulesBrowser class >> open [
 ]
 
 { #category : #accessing }
+MRMigrationRulesBrowser class >> preferredExtent [
+	^ 1300@600
+]
+
+{ #category : #accessing }
 MRMigrationRulesBrowser >> aprioriMiner [
 	^ aprioriMiner
 ]
@@ -52,6 +64,16 @@ MRMigrationRulesBrowser >> aprioriMiner [
 { #category : #accessing }
 MRMigrationRulesBrowser >> aprioriMiner: anObject [
 	aprioriMiner := anObject
+]
+
+{ #category : #'private builder' }
+MRMigrationRulesBrowser >> buildToolbar [
+
+	^ self toolbarActions 
+		asToolbarPresenterWith: [ :presenter | 
+			presenter 
+				displayMode: SpToolbarDisplayMode modeIconAndLabel;
+				addStyle: 'stToolbar' ]
 ]
 
 { #category : #accessing }
@@ -80,11 +102,6 @@ MRMigrationRulesBrowser >> firstTable: anObject [
 	firstTable := anObject
 ]
 
-{ #category : #TOREMOVE }
-MRMigrationRulesBrowser >> initialExtent [
-	^ 1300@600
-]
-
 { #category : #initialization }
 MRMigrationRulesBrowser >> initializeWidgets [
 	commitLoader := MRCommitLoaderPresenter new
@@ -97,6 +114,17 @@ MRMigrationRulesBrowser >> initializeWidgets [
 		
 	firstTable := self newTable.
 	secondTable := self newTable.
+]
+
+{ #category : #initialization }
+MRMigrationRulesBrowser >> initializeWindow: aWindowPresenter [
+	super initializeWindow: aWindowPresenter.
+	
+	aWindowPresenter
+		title: self class defaultTitle;
+		initialExtent: self class preferredExtent;
+		windowIcon: self windowIcon;
+		toolbar: self buildToolbar.
 ]
 
 { #category : #accessing }
@@ -137,7 +165,14 @@ MRMigrationRulesBrowser >> showRules [
 			evaluated: [ :each | each lift asFloat ]).
 ]
 
-{ #category : #TOREMOVE }
-MRMigrationRulesBrowser >> title [ 
-	^ 'Migration Rules Miner'
+{ #category : #building }
+MRMigrationRulesBrowser >> toolbarActions [
+
+	^ CmCommandGroup forSpec
+		register: (CmCommandGroup forSpec
+			register: (MRSortCommand forSpecContext: self);
+			register: (MRFilterCommand forSpecContext: self);
+			register: (MRExportToExcelCommand forSpecContext: self);
+			yourself);
+		yourself
 ]
