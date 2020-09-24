@@ -1,7 +1,7 @@
 Class {
 	#name : #MRExportToExcelCommand,
 	#superclass : #MRCommand,
-	#category : #'MigrationRulesMiner-Spec-Command'
+	#category : #'MigrationRulesMiner-Spec-Commands'
 }
 
 { #category : #accessing }

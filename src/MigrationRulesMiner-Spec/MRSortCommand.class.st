@@ -1,7 +1,7 @@
 Class {
 	#name : #MRSortCommand,
 	#superclass : #MRCommand,
-	#category : #'MigrationRulesMiner-Spec-Command'
+	#category : #'MigrationRulesMiner-Spec-Commands'
 }
 
 { #category : #default }

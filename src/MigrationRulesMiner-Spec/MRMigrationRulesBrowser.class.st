@@ -12,7 +12,7 @@ Class {
 		'rules',
 		'toolbar'
 	],
-	#category : #'MigrationRulesMiner-Spec-View'
+	#category : #'MigrationRulesMiner-Spec-Views'
 }
 
 { #category : #specs }

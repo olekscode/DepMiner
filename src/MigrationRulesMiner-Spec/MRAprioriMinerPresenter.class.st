@@ -8,7 +8,7 @@ Class {
 		'aprioriMiner',
 		'parent'
 	],
-	#category : #'MigrationRulesMiner-Spec-View'
+	#category : #'MigrationRulesMiner-Spec-Views'
 }
 
 { #category : #specs }

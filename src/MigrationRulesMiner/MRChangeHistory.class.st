@@ -80,11 +80,12 @@ MRChangeHistory >> extractMethodChanges [
 			each definition name = each oldNode name
 				ifFalse: [ Error signal: 'Method was renamed' ].
 				
-			MRMethodChange new
-				className: each definition className;
-				methodName: each definition name;
-				oldMethodAst: (RBParser parseMethod: each oldNode sourceCode);
-				newMethodAst: (RBParser parseMethod: each definition sourceCode);
+			MrMethodChange new
+				method: (MrMethod new
+					className: each definition className;
+					selector: each definition name;
+					yourself);
+				oldSourceCode: each oldNode sourceCode newSourceCode: each definition sourceCode;
 				yourself ].
 ]
 

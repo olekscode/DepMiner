@@ -21,49 +21,14 @@ MRAprioriMiner >> changeHistory: anObject [
 ]
 
 { #category : #'as yet unclassified' }
-MRAprioriMiner >> collectMessageSendChanges [
-	| sendsInOldMethod sendsInNewMethod addedSends deletedSends changes |
-	
-	changes := changeHistory methodChanges collect: [ :change | 		
-		sendsInOldMethod  := self collectMessageSendsFrom: change oldMethodAst.
-		sendsInNewMethod := self collectMessageSendsFrom: change newMethodAst.
-		
-		addedSends := sendsInNewMethod
-			select: [ :newSend |
-				sendsInOldMethod noneSatisfy: [ :oldSend |
-					oldSend selector = newSend selector ] ].
-			
-		deletedSends := sendsInOldMethod
-			select: [ :oldSend |
-				sendsInNewMethod noneSatisfy: [ :newSend |
-					newSend selector = oldSend selector ] ].
-	
-		MRMessageSendChanges new
-			methodChange: change;
-			deletedMessageSends: deletedSends;
-			addedMessageSends: addedSends;
-			yourself ].
-	
-	^ changes reject: [ :change |
-		change deletedMessageSends isEmpty or:
-		change addedMessageSends isEmpty ].
-
-]
-
-{ #category : #'as yet unclassified' }
-MRAprioriMiner >> collectMessageSendsFrom: anAst [
-	| visitor |
-	visitor := MRMessageSendCollectingVisitor new.
-	anAst acceptVisitor: visitor.
-	^ visitor messageSends
-
-]
-
-{ #category : #'as yet unclassified' }
 MRAprioriMiner >> collectTransactions [
-	| changes |
-	changes := self collectMessageSendChanges.
-	transactions := changes collect: [ :each | each asAprioriTransaction ].
+	| nonEmptyMethodChanges |
+	
+	nonEmptyMethodChanges := changeHistory methodChanges reject: [ :change |
+		change deletedMethodCalls isEmpty or:
+		change addedMethodCalls isEmpty ].
+	
+	transactions := nonEmptyMethodChanges collect: [ :each | each asAprioriTransaction ].
 ]
 
 { #category : #'as yet unclassified' }

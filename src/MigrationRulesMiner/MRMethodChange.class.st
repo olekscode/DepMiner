@@ -1,51 +1,95 @@
 Class {
-	#name : #MRMethodChange,
+	#name : #MrMethodChange,
 	#superclass : #Object,
 	#instVars : [
-		'className',
-		'methodName',
-		'oldMethodAst',
-		'newMethodAst'
+		'method',
+		'commit',
+		'oldSourceCode',
+		'newSourceCode',
+		'addedMethodCalls',
+		'deletedMethodCalls'
 	],
-	#category : #MigrationRulesMiner
+	#category : #'MigrationRulesMiner-Models'
 }
 
-{ #category : #accessing }
-MRMethodChange >> className [
-	^ className
+{ #category : #comparing }
+MrMethodChange >> = anObject [
+	anObject class = self class
+		ifFalse: [ ^ false ].
+		
+	^ anObject method = method and: [ 
+		anObject commit = commit and: [ 
+			anObject oldSourceCode = oldSourceCode and: [ 
+				anObject newSourceCode = newSourceCode and: [ 
+					anObject addedMethodCalls = addedMethodCalls and: [ 
+						anObject deletedMethodCalls = deletedMethodCalls ] ] ] ] ]
 ]
 
 { #category : #accessing }
-MRMethodChange >> className: anObject [
-	className := anObject
+MrMethodChange >> addedMethodCalls [
+	^ addedMethodCalls
 ]
 
 { #category : #accessing }
-MRMethodChange >> methodName [
-	^ methodName
+MrMethodChange >> addedMethodCalls: anObject [
+	addedMethodCalls := anObject
 ]
 
 { #category : #accessing }
-MRMethodChange >> methodName: anObject [
-	methodName := anObject
+MrMethodChange >> commit [
+	^ commit
 ]
 
 { #category : #accessing }
-MRMethodChange >> newMethodAst [
-	^ newMethodAst
+MrMethodChange >> commit: anObject [
+	commit := anObject
 ]
 
 { #category : #accessing }
-MRMethodChange >> newMethodAst: anObject [
-	newMethodAst := anObject
+MrMethodChange >> deletedMethodCalls [
+	^ deletedMethodCalls
 ]
 
 { #category : #accessing }
-MRMethodChange >> oldMethodAst [
-	^ oldMethodAst
+MrMethodChange >> deletedMethodCalls: anObject [
+	deletedMethodCalls := anObject
+]
+
+{ #category : #comparing }
+MrMethodChange >> hash [
+	| fields |
+	fields := { method . commit . oldSourceCode . newSourceCode . addedMethodCalls . deletedMethodCalls }.
+	
+	^ fields inject: self class hash into: [ :sum :each |
+		sum bitXor: each hash ]
 ]
 
 { #category : #accessing }
-MRMethodChange >> oldMethodAst: anObject [
-	oldMethodAst := anObject
+MrMethodChange >> method [
+	^ method
+]
+
+{ #category : #accessing }
+MrMethodChange >> method: anObject [
+	method := anObject
+]
+
+{ #category : #accessing }
+MrMethodChange >> newSourceCode [
+	^ newSourceCode
+]
+
+{ #category : #accessing }
+MrMethodChange >> newSourceCode: anObject [
+	newSourceCode := anObject
+]
+
+{ #category : #accessing }
+MrMethodChange >> oldSourceCode [
+	^ oldSourceCode
+]
+
+{ #category : #accessing }
+MrMethodChange >> oldSourceCode: anObject [
+	oldSourceCode := anObject
 ]
