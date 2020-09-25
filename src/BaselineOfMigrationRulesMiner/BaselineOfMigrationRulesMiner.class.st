@@ -20,5 +20,6 @@ BaselineOfMigrationRulesMiner >> baseline: spec [
 		"Packages"
 		spec 
 			package: 'MigrationRulesMiner' with: [ spec requires: #('APriori' 'PharoDeprecationsCollector') ];
-			package: 'MigrationRulesMiner-Tests' with: [ spec requires: #('MigrationRulesMiner') ] ]
+			package: 'MigrationRulesMiner-Tests' with: [ spec requires: #('MigrationRulesMiner') ];
+			package: 'MigrationRulesMiner-Spec' with: [ spec requires: #('MigrationRulesMiner') ] ]
 ]
