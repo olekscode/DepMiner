@@ -1,50 +1,15 @@
 Class {
-	#name : #MRAprioriMiner,
+	#name : #MrAprioriMiner,
 	#superclass : #Object,
-	#instVars : [
-		'changeHistory',
-		'transactions',
-		'apriori',
-		'rules'
-	],
-	#category : #MigrationRulesMiner
+	#category : #'MigrationRulesMiner-Controllers'
 }
 
-{ #category : #accessing }
-MRAprioriMiner >> changeHistory [
-	^ changeHistory
-]
-
-{ #category : #accessing }
-MRAprioriMiner >> changeHistory: anObject [
-	changeHistory := anObject
-]
-
 { #category : #'as yet unclassified' }
-MRAprioriMiner >> collectTransactions [
-	| nonEmptyMethodChanges |
-	
-	nonEmptyMethodChanges := changeHistory methodChanges reject: [ :change |
-		change deletedMethodCalls isEmpty or:
-		change addedMethodCalls isEmpty ].
-	
-	transactions := nonEmptyMethodChanges collect: [ :each | each asAprioriTransaction ].
-]
-
-{ #category : #'as yet unclassified' }
-MRAprioriMiner >> convertAssociationRulesToMigrationRules: aCollectionOfRules [
-	| antecedent consequent |
-	
+MrAprioriMiner >> convertAssociationRulesToMigrationRules: aCollectionOfRules [
 	^ aCollectionOfRules collect: [ :rule |
-		antecedent := rule key collect: [ :each |
-			each copyFrom: 14 to: each size - 1 ].
-		
-		consequent := rule value collect: [ :each |
-			each copyFrom: 12 to: each size - 1 ].
-		
-		MRMigrationRule new
-			antecedent: antecedent;
-			consequent: consequent;
+		MrRule new
+			deletedMethodCalls: rule key asSet;
+			addedMethodCalls: rule value asSet;
 			count: rule count;
 			confidence: rule confidence;
 			lift: rule lift;
@@ -52,7 +17,7 @@ MRAprioriMiner >> convertAssociationRulesToMigrationRules: aCollectionOfRules [
 ]
 
 { #category : #'as yet unclassified' }
-MRAprioriMiner >> filterAssociationRules: aCollectionOfRules [
+MrAprioriMiner >> filterAssociationRules: aCollectionOfRules [
 	| filteredRules |
 	
 	filteredRules := aCollectionOfRules reject: [ :rule |
@@ -60,16 +25,17 @@ MRAprioriMiner >> filterAssociationRules: aCollectionOfRules [
 		rule value isEmpty ].
 	
 	filteredRules := filteredRules select: [ :rule |
-		(rule key allSatisfy: [ :each | each beginsWith: 'deleted' ]) and: [
-			rule value allSatisfy: [ :each | each beginsWith: 'added' ] ] ].
+		(rule key allSatisfy: [ :each | each isDeleted ]) and: [
+			rule value allSatisfy: [ :each | each isAdded ] ] ].
 	
 	^ filteredRules 
 ]
 
 { #category : #'as yet unclassified' }
-MRAprioriMiner >> mineRulesWithMinCount: aCountThreshold [ 
-	| transactionsSource |
+MrAprioriMiner >> mineRulesFromMethodChanges: aCollectionOfMethodChanges withMinCount: aCountThreshold [ 
+	| transactions transactionsSource apriori rules |
 	
+	transactions := self transactionsFromMethodChanges: aCollectionOfMethodChanges.
 	transactionsSource := APrioriTransactionsArray from: transactions.
 	apriori := APriori forTransactions: transactionsSource.
 
@@ -83,11 +49,13 @@ MRAprioriMiner >> mineRulesWithMinCount: aCountThreshold [
 		APrioriLiftMetric }.
 	
 	rules := self filterAssociationRules: apriori associationRules.
-	rules := self convertAssociationRulesToMigrationRules: rules.
+	^ self convertAssociationRulesToMigrationRules: rules.
 
 ]
 
-{ #category : #accessing }
-MRAprioriMiner >> rules [
-	^ rules
+{ #category : #'as yet unclassified' }
+MrAprioriMiner >> transactionsFromMethodChanges: aCollectionOfMethodChanges [
+	^ aCollectionOfMethodChanges
+		select: [ :each | each addedMethodCalls isNotEmpty and: [ each deletedMethodCalls isNotEmpty ] ]
+		thenCollect: [ :each | (each addedMethodCalls union: each deletedMethodCalls) asItemset ].
 ]

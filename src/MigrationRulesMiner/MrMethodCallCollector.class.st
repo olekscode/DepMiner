@@ -24,5 +24,7 @@ MrMethodCallCollector >> extractAddedAndDeletedMethodCallsFrom: aMethodChange [
 	aMethodChange addedMethodCalls: (newCalls difference: oldCalls).
 	aMethodChange deletedMethodCalls: (oldCalls difference: newCalls).
 	
+	aMethodChange addedMethodCalls do: [ :each | each makeAdded ].
+	aMethodChange deletedMethodCalls do: [ :each | each makeDeleted ].
 	
 ]
