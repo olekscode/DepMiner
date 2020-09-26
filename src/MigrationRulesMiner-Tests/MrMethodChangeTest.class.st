@@ -1,12 +1,17 @@
 Class {
 	#name : #MrMethodChangeTest,
 	#superclass : #TestCase,
-	#category : #'MigrationRulesMiner-Tests'
+	#instVars : [
+		'change1',
+		'change2',
+		'change3'
+	],
+	#category : #'MigrationRulesMiner-Tests-Models'
 }
 
-{ #category : #tests }
-MrMethodChangeTest >> testEquality [ 
-	| change1 change2 change3 |
+{ #category : #running }
+MrMethodChangeTest >> setUp [
+	super setUp.
 	
 	change1 := MrMethodChange new 
 		method: MrMethod new;
@@ -34,7 +39,27 @@ MrMethodChangeTest >> testEquality [
 		addedMethodCalls: OrderedCollection new;
 		deletedMethodCalls: OrderedCollection new;
 		yourself.
-		
+]
+
+{ #category : #tests }
+MrMethodChangeTest >> testEquality [ 
 	self assert: change2 equals: change1.
 	self deny: change3 equals: change1.
+]
+
+{ #category : #tests }
+MrMethodChangeTest >> testHash [
+	self assert: change2 hash equals: change1 hash.
+	self deny: change3 hash equals: change1 hash.
+]
+
+{ #category : #tests }
+MrMethodChangeTest >> testSet [
+	| set |
+	set := { change1 . change2 . change3 } asSet.
+	
+	self assert: set size equals: 2.
+	self assert: (set includes: change1).
+	self assert: (set includes: change2).
+	self assert: (set includes: change3).
 ]
