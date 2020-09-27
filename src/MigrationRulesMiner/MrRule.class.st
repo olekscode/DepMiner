@@ -21,7 +21,8 @@ MrRule >> = anObject [
 		anObject deletedMethodCalls = deletedMethodCalls and: [ 
 			anObject count = count and: [ 
 				anObject confidence = confidence and: [ 
-					anObject lift = lift ] ] ] ]
+					anObject lift = lift and: [ 
+						anObject methodChanges = methodChanges ] ] ] ] ]
 ]
 
 { #category : #accessing }
