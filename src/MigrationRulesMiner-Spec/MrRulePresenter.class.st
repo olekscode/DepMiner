@@ -7,22 +7,36 @@ Class {
 		'commitPresenter',
 		'methodChangesTable',
 		'oldSourceCode',
-		'newSourceCode'
+		'newSourceCode',
+		'ruleFeedbackPresenter'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
 
 { #category : #specs }
 MrRulePresenter class >> defaultSpec [ 
-	^ SpBoxLayout newVertical 
+	^ SpBoxLayout newVertical
+		spacing: 5;
 		add: #ruleLabel height: self labelHeight;
-		add: #methodChangesTable;
-		add: #commitPresenter;
+		add: #methodChangesTable height: 200;
+		add: #commitPresenter height: 3 * self labelHeight;
 		add: (SpBoxLayout newHorizontal
+			spacing: 4;
 			add: #oldSourceCode;
 			add: #newSourceCode;
 			yourself);
+		add: #ruleFeedbackPresenter height: 200;
 		yourself.
+]
+
+{ #category : #accessing }
+MrRulePresenter class >> defaultTitle [
+	^ 'Rule Browser'
+]
+
+{ #category : #accessing }
+MrRulePresenter class >> preferredExtent [
+	^ 1200@1000
 ]
 
 { #category : #accessing }
@@ -35,7 +49,8 @@ MrRulePresenter >> connectPresenters [
 	super connectPresenters.
 	
 	methodChangesTable whenSelectionChangedDo: [
-		self showMethodChange: methodChangesTable selectedItem ].
+		methodChangesTable selectedItem ifNotNil: [
+			self showMethodChange: methodChangesTable selectedItem ] ].
 ]
 
 { #category : #initialization }
@@ -45,10 +60,24 @@ MrRulePresenter >> initializePresenters [
 	ruleLabel := self newLabel.
 	commitPresenter := MrCommitPresenter new.
 	methodChangesTable := self newTable.
-	oldSourceCode := self newText.
-	newSourceCode := self newText.
+	oldSourceCode := self newCode.
+	newSourceCode := self newCode.
 	
-	self showRule.
+	oldSourceCode withoutLineNumbers.
+	newSourceCode withoutLineNumbers.
+	
+	ruleFeedbackPresenter := MrRuleFeedbackPresenter new.
+	
+	rule ifNotNil: [ self showRule ].
+]
+
+{ #category : #initialization }
+MrRulePresenter >> initializeWindow: aWindowPresenter [
+	super initializeWindow: aWindowPresenter.
+	
+	aWindowPresenter
+		title: self class defaultTitle;
+		initialExtent: self class preferredExtent.
 ]
 
 { #category : #accessing }
@@ -64,6 +93,17 @@ MrRulePresenter >> newSourceCode [
 { #category : #accessing }
 MrRulePresenter >> oldSourceCode [
 	^ oldSourceCode
+]
+
+{ #category : #accessing }
+MrRulePresenter >> rule: aRule [
+	rule := aRule.
+	self showRule.
+]
+
+{ #category : #accessing }
+MrRulePresenter >> ruleFeedbackPresenter [
+	^ ruleFeedbackPresenter
 ]
 
 { #category : #accessing }
@@ -98,11 +138,15 @@ MrRulePresenter >> showMethodChanges [
 			title: 'Class'
 			evaluated: [ :each | each method className ]);
 		addColumn: (SpStringTableColumn
-			title: 'Selector'
+			title: 'Method'
 			evaluated: [ :each | each method selector ]);
 		addColumn: (SpStringTableColumn
 			title: 'Commit'
-			evaluated: [ :each | each commit sha ]).
+			evaluated: [ :each | each commit shortSha ]).
+			
+		items ifNotEmpty: [ 
+			methodChangesTable selectIndex: 1.
+			self showMethodChange: methodChangesTable selectedItem ].
 ]
 
 { #category : #initialization }

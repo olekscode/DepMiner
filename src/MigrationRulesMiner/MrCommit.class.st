@@ -77,6 +77,11 @@ MrCommit >> sha: anObject [
 	sha := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+MrCommit >> shortSha [
+	^ sha copyFrom: 1 to: 7
+]
+
 { #category : #accessing }
 MrCommit >> tags [
 	^ tags

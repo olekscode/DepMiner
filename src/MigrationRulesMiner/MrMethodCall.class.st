@@ -52,11 +52,7 @@ MrMethodCall >> makeDeleted [
 
 { #category : #printing }
 MrMethodCall >> printOn: aStream [
-	aStream
-		nextPutAll: self class name;
-		nextPut: $(;
-		nextPutAll: selector;
-		nextPut: $).
+	aStream nextPutAll: selector.
 ]
 
 { #category : #accessing }

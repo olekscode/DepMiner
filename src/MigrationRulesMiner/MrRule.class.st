@@ -7,7 +7,8 @@ Class {
 		'count',
 		'confidence',
 		'lift',
-		'methodChanges'
+		'methodChanges',
+		'feedback'
 	],
 	#category : #'MigrationRulesMiner-Models'
 }
@@ -63,6 +64,21 @@ MrRule >> deletedMethodCalls [
 { #category : #accessing }
 MrRule >> deletedMethodCalls: anObject [
 	deletedMethodCalls := anObject
+]
+
+{ #category : #accessing }
+MrRule >> feedback [
+	^ feedback
+]
+
+{ #category : #accessing }
+MrRule >> feedback: anObject [
+	feedback := anObject
+]
+
+{ #category : #testing }
+MrRule >> hasFeedback [
+	^ feedback isNotNil
 ]
 
 { #category : #comparing }
