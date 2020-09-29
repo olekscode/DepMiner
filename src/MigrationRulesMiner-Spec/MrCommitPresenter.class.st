@@ -5,9 +5,7 @@ Class {
 		'commit',
 		'shaLabel',
 		'messageLabel',
-		'authorLabel',
-		'tagsLabel',
-		'datetimeLabel'
+		'authorDateLabel'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -15,31 +13,23 @@ Class {
 { #category : #specs }
 MrCommitPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
-		add: #shaLabel;
-		add: #messageLabel;
-		add: #authorLabel;
-		add: #tagsLabel;
-		add: #datetimeLabel;
+		add: #shaLabel height: self labelHeight;
+		add: #messageLabel height: self labelHeight;
+		add: #authorDateLabel height: self labelHeight;
 		yourself.
 ]
 
 { #category : #accessing }
-MrCommitPresenter >> authorLabel [
-	^ authorLabel
-]
-
-{ #category : #accessing }
-MrCommitPresenter >> datetimeLabel [
-	^ datetimeLabel
+MrCommitPresenter >> commit: aCommit [
+	commit := aCommit.
+	self showCommit.
 ]
 
 { #category : #initialization }
 MrCommitPresenter >> initializePresenters [ 
 	shaLabel := self newLabel.
 	messageLabel := self newLabel.
-	authorLabel := self newLabel.
-	tagsLabel := self newLabel.
-	datetimeLabel := self newLabel.
+	authorDateLabel := self newLabel.
 	
 	commit ifNotNil: [ self showCommit ].
 ]
@@ -61,14 +51,8 @@ MrCommitPresenter >> shaLabel [
 
 { #category : #'as yet unclassified' }
 MrCommitPresenter >> showCommit [
-	shaLabel label: commit sha.
+	shaLabel label: (commit sha,
+		(commit tags ifEmpty: [ '' ] ifNotEmpty: [ '(', (', ' join: commit tags), ')' ])).
 	messageLabel label: commit message.
-	authorLabel label: commit author.	
-	tagsLabel label: (', ' join: commit tags).
-	datetimeLabel label: commit datetime asString.
-]
-
-{ #category : #accessing }
-MrCommitPresenter >> tagsLabel [
-	^ tagsLabel
+	authorDateLabel label: ('by ', commit author, ' on ', commit datetime asString).	
 ]

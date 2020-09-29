@@ -8,6 +8,6 @@ Class {
 MrRuleMethodChangeMapper >> mapRules: aCollectionOfRules toMethodChanges: aCollectionOfMethodChanges [
 	aCollectionOfRules do: [ :rule |
 		rule methodChanges: (aCollectionOfMethodChanges select: [ :methodChange |
-			(methodChange deletedMethodCalls includesAll: rule deletedMethodCalls) and: [ 
-				methodChange addedMethodCalls includesAll: rule addedMethodCalls ] ]) ]
+			(methodChange deletedMethodCalls asArray includesAll: rule deletedMethodCalls) and: [ 
+				methodChange addedMethodCalls asArray includesAll: rule addedMethodCalls ] ]) ]
 ]
