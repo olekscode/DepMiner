@@ -12,7 +12,7 @@ Class {
 { #category : #specs }
 MrRulesBrowser class >> defaultSpec [ 
 	^ SpBoxLayout newHorizontal
-		spacing: 5;
+		spacing: 15;
 		add: #rulesTable width: 500;
 		add: #rulePresenter;
 		yourself.

@@ -3,9 +3,7 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'commit',
-		'shaLabel',
-		'messageLabel',
-		'authorDateLabel'
+		'descriptionText'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -13,9 +11,7 @@ Class {
 { #category : #specs }
 MrCommitPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
-		add: #shaLabel height: self labelHeight;
-		add: #messageLabel height: self labelHeight;
-		add: #authorDateLabel height: self labelHeight;
+		add: #descriptionText;
 		yourself.
 ]
 
@@ -27,32 +23,32 @@ MrCommitPresenter >> commit: aCommit [
 
 { #category : #initialization }
 MrCommitPresenter >> initializePresenters [ 
-	shaLabel := self newLabel.
-	messageLabel := self newLabel.
-	authorDateLabel := self newLabel.
-	
-	commit ifNotNil: [ self showCommit ].
-]
-
-{ #category : #accessing }
-MrCommitPresenter >> messageLabel [
-	^ messageLabel
-]
-
-{ #category : #'accessing model' }
-MrCommitPresenter >> setModelBeforeInitialization: aCommit [
-	commit := aCommit
-]
-
-{ #category : #accessing }
-MrCommitPresenter >> shaLabel [
-	^ shaLabel
+	descriptionText := self newText.
 ]
 
 { #category : #'as yet unclassified' }
 MrCommitPresenter >> showCommit [
-	shaLabel label: (commit sha,
-		(commit tags ifEmpty: [ '' ] ifNotEmpty: [ '(', (', ' join: commit tags), ')' ])).
-	messageLabel label: commit message.
-	authorDateLabel label: ('by ', commit author, ' on ', commit datetime asString).	
+	| description |
+	
+	description := String streamContents: [ :stream |
+		stream nextPutAll: commit sha.
+		
+		commit tags ifNotEmpty: [ 
+			stream
+				space;
+				nextPut: $(;
+				nextPutAll: (', ' join: commit tags);
+				nextPut: $) ].
+			
+		stream
+			cr;
+			nextPutAll: commit message; cr;
+			nextPutAll: 'by ';
+			nextPutAll: commit author;
+			nextPutAll: ' on ';
+			nextPutAll: commit datetime asString ].
+		
+	descriptionText text: description.
+	
+		
 ]

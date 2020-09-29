@@ -3,7 +3,8 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'rule',
-		'ruleLabel',
+		'deletedCallsList',
+		'addedCallsList',
 		'commitPresenter',
 		'methodChangesTable',
 		'oldSourceCode',
@@ -16,27 +17,40 @@ Class {
 { #category : #specs }
 MrRulePresenter class >> defaultSpec [ 
 	^ SpBoxLayout newVertical
-		spacing: 5;
-		add: #ruleLabel height: self labelHeight;
-		add: #methodChangesTable height: 200;
-		add: #commitPresenter height: 3 * self labelHeight;
+		spacing: 4;
 		add: (SpBoxLayout newHorizontal
 			spacing: 4;
-			add: #oldSourceCode;
-			add: #newSourceCode;
+			add: (SpBoxLayout newVertical
+				add: 'Deleted method calls' height: self labelHeight;
+				add: #deletedCallsList;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: 'Added method calls' height: self labelHeight;
+				add: #addedCallsList;
+				yourself);
+			yourself) height: 70;
+		add: 'Method changes from which this rule was extracted' height: self labelHeight;
+		add: #methodChangesTable height: 200;
+		add: 'Commit' height: self labelHeight;
+		add: #commitPresenter height: 4.5 * self labelHeight;
+		add: (SpBoxLayout newHorizontal
+			spacing: 4;
+			add: (SpBoxLayout newVertical
+				add: 'Old source code' height: self labelHeight;
+				add: #oldSourceCode;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: 'New source code' height: self labelHeight;
+				add: #newSourceCode;
+				yourself);
 			yourself);
 		add: #ruleFeedbackPresenter height: 200;
 		yourself.
 ]
 
 { #category : #accessing }
-MrRulePresenter class >> defaultTitle [
-	^ 'Rule Browser'
-]
-
-{ #category : #accessing }
-MrRulePresenter class >> preferredExtent [
-	^ 1200@1000
+MrRulePresenter >> addedCallsList [
+	^ addedCallsList
 ]
 
 { #category : #accessing }
@@ -53,11 +67,21 @@ MrRulePresenter >> connectPresenters [
 			self showMethodChange: methodChangesTable selectedItem ] ].
 ]
 
+{ #category : #accessing }
+MrRulePresenter >> deletedCallsList [
+	^ deletedCallsList
+]
+
 { #category : #initialization }
 MrRulePresenter >> initializePresenters [
 	super initializePresenters.
 	
-	ruleLabel := self newLabel.
+	deletedCallsList := self newList.
+	addedCallsList := self newList.
+	
+	deletedCallsList items: #().
+	addedCallsList items: #().
+	
 	commitPresenter := MrCommitPresenter new.
 	methodChangesTable := self newTable.
 	oldSourceCode := self newCode.
@@ -69,15 +93,6 @@ MrRulePresenter >> initializePresenters [
 	ruleFeedbackPresenter := MrRuleFeedbackPresenter new.
 	
 	rule ifNotNil: [ self showRule ].
-]
-
-{ #category : #initialization }
-MrRulePresenter >> initializeWindow: aWindowPresenter [
-	super initializeWindow: aWindowPresenter.
-	
-	aWindowPresenter
-		title: self class defaultTitle;
-		initialExtent: self class preferredExtent.
 ]
 
 { #category : #accessing }
@@ -104,11 +119,6 @@ MrRulePresenter >> rule: aRule [
 { #category : #accessing }
 MrRulePresenter >> ruleFeedbackPresenter [
 	^ ruleFeedbackPresenter
-]
-
-{ #category : #accessing }
-MrRulePresenter >> ruleLabel [
-	^ ruleLabel
 ]
 
 { #category : #'accessing model' }
@@ -151,6 +161,7 @@ MrRulePresenter >> showMethodChanges [
 
 { #category : #initialization }
 MrRulePresenter >> showRule [
-	ruleLabel label: rule asString.
+	deletedCallsList items: rule deletedMethodCalls asArray.
+	addedCallsList items: rule addedMethodCalls asArray.
 	self showMethodChanges.
 ]
