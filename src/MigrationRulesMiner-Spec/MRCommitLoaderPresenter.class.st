@@ -1,5 +1,5 @@
 Class {
-	#name : #MRCommitLoaderPresenter,
+	#name : #MrCommitLoaderPresenter,
 	#superclass : #SpPresenter,
 	#instVars : [
 		'repositorySelect',
@@ -7,14 +7,14 @@ Class {
 		'fromCommitSelect',
 		'toCommitSelect',
 		'loadCommitsButton',
-		'changeHistory',
-		'parent'
+		'progressBar',
+		'methodChangeCollector'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
 
 { #category : #specs }
-MRCommitLoaderPresenter class >> defaultSpec [
+MrCommitLoaderPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		spacing: 2;
 		add: (SpBoxLayout newHorizontal
@@ -34,26 +34,23 @@ MRCommitLoaderPresenter class >> defaultSpec [
 			add: #toCommitSelect;
 			yourself) height: self inputTextHeight;
 		add: #loadCommitsButton height: self buttonHeight;
+		add: #progressBar;
 		yourself.
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> branchSelect [
+MrCommitLoaderPresenter >> branchSelect [
 	^ branchSelect
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> branchSelect: anObject [
+MrCommitLoaderPresenter >> branchSelect: anObject [
 	branchSelect := anObject
 ]
 
-{ #category : #accessing }
-MRCommitLoaderPresenter >> changeHistory [
-	^ changeHistory
-]
-
 { #category : #initialization }
-MRCommitLoaderPresenter >> connectPresenters [ 
+MrCommitLoaderPresenter >> connectPresenters [ 
+	| repository commits |
 	loadCommitsButton action: [ self loadCommits ].
 	
 	repositorySelect whenSelectedItemChangedDo: [ :repo |
@@ -61,85 +58,108 @@ MRCommitLoaderPresenter >> connectPresenters [
 			items: repo localBranches;
 			display: [ :branch | branch name ];
 			resetSelection ].
+		
+	branchSelect whenSelectedItemChangedDo: [ :branch |
+		repository := repositorySelect selectedItem.
+		methodChangeCollector := MrMethodChangeCollector forRepository: repository branch: branch.
+		commits := methodChangeCollector loadAllCommits.
+		
+		fromCommitSelect
+			items: commits;
+			display: [ :commit | commit sha copyFrom: 1 to: 7 ];
+			resetSelection.
+			
+		toCommitSelect
+			items: commits;
+			display: [ :commit | commit sha copyFrom: 1 to: 7 ];
+			resetSelection ]
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> fromCommitSelect [
+MrCommitLoaderPresenter >> fromCommitSelect [
 	^ fromCommitSelect
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> fromCommitSelect: anObject [
+MrCommitLoaderPresenter >> fromCommitSelect: anObject [
 	fromCommitSelect := anObject
 ]
 
 { #category : #initialization }
-MRCommitLoaderPresenter >> initializePresenters [ 
+MrCommitLoaderPresenter >> initializePresenters [ 
 	repositorySelect := self newDropList
 		items: (IceRepository registry select: [ :repo | repo isValid ]);
 		display: [ :repo | repo name ]
 		yourself.
 		
 	branchSelect := self newDropList.
-	fromCommitSelect := self newTextInput.
-	toCommitSelect := self newTextInput.
+	fromCommitSelect := self newDropList.
+	toCommitSelect := self newDropList.
 	
 	loadCommitsButton := self newButton
 		label: 'Load commits';
 		yourself.
+		
+	progressBar := self newProgressBar.
+	progressBar fixedAt: 0.3.
 ]
 
 { #category : #'as yet unclassified' }
-MRCommitLoaderPresenter >> loadCommits [
-	| repository |
-	
-	repository := repositorySelect selectedItem.
+MrCommitLoaderPresenter >> loadCommits [
+	| fromCommit toCommit commits diffs methodChanges |
 
-	changeHistory := MRChangeHistory new
-   		repository: repository;
-		branchNamed: branchSelect selectedItem name;
-		fromCommitId: fromCommitSelect text;
-		toCommitId: toCommitSelect text;
-		yourself.
+	fromCommit := methodChangeCollector iceCommitFromSha: fromCommitSelect selectedItem sha.
+	toCommit := methodChangeCollector iceCommitFromSha: toCommitSelect selectedItem sha.
+
+	commits := methodChangeCollector loadIceCommitsFrom: fromCommit to: toCommit.
+	diffs := OrderedCollection new.
+	progressBar fixedAt: 0.
 	
-	changeHistory loadCommits.
-	changeHistory calculateDiffs.
-	changeHistory extractMethodChanges.
+	commits withIndexDo: [ :commit :index | 
+		diffs add: (commit diffTo: commit parent).
+		progressBar fixedAt: index / commits size asFloat ].
 	
-	parent changeHistory: changeHistory.
+	methodChanges := methodChangeCollector extractMethodChangesFromDiffs: diffs.
+	
+	methodChanges inspect.
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> loadCommitsButton [
+MrCommitLoaderPresenter >> loadCommitsButton [
 	^ loadCommitsButton
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> loadCommitsButton: anObject [
+MrCommitLoaderPresenter >> loadCommitsButton: anObject [
 	loadCommitsButton := anObject
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> parent: anObject [
-	parent := anObject
+MrCommitLoaderPresenter >> progressBar [
+	^ progressBar
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> repositorySelect [
+MrCommitLoaderPresenter >> progressBar: anObject [
+	progressBar := anObject
+]
+
+{ #category : #accessing }
+MrCommitLoaderPresenter >> repositorySelect [
 	^ repositorySelect
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> repositorySelect: anObject [
+MrCommitLoaderPresenter >> repositorySelect: anObject [
 	repositorySelect := anObject
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> toCommitSelect [
+MrCommitLoaderPresenter >> toCommitSelect [
 	^ toCommitSelect
 ]
 
 { #category : #accessing }
-MRCommitLoaderPresenter >> toCommitSelect: anObject [
+MrCommitLoaderPresenter >> toCommitSelect: anObject [
 	toCommitSelect := anObject
 ]

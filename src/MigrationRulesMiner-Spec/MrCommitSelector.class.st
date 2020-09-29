@@ -18,9 +18,14 @@ MrCommitSelector class >> defaultSpec [
 		yourself.
 ]
 
-{ #category : #'as yet unclassified' }
-MrCommitSelector class >> forCommits: aCollectionOfCommits [
-	^ self new initializeCommits: aCollectionOfCommits; yourself.
+{ #category : #accessing }
+MrCommitSelector class >> defaultTitle [
+	^ 'Select commits'
+]
+
+{ #category : #accessing }
+MrCommitSelector class >> preferredExtent [
+	^ 700@400
 ]
 
 { #category : #accessing }
@@ -30,12 +35,7 @@ MrCommitSelector >> commitTable [
 
 { #category : #initialization }
 MrCommitSelector >> connectPresenters [
-	selectButton action: [ self showCommits ].
-]
-
-{ #category : #initialization }
-MrCommitSelector >> initializeCommits: aCollectionOfCommits [
-	commits := aCollectionOfCommits
+	self showCommits.
 ]
 
 { #category : #initialization }
@@ -47,9 +47,23 @@ MrCommitSelector >> initializePresenters [
 		yourself.
 ]
 
+{ #category : #initialization }
+MrCommitSelector >> initializeWindow: aWindowPresenter [
+	super initializeWindow: aWindowPresenter.
+	
+	aWindowPresenter
+		title: self class defaultTitle;
+		initialExtent: self class preferredExtent.
+]
+
 { #category : #accessing }
 MrCommitSelector >> selectButton [
 	^ selectButton
+]
+
+{ #category : #initialization }
+MrCommitSelector >> setModelBeforeInitialization: aCollectionOfCommits [
+	commits := aCollectionOfCommits
 ]
 
 { #category : #initialization }
@@ -64,8 +78,11 @@ MrCommitSelector >> showCommits [
 			title: 'Message'
 			evaluated: [ :each | each message ]);
 		addColumn: (SpStringTableColumn
-			title: 'Tag'
-			evaluated: [ :each | each tag ifNil: [ '' ] ifNotNil: [ each tag ] ]);
+			title: 'Author'
+			evaluated: [ :each | each author ]);
+		addColumn: (SpStringTableColumn
+			title: 'Tags'
+			evaluated: [ :each | ', ' join: each tags ]);
 		addColumn: (SpStringTableColumn 
 			title: 'Datetime'
 			evaluated: [ :each | each datetime asString ])

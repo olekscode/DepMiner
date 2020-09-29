@@ -3,8 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'repository',
-		'branch',
-		'failedCommits'
+		'branch'
 	],
 	#category : #'MigrationRulesMiner-Controllers'
 }
@@ -17,15 +16,12 @@ MrMethodChangeCollector class >> forRepository: aRepository branch: aBranch [
 { #category : #private }
 MrMethodChangeCollector >> calculateDiffsForCommits: aCollectionOfIceCommits [
 	| commit diffs |
-	failedCommits := OrderedCollection new.
 	diffs := OrderedCollection new.
 
 	(1 to: aCollectionOfIceCommits size - 1)
 		do: [ :i |
 			commit := aCollectionOfIceCommits at: i.
-			[ diffs add: (commit diffTo: commit parent) ]
-				on: Exception
-				do: [ failedCommits add: commit ] ]
+			diffs add: (commit diffTo: commit parent) ]
 		displayingProgress: [ :i | i asString, ' / ', aCollectionOfIceCommits size asString ].
 		
 	^ diffs

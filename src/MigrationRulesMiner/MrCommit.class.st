@@ -3,9 +3,10 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'sha',
-		'tag',
 		'datetime',
-		'message'
+		'message',
+		'tags',
+		'author'
 	],
 	#category : #'MigrationRulesMiner-Models'
 }
@@ -17,8 +18,19 @@ MrCommit >> = anObject [
 		
 	^ anObject sha = sha and: [ 
 		anObject message = message and: [ 
-			anObject tag = tag and: [ 
-				anObject datetime = datetime ] ] ]
+			anObject tags = tags and: [ 
+				anObject datetime = datetime and: [ 
+					anObject author = author ] ] ] ]
+]
+
+{ #category : #accessing }
+MrCommit >> author [
+	^ author
+]
+
+{ #category : #accessing }
+MrCommit >> author: anObject [
+	author := anObject
 ]
 
 { #category : #accessing }
@@ -34,7 +46,7 @@ MrCommit >> datetime: anObject [
 { #category : #comparing }
 MrCommit >> hash [
 	| fields |
-	fields := { sha . message . tag . datetime }.
+	fields := { sha . message . tags . datetime . author }.
 	
 	^ fields inject: self class hash into: [ :sum :each |
 		sum bitXor: each hash ]
@@ -66,11 +78,11 @@ MrCommit >> sha: anObject [
 ]
 
 { #category : #accessing }
-MrCommit >> tag [
-	^ tag
+MrCommit >> tags [
+	^ tags
 ]
 
 { #category : #accessing }
-MrCommit >> tag: anObject [
-	tag := anObject
+MrCommit >> tags: anObject [
+	tags := anObject
 ]

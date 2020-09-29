@@ -104,7 +104,7 @@ MRMigrationRulesBrowser >> firstTable: anObject [
 
 { #category : #initialization }
 MRMigrationRulesBrowser >> initializeWidgets [
-	commitLoader := MRCommitLoaderPresenter new
+	commitLoader := MrCommitLoaderPresenter new
 		parent: self;
 		yourself.
 		

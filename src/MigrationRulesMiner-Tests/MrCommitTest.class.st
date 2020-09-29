@@ -7,7 +7,8 @@ Class {
 		'commit3',
 		'commit4',
 		'commit5',
-		'commit6'
+		'commit6',
+		'commit7'
 	],
 	#category : #'MigrationRulesMiner-Tests-Models'
 }
@@ -19,7 +20,8 @@ MrCommitTest >> setUp [
 	commit1 := MrCommit new
 		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
 		message: 'Hello world';
-		tag: '1.0.1';
+		author: 'Oleksandr Zaitsev';
+		tags: #('1.0.1');
 		datetime: '10-12-2020' asDateAndTime;
 		yourself.
 	
@@ -27,7 +29,8 @@ MrCommitTest >> setUp [
 	commit2 := MrCommit new
 		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
 		message: 'Hello world';
-		tag: '1.0.1';
+		author: 'Oleksandr Zaitsev';
+		tags: #('1.0.1');
 		datetime: '10-12-2020' asDateAndTime;
 		yourself.
 		
@@ -35,7 +38,8 @@ MrCommitTest >> setUp [
 	commit3 := MrCommit new
 		sha: '3206cc82d9991e2acdd10916247c114e1b173e77';
 		message: 'Hello world';
-		tag: '1.0.1';
+		author: 'Oleksandr Zaitsev';
+		tags: #('1.0.1');
 		datetime: '10-12-2020' asDateAndTime;
 		yourself.
 		
@@ -43,23 +47,35 @@ MrCommitTest >> setUp [
 	commit4 := MrCommit new
 		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
 		message: 'Lorem ipsum';
-		tag: '1.0.1';
+		author: 'Oleksandr Zaitsev';
+		tags: #('1.0.1');
 		datetime: '10-12-2020' asDateAndTime;
 		yourself.
 		
-	"Different tag"
+	"Different author"
 	commit5 := MrCommit new
 		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
 		message: 'Hello world';
-		tag: '2.0.0';
+		author: 'Stephane Ducasse';
+		tags: #('1.0.1');
+		datetime: '10-12-2020' asDateAndTime;
+		yourself.
+		
+	"Different tags"
+	commit6 := MrCommit new
+		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
+		message: 'Hello world';
+		author: 'Oleksandr Zaitsev';
+		tags: #('release' '2.0.0');
 		datetime: '10-12-2020' asDateAndTime;
 		yourself.
 		
 	"Different datetime"
-	commit6 := MrCommit new
+	commit7 := MrCommit new
 		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
 		message: 'Hello world';
-		tag: '1.0.1';
+		author: 'Oleksandr Zaitsev';
+		tags: #('1.0.1');
 		datetime: '11-21-2020' asDateAndTime;
 		yourself.
 ]
@@ -71,6 +87,7 @@ MrCommitTest >> testEquality [
 	self deny: commit4 equals: commit1.
 	self deny: commit5 equals: commit1.
 	self deny: commit6 equals: commit1.
+	self deny: commit7 equals: commit1.
 ]
 
 { #category : #tests }
@@ -80,18 +97,20 @@ MrCommitTest >> testHash [
 	self deny: commit4 hash equals: commit1 hash.
 	self deny: commit5 hash equals: commit1 hash.
 	self deny: commit6 hash equals: commit1 hash.
+	self deny: commit7 hash equals: commit1 hash.
 ]
 
 { #category : #tests }
 MrCommitTest >> testSet [
 	| set |
-	set := { commit1 . commit2 . commit3 . commit4 . commit5 . commit6 } asSet.
+	set := { commit1 . commit2 . commit3 . commit4 . commit5 . commit6 . commit7 } asSet.
 	
-	self assert: set size equals: 5.
+	self assert: set size equals: 6.
 	self assert: (set includes: commit1).
 	self assert: (set includes: commit2).
 	self assert: (set includes: commit3).
 	self assert: (set includes: commit4).
 	self assert: (set includes: commit5).
 	self assert: (set includes: commit6).
+	self assert: (set includes: commit7).
 ]
