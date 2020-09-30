@@ -1,5 +1,5 @@
 Class {
-	#name : #MRCommand,
+	#name : #MrCommand,
 	#superclass : #StCommand,
 	#category : #'MigrationRulesMiner-Spec-Commands'
 }

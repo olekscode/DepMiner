@@ -16,10 +16,14 @@ BaselineOfMigrationRulesMiner >> baseline: spec [
 		spec
 			baseline: 'PharoDeprecationsCollector'
 			with: [ spec repository: 'github://olekscode/PharoDeprecationsCollector/src' ].
+			
+		spec
+			baseline: 'FileDialog'
+			with: [ spec repository: 'github://Ducasse/file-dialog/repository' ].
 				
 		"Packages"
 		spec 
 			package: 'MigrationRulesMiner' with: [ spec requires: #('APriori' 'PharoDeprecationsCollector') ];
 			package: 'MigrationRulesMiner-Tests' with: [ spec requires: #('MigrationRulesMiner') ];
-			package: 'MigrationRulesMiner-Spec' with: [ spec requires: #('MigrationRulesMiner') ] ]
+			package: 'MigrationRulesMiner-Spec' with: [ spec requires: #('MigrationRulesMiner' 'FileDialog') ] ]
 ]

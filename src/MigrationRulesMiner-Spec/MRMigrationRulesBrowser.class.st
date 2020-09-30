@@ -171,8 +171,8 @@ MRMigrationRulesBrowser >> toolbarActions [
 	^ CmCommandGroup forSpec
 		register: (CmCommandGroup forSpec
 			register: (MRSortCommand forSpecContext: self);
-			register: (MRFilterCommand forSpecContext: self);
-			register: (MRExportToExcelCommand forSpecContext: self);
+			register: (MrOpenCommand forSpecContext: self);
+			register: (MrSaveCommand forSpecContext: self);
 			yourself);
 		yourself
 ]
