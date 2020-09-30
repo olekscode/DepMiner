@@ -3,8 +3,7 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'rules',
-		'rulesTable',
-		'rulePresenter'
+		'notebook'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -12,9 +11,7 @@ Class {
 { #category : #specs }
 MrRulesBrowser class >> defaultSpec [ 
 	^ SpBoxLayout newHorizontal
-		spacing: 15;
-		add: #rulesTable width: 500;
-		add: #rulePresenter;
+		add: #notebook;
 		yourself.
 ]
 
@@ -45,6 +42,19 @@ MrRulesBrowser class >> preferredExtent [
 	^ 1700@1000
 ]
 
+{ #category : #adding }
+MrRulesBrowser >> addPageWithRules: aCollectionOfRules title: aTitle [
+	| newPage |
+	newPage := self newNotebookPage
+		title: aTitle;
+		presenterProvider: [ MrRulesBrowserPage on: aCollectionOfRules ];
+		yourself.
+	
+	notebook addPage: newPage.
+	notebook selectPage: newPage.
+	
+]
+
 { #category : #'private builder' }
 MrRulesBrowser >> buildToolbar [
 	^ self toolbarActions 
@@ -55,22 +65,10 @@ MrRulesBrowser >> buildToolbar [
 ]
 
 { #category : #initialization }
-MrRulesBrowser >> connectPresenters [
-	super connectPresenters.
-	
-	rulesTable whenSelectionChangedDo: [
-		rulesTable selectedItem ifNotNil: [ 
-			self showRule: rulesTable selectedItem ] ]
-]
-
-{ #category : #initialization }
 MrRulesBrowser >> initializePresenters [ 
 	super initializePresenters.
 	
-	rulesTable := self newTable.
-	rulePresenter := MrRulePresenter new.
-	
-	rules ifNotNil: [ self showRules ].
+	notebook := self newNotebook.
 ]
 
 { #category : #initialization }
@@ -84,46 +82,13 @@ MrRulesBrowser >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #accessing }
-MrRulesBrowser >> rulePresenter [
-	^ rulePresenter
-]
-
-{ #category : #accessing }
-MrRulesBrowser >> rules: aCollectionOfRules [
-	rules := aCollectionOfRules.
-	self showRules.
-]
-
-{ #category : #accessing }
-MrRulesBrowser >> rulesTable [
-	^ rulesTable
+MrRulesBrowser >> notebook [
+	^ notebook
 ]
 
 { #category : #'accessing model' }
 MrRulesBrowser >> setModelBeforeInitialization: aCollectionOfRules [
 	rules := aCollectionOfRules
-]
-
-{ #category : #'as yet unclassified' }
-MrRulesBrowser >> showRule: aRule [
-	rulePresenter rule: aRule
-]
-
-{ #category : #'as yet unclassified' }
-MrRulesBrowser >> showRules [
-	rulesTable
-		columns: { };
-		items: rules;
-		addColumn: (SpStringTableColumn
-			title: 'Deleted calls'
-			evaluated: [ :each | ', ' join: each deletedMethodCalls]);
-		addColumn: (SpStringTableColumn
-			title: 'Added calls'
-			evaluated: [ :each | ', ' join: each addedMethodCalls ]).
-			
-		rules ifNotEmpty: [ 
-			rulesTable selectIndex: 1.
-			self showRule: rulesTable selectedItem ].
 ]
 
 { #category : #building }

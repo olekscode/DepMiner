@@ -3,15 +3,18 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'commit',
-		'descriptionText'
+		'propertiesTable',
+		'messageText'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
 
 { #category : #specs }
 MrCommitPresenter class >> defaultSpec [
-	^ SpBoxLayout newVertical
-		add: #descriptionText;
+	^ SpBoxLayout newHorizontal
+		spacing: 4;
+		add: #propertiesTable;
+		add: #messageText;
 		yourself.
 ]
 
@@ -22,33 +25,51 @@ MrCommitPresenter >> commit: aCommit [
 ]
 
 { #category : #initialization }
-MrCommitPresenter >> initializePresenters [ 
-	descriptionText := self newText.
+MrCommitPresenter >> initializePresenters [
+	super initializePresenters.
+
+	propertiesTable := self newTable.
+	messageText := self newText.
+	
+	propertiesTable hideColumnHeaders.
+]
+
+{ #category : #accessing }
+MrCommitPresenter >> messageText [
+	^ messageText
+]
+
+{ #category : #accessing }
+MrCommitPresenter >> propertiesTable [
+	^ propertiesTable
 ]
 
 { #category : #'as yet unclassified' }
 MrCommitPresenter >> showCommit [
-	| description |
+	messageText text: commit message.
+	self showPropertiesTable.
+]
+
+{ #category : #'as yet unclassified' }
+MrCommitPresenter >> showPropertiesTable [
+	| rows |
+	rows := OrderedCollection new.
 	
-	description := String streamContents: [ :stream |
-		stream nextPutAll: commit sha.
-		
-		commit tags ifNotEmpty: [ 
-			stream
-				space;
-				nextPut: $(;
-				nextPutAll: (', ' join: commit tags);
-				nextPut: $) ].
-			
-		stream
-			cr;
-			nextPutAll: commit message; cr;
-			nextPutAll: 'by ';
-			nextPutAll: commit author;
-			nextPutAll: ' on ';
-			nextPutAll: commit datetime asString ].
-		
-	descriptionText text: description.
+	rows add: { 'SHA' . commit sha }.
+	rows add: { 'author' . commit author }.
 	
-		
+	commit tags ifNotEmpty: [ 
+		rows add: { 'tags' . (', ' join: commit tags) } ].
+	
+	rows add: { 'datetime' . commit datetime }.
+	
+	propertiesTable
+		items: rows;
+		columns: { };
+		addColumn: ((SpStringTableColumn
+			title: 'Property'
+			evaluated: [ :each | each first ]) width: 100; yourself);
+		addColumn: (SpStringTableColumn
+			title: 'Value'
+			evaluated: [ :each | each second ]).
 ]

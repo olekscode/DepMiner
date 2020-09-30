@@ -18,7 +18,7 @@ MrRuleSupportPresenter class >> defaultSpec [
 		add: 'Method changes from which this rule was extracted' height: self labelHeight;
 		add: #methodChangesTable height: 200;
 		add: 'Commit' height: self labelHeight;
-		add: #commitPresenter height: 4.5 * self labelHeight;
+		add: #commitPresenter height: 5 * self labelHeight;
 		add: (SpBoxLayout newHorizontal
 			spacing: 4;
 			add: (SpBoxLayout newVertical

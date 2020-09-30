@@ -26,7 +26,7 @@ MrOpenCommand >> execute [
 		rules := selectedFile readStreamDo: [ :readStream |
         STON fromStream: readStream ].
 
-		context rules: rules ].
+		context addPageWithRules: rules title: selectedFile basename ].
 	
 	openFileDialog openWithSpec 
 ]
