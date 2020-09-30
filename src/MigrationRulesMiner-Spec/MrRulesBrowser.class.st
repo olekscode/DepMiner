@@ -89,6 +89,12 @@ MrRulesBrowser >> rulePresenter [
 ]
 
 { #category : #accessing }
+MrRulesBrowser >> rules: aCollectionOfRules [
+	rules := aCollectionOfRules.
+	self showRules.
+]
+
+{ #category : #accessing }
 MrRulesBrowser >> rulesTable [
 	^ rulesTable
 ]
@@ -113,16 +119,7 @@ MrRulesBrowser >> showRules [
 			evaluated: [ :each | ', ' join: each deletedMethodCalls]);
 		addColumn: (SpStringTableColumn
 			title: 'Added calls'
-			evaluated: [ :each | ', ' join: each addedMethodCalls ]);
-		addColumn: (SpStringTableColumn
-			title: 'Count'
-			evaluated: [ :each | each count ]);
-		addColumn: (SpStringTableColumn
-			title: 'Confidence'
-			evaluated: [ :each | each confidence asFloat round: 3 ]);
-		addColumn: (SpStringTableColumn
-			title: 'Lift'
-			evaluated: [ :each | each lift asFloat round: 3 ]).
+			evaluated: [ :each | ', ' join: each addedMethodCalls ]).
 			
 		rules ifNotEmpty: [ 
 			rulesTable selectIndex: 1.

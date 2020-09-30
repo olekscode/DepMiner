@@ -21,5 +21,12 @@ MrOpenCommand class >> defaultName [
 
 { #category : #executing }
 MrOpenCommand >> execute [
-	Transcript open
+	| openFileDialog rules |
+	openFileDialog := FDOpenFileDialog new whenSelected: [ :selectedFile |
+		rules := selectedFile readStreamDo: [ :readStream |
+        STON fromStream: readStream ].
+
+		context rules: rules ].
+	
+	openFileDialog openWithSpec 
 ]
