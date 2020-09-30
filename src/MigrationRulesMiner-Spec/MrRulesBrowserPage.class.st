@@ -65,9 +65,16 @@ MrRulesBrowserPage >> showRule: aRule [
 
 { #category : #'as yet unclassified' }
 MrRulesBrowserPage >> showRules [
+	| sortedRules |
+	"Sort first by lift then by confidence then by count"
+	sortedRules := rules sorted: [ :a :b |
+		a lift > b lift or: [ 
+			a lift = b lift and: [ a confidence > b confidence or: [ 
+				a confidence = b confidence and: [ a count > b count ] ] ] ] ].
+
 	rulesTable
 		columns: { };
-		items: rules;
+		items: sortedRules;
 		addColumn: (SpStringTableColumn
 			title: 'Deleted calls'
 			evaluated: [ :each | ', ' join: each deletedMethodCalls]);

@@ -97,6 +97,7 @@ MrRulesBrowser >> toolbarActions [
 		register: (CmCommandGroup forSpec
 			register: (MrOpenCommand forSpecContext: self);
 			register: (MrSaveCommand forSpecContext: self);
+			register: (MrMineRulesCommand forSpecContext: self);
 			yourself);
 		yourself
 ]

@@ -32,6 +32,7 @@ MrCommitPresenter >> initializePresenters [
 	messageText := self newText.
 	
 	propertiesTable hideColumnHeaders.
+	messageText beNotEditable.
 ]
 
 { #category : #accessing }

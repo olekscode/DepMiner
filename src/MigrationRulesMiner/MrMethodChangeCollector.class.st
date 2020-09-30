@@ -88,12 +88,6 @@ MrMethodChangeCollector >> initializeRepository: aRepository branch: aBranch [
 	^ self
 ]
 
-{ #category : #public }
-MrMethodChangeCollector >> loadAllCommits [
-	^ branch commits collect: [ :commit |
-		commit asMrCommit ]
-]
-
 { #category : #private }
 MrMethodChangeCollector >> loadIceCommitsFrom: anOldestIceCommit to: aNewestIceCommit [
 	| commits commitWalk |

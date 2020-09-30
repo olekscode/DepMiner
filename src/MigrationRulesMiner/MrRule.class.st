@@ -109,3 +109,13 @@ MrRule >> methodChanges [
 MrRule >> methodChanges: anObject [
 	methodChanges := anObject
 ]
+
+{ #category : #printing }
+MrRule >> printOn: aStream [
+	aStream 
+		nextPut: ${;
+		nextPutAll: (', ' join: deletedMethodCalls);
+		nextPutAll: '} => {';
+		nextPutAll: (', ' join: addedMethodCalls);
+		nextPut: $}
+]

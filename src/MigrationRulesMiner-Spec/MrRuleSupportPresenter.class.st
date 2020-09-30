@@ -56,8 +56,8 @@ MrRuleSupportPresenter >> initializePresenters [
 	oldSourceCode := self newCode.
 	newSourceCode := self newCode.
 	
-	oldSourceCode withoutLineNumbers.
-	newSourceCode withoutLineNumbers.
+	oldSourceCode withoutLineNumbers; withoutSyntaxHighlight; beNotEditable.
+	newSourceCode withoutLineNumbers; withoutSyntaxHighlight; beNotEditable.
 	
 	rule ifNotNil: [ self showMethodChanges ].
 ]
