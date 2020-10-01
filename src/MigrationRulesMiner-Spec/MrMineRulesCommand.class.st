@@ -21,5 +21,5 @@ MrMineRulesCommand class >> defaultName [
 
 { #category : #'as yet unclassified' }
 MrMineRulesCommand >> execute [
-	Transcript open
+	MrCommitLoaderPresenter new openWithSpec.
 ]

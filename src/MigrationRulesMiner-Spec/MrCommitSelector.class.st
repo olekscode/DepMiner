@@ -33,8 +33,9 @@ MrCommitSelector >> commitTable [
 	^ commitTable
 ]
 
-{ #category : #initialization }
-MrCommitSelector >> connectPresenters [
+{ #category : #accessing }
+MrCommitSelector >> commits: aCollectionOfCommits [
+	commits := aCollectionOfCommits.
 	self showCommits.
 ]
 
@@ -45,6 +46,8 @@ MrCommitSelector >> initializePresenters [
 	selectButton := self newButton
 		label: 'Select';
 		yourself.
+		
+	commits ifNotNil: [ self showCommits ].
 ]
 
 { #category : #initialization }

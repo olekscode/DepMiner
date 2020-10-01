@@ -2,13 +2,16 @@ Class {
 	#name : #MrCommitLoaderPresenter,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'repositorySelect',
-		'branchSelect',
-		'fromCommitSelect',
-		'toCommitSelect',
-		'loadCommitsButton',
 		'progressBar',
-		'methodChangeCollector'
+		'methodChangeCollector',
+		'commits',
+		'fromCommitTable',
+		'repositoriesTable',
+		'toCommitTable',
+		'branchesTable',
+		'minCountInput',
+		'minConfidenceInput',
+		'mineRulesButton'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -18,148 +21,151 @@ MrCommitLoaderPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		spacing: 2;
 		add: (SpBoxLayout newHorizontal
-			add: 'Repository' width: self labelWidth;
-			add: #repositorySelect;
-			yourself) height: self inputTextHeight;
-		add: (SpBoxLayout newHorizontal
-			add: 'Branch' width: self labelWidth;
-			add: #branchSelect;
-			yourself) height: self inputTextHeight;
-		add: (SpBoxLayout newHorizontal
-			add: 'From commit' width: self labelWidth;
-			add: #fromCommitSelect;
-			yourself) height: self inputTextHeight;
-		add: (SpBoxLayout newHorizontal
-			add: 'To commit' width: self labelWidth;
-			add: #toCommitSelect;
-			yourself) height: self inputTextHeight;
-		add: #loadCommitsButton height: self buttonHeight;
-		add: #progressBar;
+			spacing: 4;
+			add: (SpBoxLayout newVertical
+				add: 'Repository' height: self labelHeight;
+				add: #repositoriesTable;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: 'Branch' height: self labelHeight;
+				add: #branchesTable;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: 'From commit' height: self labelHeight;
+				add: #fromCommitTable;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: 'To commit' height: self labelHeight;
+				add: #toCommitTable;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: '' height: self labelHeight;
+				add: (SpBoxLayout newHorizontal
+					add: 'Min count';
+					add: #minCountInput width: 50;
+					yourself) height: self buttonHeight;
+				add: (SpBoxLayout newHorizontal
+					add: 'Min confidence';
+					add: #minConfidenceInput width: 50;
+					yourself) height: self buttonHeight;
+				add: #mineRulesButton height: self buttonHeight;
+				yourself);
+			yourself);
+		add: #progressBar height: self buttonHeight;
 		yourself.
 ]
 
 { #category : #accessing }
-MrCommitLoaderPresenter >> branchSelect [
-	^ branchSelect
+MrCommitLoaderPresenter class >> defaultTitle [
+	^ 'MrMiner'
 ]
 
 { #category : #accessing }
-MrCommitLoaderPresenter >> branchSelect: anObject [
-	branchSelect := anObject
+MrCommitLoaderPresenter class >> preferredExtent [
+	^ 1100@500
 ]
 
 { #category : #initialization }
 MrCommitLoaderPresenter >> connectPresenters [ 
-	| repository commits |
-	loadCommitsButton action: [ self loadCommits ].
+	repositoriesTable whenSelectionChangedDo: [ :selection |
+		self onRepositorySelectionChanged: repositoriesTable selectedItem ].
+		
+	branchesTable whenSelectionChangedDo: [ :selection |
+		self onBranchSelectionChanged: branchesTable selectedItem ].
 	
-	repositorySelect whenSelectedItemChangedDo: [ :repo |
-		branchSelect
-			items: repo localBranches;
-			display: [ :branch | branch name ];
-			resetSelection ].
-		
-	branchSelect whenSelectedItemChangedDo: [ :branch |
-		repository := repositorySelect selectedItem.
-		methodChangeCollector := MrMethodChangeCollector forRepository: repository branch: branch.
-		commits := methodChangeCollector loadAllCommits.
-		
-		fromCommitSelect
-			items: commits;
-			display: [ :commit | commit sha copyFrom: 1 to: 7 ];
-			resetSelection.
-			
-		toCommitSelect
-			items: commits;
-			display: [ :commit | commit sha copyFrom: 1 to: 7 ];
-			resetSelection ]
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> fromCommitSelect [
-	^ fromCommitSelect
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> fromCommitSelect: anObject [
-	fromCommitSelect := anObject
+	fromCommitTable whenSelectionChangedDo: [ :selection |
+		self onFromCommitSelectionChanged: fromCommitTable selectedItem ].
+	
+	toCommitTable whenSelectionChangedDo: [ :selection |
+		self onToCommitSelectionChanged: toCommitTable selectedItem ].
 ]
 
 { #category : #initialization }
 MrCommitLoaderPresenter >> initializePresenters [ 
-	repositorySelect := self newDropList
-		items: (IceRepository registry select: [ :repo | repo isValid ]);
-		display: [ :repo | repo name ]
-		yourself.
-		
-	branchSelect := self newDropList.
-	fromCommitSelect := self newDropList.
-	toCommitSelect := self newDropList.
+	repositoriesTable := self newTable.
+	branchesTable:= self newTable.
+	fromCommitTable := self newTable.
+	toCommitTable := self newTable.
 	
-	loadCommitsButton := self newButton
-		label: 'Load commits';
+	minCountInput := self newNumberInput.
+	minConfidenceInput := self newNumberInput.
+	
+	repositoriesTable hideColumnHeaders.
+	branchesTable hideColumnHeaders.
+	fromCommitTable hideColumnHeaders.
+	toCommitTable hideColumnHeaders.
+		
+	repositoriesTable
+		columns: { };
+		items: (IceRepository registry select: [ :repo | repo isValid ]);
+		addColumn: (SpStringTableColumn
+			title: 'Repository'
+			evaluated: [ :repo | repo name ]).
+	
+	mineRulesButton := self newButton
+		label: 'Mine rules';
 		yourself.
 		
 	progressBar := self newProgressBar.
 	progressBar fixedAt: 0.3.
 ]
 
+{ #category : #initialization }
+MrCommitLoaderPresenter >> initializeWindow: aWindowPresenter [
+	super initializeWindow: aWindowPresenter.
+	
+	aWindowPresenter
+		title: self class defaultTitle;
+		initialExtent: self class preferredExtent.
+]
+
 { #category : #'as yet unclassified' }
-MrCommitLoaderPresenter >> loadCommits [
-	| fromCommit toCommit commits diffs methodChanges |
-
-	fromCommit := methodChangeCollector iceCommitFromSha: fromCommitSelect selectedItem sha.
-	toCommit := methodChangeCollector iceCommitFromSha: toCommitSelect selectedItem sha.
-
-	commits := methodChangeCollector loadIceCommitsFrom: fromCommit to: toCommit.
-	diffs := OrderedCollection new.
-	progressBar fixedAt: 0.
-	
-	commits withIndexDo: [ :commit :index | 
-		diffs add: (commit diffTo: commit parent).
-		progressBar fixedAt: index / commits size asFloat ].
-	
-	methodChanges := methodChangeCollector extractMethodChangesFromDiffs: diffs.
-	
-	methodChanges inspect.
+MrCommitLoaderPresenter >> onBranchSelectionChanged: aBranch [
+	aBranch ifNotNil: [
+		commits := aBranch commits collect: [ :each | each asMrCommit ].
+		
+		fromCommitTable
+			columns: { };
+			items: commits;
+			addColumn: (SpStringTableColumn
+				title: 'From commit'
+				evaluated: [ :commit |
+					commit shortSha, (commit tags
+						ifEmpty: [ '' ]
+						ifNotEmpty: [ ' (', (', ' join: commit tags), ')' ]) ]).
+					
+		toCommitTable items: #() ].
 ]
 
-{ #category : #accessing }
-MrCommitLoaderPresenter >> loadCommitsButton [
-	^ loadCommitsButton
+{ #category : #'as yet unclassified' }
+MrCommitLoaderPresenter >> onFromCommitSelectionChanged: aCommit [
+	aCommit ifNotNil: [
+		toCommitTable
+			columns: { };
+			items: (commits select: [ :each | each datetime > aCommit datetime ]);
+			addColumn: (SpStringTableColumn
+				title: 'To commit'
+				evaluated: [ :commit |
+					commit shortSha, (commit tags
+						ifEmpty: [ '' ]
+						ifNotEmpty: [ ' (', (', ' join: commit tags), ')' ]) ]) ].
 ]
 
-{ #category : #accessing }
-MrCommitLoaderPresenter >> loadCommitsButton: anObject [
-	loadCommitsButton := anObject
+{ #category : #'as yet unclassified' }
+MrCommitLoaderPresenter >> onRepositorySelectionChanged: aRepository [
+	aRepository ifNotNil: [
+		branchesTable
+			columns: { };
+			items: aRepository localBranches;
+			addColumn: (SpStringTableColumn
+				title: 'Branch'
+				evaluated: [ :branch | branch name ]).
+				
+		fromCommitTable items: #().
+		toCommitTable items: #() ].
 ]
 
-{ #category : #accessing }
-MrCommitLoaderPresenter >> progressBar [
-	^ progressBar
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> progressBar: anObject [
-	progressBar := anObject
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> repositorySelect [
-	^ repositorySelect
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> repositorySelect: anObject [
-	repositorySelect := anObject
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> toCommitSelect [
-	^ toCommitSelect
-]
-
-{ #category : #accessing }
-MrCommitLoaderPresenter >> toCommitSelect: anObject [
-	toCommitSelect := anObject
+{ #category : #'as yet unclassified' }
+MrCommitLoaderPresenter >> onToCommitSelectionChanged: aCommit [
+	aCommit ifNotNil: [  ].
 ]
