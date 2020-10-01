@@ -34,7 +34,7 @@ MrMethodChangeCollector >> collectMethodChangesFromCommit: anOldestCommit toComm
 	oldestIceCommit := self iceCommitFromSha: anOldestCommit sha.
 	newestIceCommit := self iceCommitFromSha: aNewestCommit sha.
 	
-	commits := self loadIceCommitsFrom: oldestIceCommit to: newestIceCommit.
+	commits := self loadIceCommitsFrom: newestIceCommit to: oldestIceCommit.
 	diffs := self calculateDiffsForCommits: commits.
 	
 	^ self extractMethodChangesFromDiffs: diffs.

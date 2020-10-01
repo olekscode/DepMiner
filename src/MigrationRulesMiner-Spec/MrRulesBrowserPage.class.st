@@ -2,7 +2,7 @@ Class {
 	#name : #MrRulesBrowserPage,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'rules',
+		'experiment',
 		'rulesTable',
 		'rulePresenter'
 	],
@@ -27,6 +27,17 @@ MrRulesBrowserPage >> connectPresenters [
 			self showRule: rulesTable selectedItem ] ]
 ]
 
+{ #category : #accessing }
+MrRulesBrowserPage >> experiment [ 
+	^ experiment
+]
+
+{ #category : #accessing }
+MrRulesBrowserPage >> experiment: anExperiment [
+	experiment := anExperiment.
+	self showRules.
+]
+
 { #category : #initialization }
 MrRulesBrowserPage >> initializePresenters [ 
 	super initializePresenters.
@@ -34,7 +45,7 @@ MrRulesBrowserPage >> initializePresenters [
 	rulesTable := self newTable.
 	rulePresenter := MrRulePresenter new.
 	
-	rules ifNotNil: [ self showRules ].
+	experiment ifNotNil: [ self showRules ].
 ]
 
 { #category : #accessing }
@@ -43,19 +54,13 @@ MrRulesBrowserPage >> rulePresenter [
 ]
 
 { #category : #accessing }
-MrRulesBrowserPage >> rules: aCollectionOfRules [
-	rules := aCollectionOfRules.
-	self showRules.
-]
-
-{ #category : #accessing }
 MrRulesBrowserPage >> rulesTable [
 	^ rulesTable
 ]
 
 { #category : #'accessing model' }
-MrRulesBrowserPage >> setModelBeforeInitialization: aCollectionOfRules [
-	rules := aCollectionOfRules
+MrRulesBrowserPage >> setModelBeforeInitialization: anExperiment [
+	experiment := anExperiment
 ]
 
 { #category : #'as yet unclassified' }
@@ -67,7 +72,7 @@ MrRulesBrowserPage >> showRule: aRule [
 MrRulesBrowserPage >> showRules [
 	| sortedRules |
 	"Sort first by lift then by confidence then by count"
-	sortedRules := rules sorted: [ :a :b |
+	sortedRules := experiment rules sorted: [ :a :b |
 		a lift > b lift or: [ 
 			a lift = b lift and: [ a confidence > b confidence or: [ 
 				a confidence = b confidence and: [ a count > b count ] ] ] ] ].
@@ -82,7 +87,7 @@ MrRulesBrowserPage >> showRules [
 			title: 'Added calls'
 			evaluated: [ :each | ', ' join: each addedMethodCalls ]).
 			
-		rules ifNotEmpty: [ 
+		experiment rules ifNotEmpty: [ 
 			rulesTable selectIndex: 1.
 			self showRule: rulesTable selectedItem ].
 ]

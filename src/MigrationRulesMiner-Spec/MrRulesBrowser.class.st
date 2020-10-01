@@ -2,7 +2,6 @@ Class {
 	#name : #MrRulesBrowser,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'rules',
 		'notebook'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
@@ -43,11 +42,11 @@ MrRulesBrowser class >> preferredExtent [
 ]
 
 { #category : #adding }
-MrRulesBrowser >> addPageWithRules: aCollectionOfRules title: aTitle [
+MrRulesBrowser >> addPageWithExperiment: anExperiment title: aTitle [
 	| newPage |
 	newPage := self newNotebookPage
 		title: aTitle;
-		presenterProvider: [ MrRulesBrowserPage on: aCollectionOfRules ];
+		presenterProvider: [ MrRulesBrowserPage on: anExperiment ];
 		yourself.
 	
 	notebook addPage: newPage.
@@ -62,6 +61,11 @@ MrRulesBrowser >> buildToolbar [
 			presenter 
 				displayMode: SpToolbarDisplayMode modeIconAndLabel;
 				addStyle: 'stToolbar' ]
+]
+
+{ #category : #'as yet unclassified' }
+MrRulesBrowser >> currentExperiment [
+	^ notebook selectedPage activePresenter experiment
 ]
 
 { #category : #initialization }
@@ -86,9 +90,9 @@ MrRulesBrowser >> notebook [
 	^ notebook
 ]
 
-{ #category : #'accessing model' }
-MrRulesBrowser >> setModelBeforeInitialization: aCollectionOfRules [
-	rules := aCollectionOfRules
+{ #category : #'as yet unclassified' }
+MrRulesBrowser >> onFileSaved [
+	notebook selectedPage title: self currentExperiment fileReference basename.
 ]
 
 { #category : #building }

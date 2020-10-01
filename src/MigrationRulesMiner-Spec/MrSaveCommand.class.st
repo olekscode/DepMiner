@@ -21,5 +21,22 @@ MrSaveCommand class >> defaultName [
 
 { #category : #executing }
 MrSaveCommand >> execute [
-	Transcript open
+	| saveFileDialog |
+	context currentExperiment fileReference
+		ifNotNil: [ self save ]
+		ifNil: [ 
+			saveFileDialog := FDSaveFileDialog new whenSelected: [ :selectedFile |
+				context currentExperiment fileReference: selectedFile.
+				self save ].
+		
+			saveFileDialog openWithSpec ].
+	
+]
+
+{ #category : #files }
+MrSaveCommand >> save [
+	context currentExperiment fileReference writeStreamDo: [ :writeStream |
+		STON put: context currentExperiment onStream: writeStream  ].
+	
+	context onFileSaved.
 ]

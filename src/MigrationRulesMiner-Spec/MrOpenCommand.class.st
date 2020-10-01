@@ -21,12 +21,12 @@ MrOpenCommand class >> defaultName [
 
 { #category : #executing }
 MrOpenCommand >> execute [
-	| openFileDialog rules |
+	| openFileDialog experiment |
 	openFileDialog := FDOpenFileDialog new whenSelected: [ :selectedFile |
-		rules := selectedFile readStreamDo: [ :readStream |
+		experiment := selectedFile readStreamDo: [ :readStream |
         STON fromStream: readStream ].
 
-		context addPageWithRules: rules title: selectedFile basename ].
+		context addPageWithExperiment: experiment title: selectedFile basename ].
 	
 	openFileDialog openWithSpec 
 ]

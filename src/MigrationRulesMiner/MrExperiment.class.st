@@ -11,7 +11,8 @@ Class {
 		'minConfidence',
 		'numberOfTransactions',
 		'rules',
-		'feedbackAuthor'
+		'feedbackAuthor',
+		'fileReference'
 	],
 	#category : #'MigrationRulesMiner-Models'
 }
@@ -34,6 +35,16 @@ MrExperiment >> feedbackAuthor [
 { #category : #accessing }
 MrExperiment >> feedbackAuthor: anObject [
 	feedbackAuthor := anObject
+]
+
+{ #category : #accessing }
+MrExperiment >> fileReference [
+	^ fileReference
+]
+
+{ #category : #accessing }
+MrExperiment >> fileReference: anObject [
+	fileReference := anObject
 ]
 
 { #category : #accessing }

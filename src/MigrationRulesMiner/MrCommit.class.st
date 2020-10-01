@@ -52,6 +52,12 @@ MrCommit >> hash [
 		sum bitXor: each hash ]
 ]
 
+{ #category : #initialization }
+MrCommit >> initialize [
+	super initialize.
+	tags := OrderedCollection new.
+]
+
 { #category : #accessing }
 MrCommit >> message [
 	^ message

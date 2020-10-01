@@ -11,24 +11,42 @@ Class {
 }
 
 { #category : #accessing }
+MrExperimentManager >> branch: aBranch [
+	branch := aBranch.
+	experiment branchName: branch name.
+]
+
+{ #category : #accessing }
 MrExperimentManager >> experiment [
 	^ experiment
 ]
 
+{ #category : #initialization }
+MrExperimentManager >> initialize [
+	super initialize.
+	experiment := MrExperiment new.
+]
+
 { #category : #'as yet unclassified' }
-MrExperimentManager >> loadMethodChangesFromRepository: aRepository branch: aBranch fromCommit: aFromCommit toCommit: aToCommit [
+MrExperimentManager >> loadAllCommits [
+	| commits |
+	commits := branch commits collect: [ :each | each asMrCommit ].
+	
+	repository tags do: [ :tag |
+		commits
+			detect: [ :commit | commit sha = tag commit id ]
+			ifFound: [ :commit | commit tags add: tag name ] ].
+	
+	^ commits
+]
+
+{ #category : #'as yet unclassified' }
+MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCommit [
 	| methodChangeCollector methodCallCollector |
 	
-	repository := aRepository.
-	branch := aBranch.
-	
-	experiment := MrExperiment new
-		repositoryName: repository name;
-		repositoryUrl: repository origin httpsUrl;
-		branchName: branch name;
+	experiment
 		fromCommit: aFromCommit;
-		toCommit: aToCommit;
-		yourself.
+		toCommit: aToCommit.
 	
 	methodChangeCollector := MrMethodChangeCollector
 		forRepository: repository
@@ -66,4 +84,13 @@ MrExperimentManager >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfi
 	mapper mapRules: rules toMethodChanges: methodChanges.
 	
 	experiment rules: rules.
+]
+
+{ #category : #accessing }
+MrExperimentManager >> repository: aRepository [
+	repository := aRepository.
+	
+	experiment
+		repositoryName: repository name;
+		repositoryUrl: repository origin httpsUrl.
 ]

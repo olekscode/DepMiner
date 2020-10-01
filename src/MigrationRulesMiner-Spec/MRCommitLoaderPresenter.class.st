@@ -2,9 +2,10 @@ Class {
 	#name : #MrCommitLoaderPresenter,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'progressBar',
-		'methodChangeCollector',
+		'experimentManager',
 		'commits',
+		'resultCallback',
+		'progressBar',
 		'fromCommitTable',
 		'repositoriesTable',
 		'toCommitTable',
@@ -78,6 +79,14 @@ MrCommitLoaderPresenter >> connectPresenters [
 	
 	toCommitTable whenSelectionChangedDo: [ :selection |
 		self onToCommitSelectionChanged: toCommitTable selectedItem ].
+	
+	mineRulesButton action: [ self mineRules ].
+]
+
+{ #category : #initialization }
+MrCommitLoaderPresenter >> initialize [
+	super initialize.
+	experimentManager := MrExperimentManager new.
 ]
 
 { #category : #initialization }
@@ -90,10 +99,37 @@ MrCommitLoaderPresenter >> initializePresenters [
 	minCountInput := self newNumberInput.
 	minConfidenceInput := self newNumberInput.
 	
+	mineRulesButton := self newButton
+		label: 'Mine rules';
+		yourself.
+		
+	progressBar := self newProgressBar.
+	progressBar fixedAt: 0.3.
+	
+	minCountInput
+		minimum: 1;
+		number: 1.
+		
+	minConfidenceInput
+		beFloat;
+		minimum: 0.0;
+		maximum: 1.0;
+		number: 0.0;
+		climbRate: 0.01.
+	
 	repositoriesTable hideColumnHeaders.
 	branchesTable hideColumnHeaders.
-	fromCommitTable hideColumnHeaders.
-	toCommitTable hideColumnHeaders.
+	
+	fromCommitTable
+		hideColumnHeaders;
+		enableSearch;
+		searchMatching: [ :item :pattern |
+			(fromCommitTable columns first evaluation value: item) includesSubstring: pattern ].
+		
+	toCommitTable hideColumnHeaders;
+		enableSearch;
+		searchMatching: [ :item :pattern |
+			(toCommitTable columns first evaluation value: item) includesSubstring: pattern ].
 		
 	repositoriesTable
 		columns: { };
@@ -101,13 +137,6 @@ MrCommitLoaderPresenter >> initializePresenters [
 		addColumn: (SpStringTableColumn
 			title: 'Repository'
 			evaluated: [ :repo | repo name ]).
-	
-	mineRulesButton := self newButton
-		label: 'Mine rules';
-		yourself.
-		
-	progressBar := self newProgressBar.
-	progressBar fixedAt: 0.3.
 ]
 
 { #category : #initialization }
@@ -120,9 +149,24 @@ MrCommitLoaderPresenter >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #'as yet unclassified' }
+MrCommitLoaderPresenter >> mineRules [
+	experimentManager
+		loadMethodChangesFromCommit: fromCommitTable selectedItem
+		toCommit: toCommitTable selectedItem.
+		
+	experimentManager
+		mineRulesWithMinCount: minCountInput number 
+		minConfidence: minConfidenceInput number.
+		
+	resultCallback value: experimentManager experiment.
+	self window close.
+]
+
+{ #category : #'as yet unclassified' }
 MrCommitLoaderPresenter >> onBranchSelectionChanged: aBranch [
 	aBranch ifNotNil: [
-		commits := aBranch commits collect: [ :each | each asMrCommit ].
+		experimentManager branch: aBranch.
+		commits := experimentManager loadAllCommits.
 		
 		fromCommitTable
 			columns: { };
@@ -154,6 +198,8 @@ MrCommitLoaderPresenter >> onFromCommitSelectionChanged: aCommit [
 { #category : #'as yet unclassified' }
 MrCommitLoaderPresenter >> onRepositorySelectionChanged: aRepository [
 	aRepository ifNotNil: [
+		experimentManager repository: aRepository.
+		
 		branchesTable
 			columns: { };
 			items: aRepository localBranches;
@@ -168,4 +214,9 @@ MrCommitLoaderPresenter >> onRepositorySelectionChanged: aRepository [
 { #category : #'as yet unclassified' }
 MrCommitLoaderPresenter >> onToCommitSelectionChanged: aCommit [
 	aCommit ifNotNil: [  ].
+]
+
+{ #category : #accessing }
+MrCommitLoaderPresenter >> resultCallback: aBlock [
+	resultCallback := aBlock
 ]
