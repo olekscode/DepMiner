@@ -22,7 +22,7 @@ MrMineRulesCommand class >> defaultName [
 { #category : #'as yet unclassified' }
 MrMineRulesCommand >> execute [
 	MrCommitLoaderPresenter new
-		resultCallback: [ :experiment |
+		whenReseltsAreReadyDo: [ :experiment |
 			context addPageWithExperiment: experiment title: '(not saved)' ];
 		openWithSpec.
 ]

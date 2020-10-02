@@ -107,8 +107,8 @@ MrCommitLoaderPresenter >> initializePresenters [
 	progressBar fixedAt: 0.3.
 	
 	minCountInput
-		minimum: 1;
-		number: 1.
+		minimum: 2;
+		number: 2.
 		
 	minConfidenceInput
 		beFloat;
@@ -217,6 +217,6 @@ MrCommitLoaderPresenter >> onToCommitSelectionChanged: aCommit [
 ]
 
 { #category : #accessing }
-MrCommitLoaderPresenter >> resultCallback: aBlock [
+MrCommitLoaderPresenter >> whenReseltsAreReadyDo: aBlock [
 	resultCallback := aBlock
 ]

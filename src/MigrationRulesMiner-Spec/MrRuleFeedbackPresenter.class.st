@@ -10,14 +10,17 @@ Class {
 		'canBeAcceptedNotSure',
 		'commentText',
 		'feedbackChangedCallback',
-		'canBeAcceptedNo'
+		'canBeAcceptedNo',
+		'helpButton',
+		'saveButton'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
 
 { #category : #specs }
 MrRuleFeedbackPresenter class >> defaultSpec [ 
-	^ SpBoxLayout newVertical 
+	^ SpBoxLayout newVertical
+		spacing: 5;
 		add: (SpBoxLayout newHorizontal
 			add: (SpBoxLayout newVertical
 				add: 'Is this rule reasonable?' height: self labelHeight;
@@ -31,30 +34,25 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 				add: #canBeAcceptedNo height: self labelHeight;
 				add: #canBeAcceptedNotSure height: self labelHeight;
 				yourself);
+			add: '';
+			add: (SpBoxLayout newVertical
+				add: #helpButton height: self buttonHeight;
+				yourself) width: self buttonWidth;
 			yourself) height: 5 * self labelHeight;
 		add: 'Comment' height: self labelHeight;
-		add: #commentText;
+		add: #commentText height: 100;
+		add: (SpBoxLayout newHorizontal
+			add: '';
+			add: #saveButton width: self buttonWidth) height: self buttonHeight;
 		yourself.
 ]
 
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> canBeAcceptedNo [
-	^ canBeAcceptedNo
-]
-
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> canBeAcceptedNotSure [
-	^ canBeAcceptedNotSure
-]
-
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> canBeAcceptedYes [
-	^ canBeAcceptedYes
-]
-
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> commentText [
-	^ commentText
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> connectPresenters [
+	super connectPresenters.
+	
+	helpButton action: [ MrFeedbackHelpPresenter new openWithSpec ].
+	saveButton action: [ self saveFeedback ].
 ]
 
 { #category : #initialization }
@@ -82,21 +80,19 @@ MrRuleFeedbackPresenter >> initializePresenters [
 	canBeAcceptedNotSure label: 'Not sure'.
 	
 	commentText := self newText.
+	
+	helpButton := self newButton
+		label: 'Help';
+		icon: (self iconNamed: #help);
+		yourself.
+		
+	saveButton := self newButton
+		label: 'Save';
+		yourself.
 ]
 
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> isReasonableNo [
-	^ isReasonableNo
-]
-
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> isReasonableNotSure [
-	^ isReasonableNotSure
-]
-
-{ #category : #accessing }
-MrRuleFeedbackPresenter >> isReasonableYes [
-	^ isReasonableYes
+{ #category : #'as yet unclassified' }
+MrRuleFeedbackPresenter >> saveFeedback [
 ]
 
 { #category : #'accessing model' }

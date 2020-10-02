@@ -16,17 +16,17 @@ MrRulesBrowser class >> defaultSpec [
 
 { #category : #accessing }
 MrRulesBrowser class >> defaultTitle [
-	^ 'Rule Browser'
+	^ 'MrMiner Browser'
 ]
 
 { #category : #'world menu' }
 MrRulesBrowser class >> menuCommandOn: aBuilder [
 	<worldMenu>
-	(aBuilder item: #'Migration Rules Browser')
+	(aBuilder item: #'MrMiner Browser')
 		parent: #Tools;
 		action: [ self open ];
 		order: 30;
-		help: 'A tool for browsing and evaluating the migration rules that were mined from the commit history';
+		help: 'A tool for mining the migration rules that were mined from the commit history as well as  browsing and evaluating those rules';
 		icon: (self iconNamed: #user).
 ]
 
@@ -38,7 +38,7 @@ MrRulesBrowser class >> open [
 
 { #category : #accessing }
 MrRulesBrowser class >> preferredExtent [
-	^ 1700@1000
+	^ 1300@900
 ]
 
 { #category : #adding }
