@@ -60,7 +60,7 @@ MrRulesBrowserPage >> rulesTable [
 
 { #category : #'accessing model' }
 MrRulesBrowserPage >> setModelBeforeInitialization: anExperiment [
-	experiment := anExperiment
+	experiment := anExperiment.
 ]
 
 { #category : #'as yet unclassified' }
@@ -90,4 +90,9 @@ MrRulesBrowserPage >> showRules [
 		experiment rules ifNotEmpty: [ 
 			rulesTable selectIndex: 1.
 			self showRule: rulesTable selectedItem ].
+]
+
+{ #category : #enumerating }
+MrRulesBrowserPage >> whenFeedbackChangedDo: aBlock [
+	rulePresenter whenFeedbackChangedDo: aBlock
 ]

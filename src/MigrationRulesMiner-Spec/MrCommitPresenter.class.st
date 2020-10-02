@@ -62,7 +62,8 @@ MrCommitPresenter >> showPropertiesTable [
 	commit tags ifNotEmpty: [ 
 		rows add: { 'tags' . (', ' join: commit tags) } ].
 	
-	rows add: { 'datetime' . commit datetime }.
+	rows add: { 'date' . commit datetime asDate }.
+	rows add: { 'time' . commit datetime asTime }.
 	
 	propertiesTable
 		items: rows;

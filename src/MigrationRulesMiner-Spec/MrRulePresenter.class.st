@@ -9,7 +9,8 @@ Class {
 		'ruleSupportPresenter',
 		'ruleFeedbackPresenter',
 		'ruleSupportPage',
-		'ruleFeedbackPage'
+		'ruleFeedbackPage',
+		'feedbackChangedCallback'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -36,6 +37,15 @@ MrRulePresenter class >> defaultSpec [
 { #category : #accessing }
 MrRulePresenter >> addedCallsList [
 	^ addedCallsList
+]
+
+{ #category : #initialization }
+MrRulePresenter >> connectPresenters [ 
+	super connectPresenters.
+	
+	ruleFeedbackPresenter whenFeedbackChangedDo: [ :ruleFeedback |
+		rule feedback: ruleFeedback.
+		feedbackChangedCallback value ].
 ]
 
 { #category : #accessing }
@@ -82,6 +92,7 @@ MrRulePresenter >> notebook [
 MrRulePresenter >> rule: aRule [
 	rule := aRule.
 	ruleSupportPresenter rule: aRule.
+	ruleFeedbackPresenter ruleFeedback: aRule feedback.
 	self showRule.
 ]
 
@@ -109,4 +120,9 @@ MrRulePresenter >> setModelBeforeInitialization: aRule [
 MrRulePresenter >> showRule [
 	deletedCallsList items: rule deletedMethodCalls asArray.
 	addedCallsList items: rule addedMethodCalls asArray.
+]
+
+{ #category : #announcing }
+MrRulePresenter >> whenFeedbackChangedDo: aBlock [
+	feedbackChangedCallback := aBlock
 ]

@@ -2,7 +2,8 @@ Class {
 	#name : #MrRulesBrowser,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'notebook'
+		'notebook',
+		'hasUnsavedChanges'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -46,7 +47,9 @@ MrRulesBrowser >> addPageWithExperiment: anExperiment title: aTitle [
 	| newPage |
 	newPage := self newNotebookPage
 		title: aTitle;
-		presenterProvider: [ MrRulesBrowserPage on: anExperiment ];
+		presenterProvider: [ (MrRulesBrowserPage on: anExperiment)
+			whenFeedbackChangedDo: [ self onChanged ];
+			yourself ];
 		yourself.
 	
 	notebook addPage: newPage.
@@ -66,6 +69,12 @@ MrRulesBrowser >> buildToolbar [
 { #category : #'as yet unclassified' }
 MrRulesBrowser >> currentExperiment [
 	^ notebook selectedPage activePresenter experiment
+]
+
+{ #category : #initialization }
+MrRulesBrowser >> initialize [
+	super initialize.
+	hasUnsavedChanges := false.
 ]
 
 { #category : #initialization }
@@ -91,7 +100,16 @@ MrRulesBrowser >> notebook [
 ]
 
 { #category : #'as yet unclassified' }
-MrRulesBrowser >> onFileSaved [
+MrRulesBrowser >> onChanged [
+	hasUnsavedChanges ifFalse: [ 
+		notebook selectedPage title: (notebook selectedPage title, '*') ].
+
+	hasUnsavedChanges := true.
+]
+
+{ #category : #'as yet unclassified' }
+MrRulesBrowser >> onSaved [
+	hasUnsavedChanges := false.
 	notebook selectedPage title: self currentExperiment fileReference basename.
 ]
 

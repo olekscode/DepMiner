@@ -38,5 +38,5 @@ MrSaveCommand >> save [
 	context currentExperiment fileReference writeStreamDo: [ :writeStream |
 		STON put: context currentExperiment onStream: writeStream  ].
 	
-	context onFileSaved.
+	context onSaved.
 ]

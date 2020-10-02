@@ -23,6 +23,7 @@ MrMineRulesCommand class >> defaultName [
 MrMineRulesCommand >> execute [
 	MrCommitLoaderPresenter new
 		whenReseltsAreReadyDo: [ :experiment |
-			context addPageWithExperiment: experiment title: '(not saved)' ];
+			context addPageWithExperiment: experiment title: '(not saved)'.
+			context onChanged ];
 		openWithSpec.
 ]
