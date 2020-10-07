@@ -29,7 +29,6 @@ MrRulesTable >> feedbackIconMapping [
 { #category : #initialization }
 MrRulesTable >> initialize [
 	super initialize.
-	
 	self beResizable.
 ]
 
@@ -55,11 +54,11 @@ MrRulesTable >> showRules [
 			evaluated: [ :each | ', ' join: each addedMethodCalls ]).
 			
 		rules ifNotEmpty: [ 
-			self selectIndex: 1 ].
+			self selectItem: rules first ].
 ]
 
 { #category : #enumerating }
 MrRulesTable >> whenSelectedRuleChangedDo: aBlock [
 	self whenSelectionChangedDo: [ :selection |
-		aBlock value: self selectedItem ].
+		aBlock value: self selectedItem. ]
 ]

@@ -37,8 +37,8 @@ MrRulesNotebook >> addPageWithRules: aCollectionOfRules title: aTitle [
 		title: aTitle;
 		presenterProvider: [
 			MrRulesTable new
-				rules: aCollectionOfRules;
 				whenSelectedRuleChangedDo: [ :rule | ruleSelectionCallback value: rule ];
+				rules: aCollectionOfRules;
 				yourself ];
 		yourself.
 	
@@ -53,9 +53,20 @@ MrRulesNotebook >> rules: aCollectionOfRules [
 
 { #category : #'as yet unclassified' }
 MrRulesNotebook >> showRules [
+	| currentlySelectedPageIndex currentlySelectedRule |
+	
+	self selectedPage ifNotNil: [
+		currentlySelectedPageIndex := self selectedPageIndex.
+		currentlySelectedRule := self selectedPage activePresenter selectedItem ].
+	
+	self removeAll.
 	self addAllRulesPage.
 	self addAutomatableRulesPage.
 	self addNonAutomatableRulesPage.
+	
+	currentlySelectedPageIndex ifNotNil: [ 
+		self selectPageIndex: currentlySelectedPageIndex.
+		self selectedPage activePresenter selectItem: currentlySelectedRule ].
 ]
 
 { #category : #enumerating }

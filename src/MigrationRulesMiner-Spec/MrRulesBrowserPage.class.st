@@ -64,5 +64,7 @@ MrRulesBrowserPage >> showRules [
 
 { #category : #enumerating }
 MrRulesBrowserPage >> whenFeedbackChangedDo: aBlock [
-	rulePresenter whenFeedbackChangedDo: aBlock.
+	rulePresenter whenFeedbackChangedDo: [
+		self showRules.
+		aBlock value ].
 ]
