@@ -63,22 +63,22 @@ MrRulePresenter >> initializePresenters [
 	deletedCallsList items: #().
 	addedCallsList items: #().
 	
-	ruleSupportPresenter := MrRuleSupportPresenter new.
 	ruleFeedbackPresenter := MrRuleFeedbackPresenter new.
+	ruleSupportPresenter := MrRuleSupportPresenter new.
 	
 	notebook := self newNotebook.
+	
+	ruleFeedbackPage := self newNotebookPage
+		title: 'Feedback';
+		presenterProvider: [ ruleFeedbackPresenter ];
+		yourself.
 	
 	ruleSupportPage := self newNotebookPage
 		title: 'Support';
 		presenterProvider: [ ruleSupportPresenter ];
 		yourself.
 		
-	ruleFeedbackPage := self newNotebookPage
-		title: 'Feedback';
-		presenterProvider: [ ruleFeedbackPresenter ];
-		yourself.
-		
-	notebook pages: { ruleSupportPage . ruleFeedbackPage }.
+	notebook pages: { ruleFeedbackPage . ruleSupportPage }.
 	
 	rule ifNotNil: [ self showRule ].
 ]

@@ -9,21 +9,12 @@ Class {
 
 { #category : #'as yet unclassified' }
 MrRulesTable >> feedbackIconForRule: aRule [
-	^ aRule feedback
-		ifNil: [ nil ]
-		ifNotNil: [
-			aRule feedback isReasonable
-				ifNil: [ nil ]
-				ifNotNil: [ self feedbackIconMapping at: aRule feedback isReasonable ] ]
-]
-
-{ #category : #'as yet unclassified' }
-MrRulesTable >> feedbackIconMapping [
-	^ { 
-		'Yes' -> (self iconNamed: #thumbsUp) .
-		'No' -> (self iconNamed: #thumbsDown) .
-		'Not sure' -> (self iconNamed: #help)
-	} asDictionary.
+	aRule isGood ifTrue: [ ^ self iconNamed: #thumbsUp ].
+	aRule isBad ifTrue: [ ^ self iconNamed: #thumbsDown ].
+	aRule isUncertain ifTrue: [ ^ self iconNamed: #help ].
+	
+	"No feedback - no icon"
+	^ nil
 ]
 
 { #category : #initialization }

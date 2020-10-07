@@ -23,6 +23,20 @@ MrRulesNotebook >> addAutomatableRulesPage [
 ]
 
 { #category : #'as yet unclassified' }
+MrRulesNotebook >> addBadRulesPage [
+	self
+		addPageWithRules: (rules select: [ :each | each isBad ])
+		title: 'Bad'. 
+]
+
+{ #category : #'as yet unclassified' }
+MrRulesNotebook >> addGoodRulesPage [
+	self
+		addPageWithRules: (rules select: [ :each | each isGood ])
+		title: 'Good'. 
+]
+
+{ #category : #'as yet unclassified' }
 MrRulesNotebook >> addNonAutomatableRulesPage [
 	self
 		addPageWithRules: (rules reject: [ :each | each isAutomatable ])
@@ -45,6 +59,13 @@ MrRulesNotebook >> addPageWithRules: aCollectionOfRules title: aTitle [
 	self addPage: page.
 ]
 
+{ #category : #'as yet unclassified' }
+MrRulesNotebook >> addUncertainRulesPage [
+	self
+		addPageWithRules: (rules select: [ :each | each isUncertain ])
+		title: 'Uncertain'. 
+]
+
 { #category : #accessing }
 MrRulesNotebook >> rules: aCollectionOfRules [
 	rules := aCollectionOfRules.
@@ -63,6 +84,9 @@ MrRulesNotebook >> showRules [
 	self addAllRulesPage.
 	self addAutomatableRulesPage.
 	self addNonAutomatableRulesPage.
+	self addGoodRulesPage.
+	self addBadRulesPage.
+	self addUncertainRulesPage.
 	
 	currentlySelectedPageIndex ifNotNil: [ 
 		self selectPageIndex: currentlySelectedPageIndex.

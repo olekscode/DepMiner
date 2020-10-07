@@ -95,6 +95,21 @@ MrRule >> isAutomatable [
 	self subclassResponsibility
 ]
 
+{ #category : #testing }
+MrRule >> isBad [
+	^ feedback isNotNil and: [ feedback isReasonable = 'No' ]
+]
+
+{ #category : #testing }
+MrRule >> isGood [
+	^ feedback isNotNil and: [ feedback isReasonable = 'Yes' ]
+]
+
+{ #category : #testing }
+MrRule >> isUncertain [
+	^ feedback isNotNil and: [ feedback isReasonable = 'Not sure' ]
+]
+
 { #category : #accessing }
 MrRule >> lift [
 	^ lift
