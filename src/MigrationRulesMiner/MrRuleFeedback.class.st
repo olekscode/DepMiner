@@ -7,11 +7,22 @@ Class {
 		'canBeExpressedWithTransformationRule',
 		'isProposedTransformationRuleGood',
 		'manualTransformationRule',
+		'canBeDeprecation',
 		'isInterestingCase',
 		'comment'
 	],
 	#category : #'MigrationRulesMiner-Models'
 }
+
+{ #category : #accessing }
+MrRuleFeedback >> canBeDeprecation [
+	^ canBeDeprecation
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> canBeDeprecation: anObject [
+	canBeDeprecation := anObject
+]
 
 { #category : #accessing }
 MrRuleFeedback >> canBeExpressedWithTransformationRule [

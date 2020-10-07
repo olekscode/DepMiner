@@ -4,16 +4,15 @@ Class {
 	#instVars : [
 		'ruleFeedback',
 		'isGoodRadio',
-		'canBeIntegratedRadio',
 		'canBeExpressedWithTransformationRuleRadio',
 		'isProposedTransformationRuleGoodRadio',
 		'manualTransformationRuleText',
 		'validateTransformationRuleButton',
 		'helpTransformationRuleButton',
+		'canBeDeprecationRadio',
 		'isInterestingCaseCheckbox',
 		'commentText',
 		'feedbackChangedCallback',
-		'helpButton',
 		'saveButton'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
@@ -21,37 +20,38 @@ Class {
 
 { #category : #specs }
 MrRuleFeedbackPresenter class >> defaultSpec [
-	^ SpBoxLayout newHorizontal
-		add: (SpBoxLayout newVertical
-			spacing: 10;
-			add: (SpBoxLayout newHorizontal
-				add: #isGoodRadio;
-				add: '';
-				yourself);
-			add: (SpBoxLayout newHorizontal
-				add: #canBeExpressedWithTransformationRuleRadio;
-				add: #isProposedTransformationRuleGoodRadio;
-				yourself);
-			add: 'Propose a different transformation rule:' height: self labelHeight;
-			add: #manualTransformationRuleText height: 100;
-			add: 'Comment:' height: self labelHeight;
-			add: #commentText height: 100;
-			add: (SpBoxLayout newHorizontal
-				add: '';
-				add: #saveButton width: self buttonWidth;
-				yourself) height: self buttonHeight;
+	^ SpBoxLayout newVertical
+		spacing: 10;
+		add: #isGoodRadio;
+		add: (SpBoxLayout newHorizontal
+			add: #canBeExpressedWithTransformationRuleRadio;
+			add: #isProposedTransformationRuleGoodRadio;
 			yourself);
 		add: (SpBoxLayout newVertical
-			add: #helpButton height: self buttonHeight;
-			yourself) width: self buttonWidth;
+			spacing: 5; 
+			add: 'Propose a different transformation rule:' height: self labelHeight;
+			add: #manualTransformationRuleText height: 100;
+			add: (SpBoxLayout newHorizontal 
+				spacing: 2;
+				add: '';
+				add: #validateTransformationRuleButton width: self buttonWidth;
+				add: #helpTransformationRuleButton width: self buttonWidth;
+				yourself) height: self buttonHeight;
+			yourself);
+		add: #canBeDeprecationRadio;
+		add: 'Comment:' height: self labelHeight;
+		add: #commentText height: 100;
+		add: (SpBoxLayout newHorizontal
+			add: #isInterestingCaseCheckbox;
+			add: #saveButton width: self buttonWidth;
+			yourself) height: self buttonHeight;
 		yourself.
 ]
 
 { #category : #initialization }
 MrRuleFeedbackPresenter >> connectPresenters [
 	super connectPresenters.
-	
-	helpButton action: [ MrFeedbackHelpPresenter new openWithSpec ].
+
 	saveButton action: [ self saveFeedback ].
 ]
 
@@ -65,9 +65,9 @@ MrRuleFeedbackPresenter >> initializePresenters [
 	super initializePresenters.
 	
 	isGoodRadio := MrIsGoodQuestion new.
-	canBeIntegratedRadio := MrCanBeIntegratedQuestion new.
 	canBeExpressedWithTransformationRuleRadio := MrCanBeExpressedWithTransformationRuleQuestion new.
 	isProposedTransformationRuleGoodRadio := MrIsProposedTransformationRuleGoodQuestion new.
+	canBeDeprecationRadio := MrCanBeDeprecationQuestion new.
 	
 	manualTransformationRuleText := self newText.
 	commentText := self newText.
@@ -80,10 +80,9 @@ MrRuleFeedbackPresenter >> initializePresenters [
 	validateTransformationRuleButton := self newButton
 		label: 'Validate';
 		yourself.
-	
-	helpButton := self newButton
-		label: 'Help';
-		icon: (self iconNamed: #help);
+		
+	isInterestingCaseCheckbox := self newCheckBox
+		label: 'Mark this rule as an interesting case that could be discussed';
 		yourself.
 		
 	saveButton := self newButton
@@ -106,7 +105,6 @@ MrRuleFeedbackPresenter >> ruleFeedback: anObject [
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> saveFeedback [
 	ruleFeedback isGood: isGoodRadio selectedOption.
-	ruleFeedback canBeIntegrated: canBeIntegratedRadio selectedOption.
 	ruleFeedback comment: commentText text.
 	
 	feedbackChangedCallback value: ruleFeedback.
@@ -115,7 +113,6 @@ MrRuleFeedbackPresenter >> saveFeedback [
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> showRuleFeedback [ 
 	isGoodRadio selectOption: ruleFeedback isGood.
-	canBeIntegratedRadio selectOption: ruleFeedback canBeIntegrated.
 		
 	ruleFeedback comment
 		ifNil: [ commentText text: '' ]
