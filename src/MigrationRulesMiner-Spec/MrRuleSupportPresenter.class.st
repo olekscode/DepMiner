@@ -3,7 +3,6 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'rule',
-		'commitPresenter',
 		'methodChangesTable',
 		'oldSourceCode',
 		'newSourceCode'
@@ -17,8 +16,6 @@ MrRuleSupportPresenter class >> defaultSpec [
 		spacing: 4;
 		add: 'Method changes from which this rule was extracted' height: self labelHeight;
 		add: #methodChangesTable height: 200;
-		add: 'Commit' height: self labelHeight;
-		add: #commitPresenter height: 5 * self labelHeight;
 		add: (SpBoxLayout newHorizontal
 			spacing: 4;
 			add: (SpBoxLayout newVertical
@@ -31,11 +28,6 @@ MrRuleSupportPresenter class >> defaultSpec [
 				yourself);
 			yourself);
 		yourself.
-]
-
-{ #category : #accessing }
-MrRuleSupportPresenter >> commitPresenter [
-	^ commitPresenter
 ]
 
 { #category : #initialization }
@@ -51,7 +43,6 @@ MrRuleSupportPresenter >> connectPresenters [
 MrRuleSupportPresenter >> initializePresenters [
 	super initializePresenters.
 	
-	commitPresenter := MrCommitPresenter new.
 	methodChangesTable := self newTable.
 	oldSourceCode := self newCode.
 	newSourceCode := self newCode.
@@ -60,21 +51,6 @@ MrRuleSupportPresenter >> initializePresenters [
 	newSourceCode withoutLineNumbers; withoutSyntaxHighlight; beNotEditable.
 	
 	rule ifNotNil: [ self showMethodChanges ].
-]
-
-{ #category : #accessing }
-MrRuleSupportPresenter >> methodChangesTable [
-	^ methodChangesTable
-]
-
-{ #category : #accessing }
-MrRuleSupportPresenter >> newSourceCode [
-	^ newSourceCode
-]
-
-{ #category : #accessing }
-MrRuleSupportPresenter >> oldSourceCode [
-	^ oldSourceCode
 ]
 
 { #category : #accessing }
@@ -90,8 +66,6 @@ MrRuleSupportPresenter >> setModelBeforeInitialization: aRule [
 
 { #category : #'as yet unclassified' }
 MrRuleSupportPresenter >> showMethodChange: aMethodChange [
-	commitPresenter commit: aMethodChange commit.
-	
 	oldSourceCode text: aMethodChange oldSourceCode.
 	newSourceCode text: aMethodChange newSourceCode.
 ]
@@ -114,7 +88,13 @@ MrRuleSupportPresenter >> showMethodChanges [
 			evaluated: [ :each | each method selector ]);
 		addColumn: (SpStringTableColumn
 			title: 'Commit'
-			evaluated: [ :each | each commit shortSha ]).
+			evaluated: [ :each | each commit shortSha ]);
+		addColumn: (SpStringTableColumn
+			title: 'Date'
+			evaluated: [ :each | each commit datetime asDate ]);
+		addColumn: (SpStringTableColumn
+			title: 'Time'
+			evaluated: [ :each | each commit datetime asTime ]).
 			
 		items ifNotEmpty: [ 
 			methodChangesTable selectIndex: 1.

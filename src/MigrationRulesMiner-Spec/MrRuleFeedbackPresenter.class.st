@@ -5,6 +5,12 @@ Class {
 		'ruleFeedback',
 		'isGoodRadio',
 		'canBeIntegratedRadio',
+		'canBeExpressedWithTransformationRuleRadio',
+		'isProposedTransformationRuleGoodRadio',
+		'manualTransformationRuleText',
+		'validateTransformationRuleButton',
+		'helpTransformationRuleButton',
+		'isInterestingCaseCheckbox',
 		'commentText',
 		'feedbackChangedCallback',
 		'helpButton',
@@ -14,22 +20,30 @@ Class {
 }
 
 { #category : #specs }
-MrRuleFeedbackPresenter class >> defaultSpec [ 
-	^ SpBoxLayout newVertical
-		spacing: 5;
-		add: (SpBoxLayout newHorizontal
-			add: #isGoodRadio;
-			add: #canBeIntegratedRadio;
-			add: '';
-			add: (SpBoxLayout newVertical
-				add: #helpButton height: self buttonHeight;
-				yourself) width: self buttonWidth;
-			yourself) height: 5 * self labelHeight;
-		add: 'Comment' height: self labelHeight;
-		add: #commentText height: 100;
-		add: (SpBoxLayout newHorizontal
-			add: '';
-			add: #saveButton width: self buttonWidth) height: self buttonHeight;
+MrRuleFeedbackPresenter class >> defaultSpec [
+	^ SpBoxLayout newHorizontal
+		add: (SpBoxLayout newVertical
+			spacing: 5;
+			add: (SpBoxLayout newHorizontal
+				add: #isGoodRadio;
+				add: #canBeIntegratedRadio;
+				yourself);
+			add: (SpBoxLayout newHorizontal
+				add: #canBeExpressedWithTransformationRuleRadio;
+				add: #isProposedTransformationRuleGoodRadio;
+				yourself);
+			add: 'Propose a different transformation rule:' height: self labelHeight;
+			add: #manualTransformationRuleText height: 100;
+			add: 'Comment:' height: self labelHeight;
+			add: #commentText height: 100;
+			add: (SpBoxLayout newHorizontal
+				add: '';
+				add: #saveButton width: self buttonWidth;
+				yourself) height: self buttonHeight;
+			yourself);
+		add: (SpBoxLayout newVertical
+			add: #helpButton height: self buttonHeight;
+			yourself) width: self buttonWidth;
 		yourself.
 ]
 
@@ -50,10 +64,22 @@ MrRuleFeedbackPresenter >> initializeEmptyRuleFeedback [
 MrRuleFeedbackPresenter >> initializePresenters [ 
 	super initializePresenters.
 	
-	isGoodRadio := MrRadioButtonGroup on: 'Is this a good rule?'.
-	canBeIntegratedRadio := MrRadioButtonGroup on: 'Can this rule be integrated into the project?'.
+	isGoodRadio := MrIsGoodQuestion new.
+	canBeIntegratedRadio := MrCanBeIntegratedQuestion new.
+	canBeExpressedWithTransformationRuleRadio := MrCanBeExpressedWithTransformationRuleQuestion new.
+	isProposedTransformationRuleGoodRadio := MrIsProposedTransformationRuleGoodQuestion new.
 	
+	manualTransformationRuleText := self newText.
 	commentText := self newText.
+	
+	helpTransformationRuleButton := self newButton
+		label: 'Help';
+		icon: (self iconNamed: #help);
+		yourself.
+		
+	validateTransformationRuleButton := self newButton
+		label: 'Validate';
+		yourself.
 	
 	helpButton := self newButton
 		label: 'Help';
@@ -66,11 +92,6 @@ MrRuleFeedbackPresenter >> initializePresenters [
 		
 	self initializeEmptyRuleFeedback.
 	self showRuleFeedback.
-]
-
-{ #category : #'as yet unclassified' }
-MrRuleFeedbackPresenter >> resetRadioButtons: aCollectionOfRadioButtons [
-	aCollectionOfRadioButtons do: [ :each | each state: false ]
 ]
 
 { #category : #accessing }

@@ -1,8 +1,7 @@
 Class {
-	#name : #MrRadioButtonGroup,
+	#name : #MrRadioButtonQuestion,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'text',
 		'textLabel',
 		'yesButton',
 		'noButton',
@@ -12,7 +11,7 @@ Class {
 }
 
 { #category : #specs }
-MrRadioButtonGroup class >> defaultSpec [
+MrRadioButtonQuestion class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		add: #textLabel height: self labelHeight;
 		add: #yesButton height: self labelHeight;
@@ -22,16 +21,16 @@ MrRadioButtonGroup class >> defaultSpec [
 ]
 
 { #category : #accessing }
-MrRadioButtonGroup >> buttons [
+MrRadioButtonQuestion >> buttons [
 	^ { yesButton }, yesButton associatedRadioButtons
 ]
 
 { #category : #initialization }
-MrRadioButtonGroup >> initializePresenters [
+MrRadioButtonQuestion >> initializePresenters [
 	super initializePresenters.
 	
 	textLabel := self newLabel
-		label: text;
+		label: self text;
 		yourself.
 	
 	yesButton := self newRadioButton.
@@ -47,21 +46,21 @@ MrRadioButtonGroup >> initializePresenters [
 ]
 
 { #category : #enumerating }
-MrRadioButtonGroup >> selectOption: aString [
+MrRadioButtonQuestion >> selectOption: aString [
 	self buttons
 		detect: [ :radio | radio label = aString ]
 		ifFound: [ :radio | radio state: true ].
 ]
 
 { #category : #accessing }
-MrRadioButtonGroup >> selectedOption [
+MrRadioButtonQuestion >> selectedOption [
 	^ self buttons
 		detect: [ :radio | radio state ]
 		ifFound: [ :radio | radio label ]
 		ifNone: [ nil ]
 ]
 
-{ #category : #'accessing model' }
-MrRadioButtonGroup >> setModelBeforeInitialization: aString [
-	text := aString
+{ #category : #accessing }
+MrRadioButtonQuestion >> text [
+	self subclassResponsibility
 ]

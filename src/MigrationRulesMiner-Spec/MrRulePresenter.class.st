@@ -74,7 +74,7 @@ MrRulePresenter >> initializePresenters [
 		yourself.
 	
 	ruleSupportPage := self newNotebookPage
-		title: 'Support';
+		title: 'Method changes';
 		presenterProvider: [ ruleSupportPresenter ];
 		yourself.
 		
