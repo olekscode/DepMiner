@@ -23,7 +23,6 @@ MrMineRulesCommand class >> defaultName [
 MrMineRulesCommand >> execute [
 	MrCommitLoaderPresenter new
 		whenResultsAreReadyDo: [ :experiment |
-			experiment inspect.
 			context addPageWithExperiment: experiment title: '(not saved)'.
 			context onChanged ];
 		openWithSpec.

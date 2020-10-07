@@ -3,8 +3,8 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'experiment',
-		'rulesTable',
-		'rulePresenter'
+		'rulePresenter',
+		'rulesNotebook'
 	],
 	#category : #'MigrationRulesMiner-Spec-Views'
 }
@@ -13,7 +13,7 @@ Class {
 MrRulesBrowserPage class >> defaultSpec [ 
 	^ SpBoxLayout newHorizontal
 		spacing: 15;
-		add: #rulesTable width: 500;
+		add: #rulesNotebook width: 500;
 		add: #rulePresenter;
 		yourself.
 ]
@@ -22,9 +22,8 @@ MrRulesBrowserPage class >> defaultSpec [
 MrRulesBrowserPage >> connectPresenters [
 	super connectPresenters.
 	
-	rulesTable whenSelectionChangedDo: [
-		rulesTable selectedItem ifNotNil: [ 
-			self showRule: rulesTable selectedItem ] ]
+	rulesNotebook whenSelectedRuleChangedDo: [ :rule |
+		rule ifNotNil: [ self showRule: rule ] ].
 ]
 
 { #category : #accessing }
@@ -42,20 +41,10 @@ MrRulesBrowserPage >> experiment: anExperiment [
 MrRulesBrowserPage >> initializePresenters [ 
 	super initializePresenters.
 	
-	rulesTable := self newTable.
+	rulesNotebook := MrRulesNotebook new.
 	rulePresenter := MrRulePresenter new.
 	
 	experiment ifNotNil: [ self showRules ].
-]
-
-{ #category : #accessing }
-MrRulesBrowserPage >> rulePresenter [
-	^ rulePresenter
-]
-
-{ #category : #accessing }
-MrRulesBrowserPage >> rulesTable [
-	^ rulesTable
 ]
 
 { #category : #'accessing model' }
@@ -70,41 +59,7 @@ MrRulesBrowserPage >> showRule: aRule [
 
 { #category : #'as yet unclassified' }
 MrRulesBrowserPage >> showRules [
-	| sortedRules feedbackIconMapping |
-	"Sort first by lift then by confidence then by count"
-	sortedRules := experiment rules sorted: [ :a :b |
-		a lift > b lift or: [ 
-			a lift = b lift and: [ a confidence > b confidence or: [ 
-				a confidence = b confidence and: [ a count > b count ] ] ] ] ].
-
-	feedbackIconMapping := { 
-		'Yes' -> (self iconNamed: #thumbsUp) .
-		'No' -> (self iconNamed: #thumbsDown) .
-		'Not sure' -> (self iconNamed: #help)
-	} asDictionary.
-
-	rulesTable
-		beResizable;
-		columns: { };
-		items: sortedRules;
-		addColumn: (SpImageTableColumn
-			title: 'Feedback'
-			evaluated: [ :each | each feedback
-				ifNil: [ nil ]
-				ifNotNil: [ 
-					each feedback isReasonable
-						ifNil: [ nil ]
-						ifNotNil: [ feedbackIconMapping at: each feedback isReasonable ] ] ]);
-		addColumn: (SpStringTableColumn
-			title: 'Deleted calls'
-			evaluated: [ :each | ', ' join: each deletedMethodCalls]);
-		addColumn: (SpStringTableColumn
-			title: 'Added calls'
-			evaluated: [ :each | ', ' join: each addedMethodCalls ]).
-			
-		experiment rules ifNotEmpty: [ 
-			rulesTable selectIndex: 1.
-			self showRule: rulesTable selectedItem ].
+	rulesNotebook rules: experiment rules.
 ]
 
 { #category : #enumerating }

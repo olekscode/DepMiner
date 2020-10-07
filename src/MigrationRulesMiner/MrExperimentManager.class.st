@@ -84,7 +84,7 @@ MrExperimentManager >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfi
 	rules := rulesBuilder buildMigrationRulesFromAssociationRules: associationRules.
 	rulesBuilder mapRules: rules toMethodChanges: methodChanges.
 	
-	experiment rules: rules.
+	experiment rules: (self sortRules: rules).
 ]
 
 { #category : #accessing }
@@ -94,4 +94,13 @@ MrExperimentManager >> repository: aRepository [
 	experiment
 		repositoryName: repository name;
 		repositoryUrl: repository origin httpsUrl.
+]
+
+{ #category : #sorting }
+MrExperimentManager >> sortRules: aCollectionOfRules [
+	"Sort first by lift then by confidence then by count"
+	^ aCollectionOfRules sorted: [ :a :b |
+		a lift > b lift or: [ 
+			a lift = b lift and: [ a confidence > b confidence or: [ 
+				a confidence = b confidence and: [ a count > b count ] ] ] ] ].
 ]
