@@ -2,6 +2,7 @@ Class {
 	#name : #MrHelpPresenter,
 	#superclass : #SpPresenter,
 	#instVars : [
+		'text',
 		'helpText',
 		'okButton'
 	],
@@ -30,11 +31,6 @@ MrHelpPresenter class >> preferredExtent [
 	^ 400@300
 ]
 
-{ #category : #accessing }
-MrHelpPresenter class >> text [
-	self subclassResponsibility
-]
-
 { #category : #initialization }
 MrHelpPresenter >> connectPresenters [
 	super connectPresenters.
@@ -47,7 +43,7 @@ MrHelpPresenter >> initializePresenters [
 	super initializePresenters.
 	
 	helpText := self newText
-		text: self class text;
+		text: text;
 		beNotEditable;
 		yourself.
 	
@@ -63,4 +59,9 @@ MrHelpPresenter >> initializeWindow: aWindowPresenter [
 	aWindowPresenter
 		title: self class defaultTitle;
 		initialExtent: self class preferredExtent.
+]
+
+{ #category : #'accessing model' }
+MrHelpPresenter >> setModelBeforeInitialization: aString [
+	text := aString
 ]

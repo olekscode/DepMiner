@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+MrIsProposedTransformationRuleGoodQuestion >> helpText [
+	^ 'TODO'
+]
+
+{ #category : #accessing }
 MrIsProposedTransformationRuleGoodQuestion >> text [ 
 	^ 'Is proposed transformation rule good?'
 ]

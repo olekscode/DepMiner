@@ -3,6 +3,7 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'textLabel',
+		'helpLink',
 		'yesButton',
 		'noButton',
 		'notSureButton'
@@ -14,6 +15,7 @@ Class {
 MrRadioButtonQuestion class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		add: #textLabel height: self labelHeight;
+		add: #helpLink height: self labelHeight;
 		add: #yesButton height: self labelHeight;
 		add: #noButton height: self labelHeight;
 		add: #notSureButton height: self labelHeight;
@@ -26,11 +28,26 @@ MrRadioButtonQuestion >> buttons [
 ]
 
 { #category : #initialization }
+MrRadioButtonQuestion >> connectPresenters [	
+	helpLink action: [ 
+		(MrHelpPresenter on: self helpText) openWithSpec ].
+]
+
+{ #category : #accessing }
+MrRadioButtonQuestion >> helpText [
+	self subclassResponsibility
+]
+
+{ #category : #initialization }
 MrRadioButtonQuestion >> initializePresenters [
 	super initializePresenters.
 	
 	textLabel := self newLabel
 		label: self text;
+		yourself.
+		
+	helpLink := self newLink
+		label: '(help)';
 		yourself.
 	
 	yesButton := self newRadioButton.

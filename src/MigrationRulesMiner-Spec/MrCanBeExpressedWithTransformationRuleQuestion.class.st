@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+MrCanBeExpressedWithTransformationRuleQuestion >> helpText [
+	^ 'TODO'
+]
+
+{ #category : #accessing }
 MrCanBeExpressedWithTransformationRuleQuestion >> text [
 	^ 'Can it be expressed with a transformation rule?'
 ]
