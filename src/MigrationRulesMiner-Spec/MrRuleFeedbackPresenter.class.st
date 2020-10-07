@@ -3,14 +3,10 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'ruleFeedback',
-		'isReasonableYes',
-		'isReasonableNo',
-		'isReasonableNotSure',
-		'canBeAcceptedYes',
-		'canBeAcceptedNotSure',
+		'isGoodRadio',
+		'canBeIntegratedRadio',
 		'commentText',
 		'feedbackChangedCallback',
-		'canBeAcceptedNo',
 		'helpButton',
 		'saveButton'
 	],
@@ -22,18 +18,8 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		spacing: 5;
 		add: (SpBoxLayout newHorizontal
-			add: (SpBoxLayout newVertical
-				add: 'Is this rule reasonable?' height: self labelHeight;
-				add: #isReasonableYes height: self labelHeight;
-				add: #isReasonableNo height: self labelHeight;
-				add: #isReasonableNotSure height: self labelHeight;
-				yourself);
-			add: (SpBoxLayout newVertical
-				add: 'Can it be accepted?' height: self labelHeight;
-				add: #canBeAcceptedYes height: self labelHeight;
-				add: #canBeAcceptedNo height: self labelHeight;
-				add: #canBeAcceptedNotSure height: self labelHeight;
-				yourself);
+			add: #isGoodRadio;
+			add: #canBeIntegratedRadio;
 			add: '';
 			add: (SpBoxLayout newVertical
 				add: #helpButton height: self buttonHeight;
@@ -47,11 +33,6 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 		yourself.
 ]
 
-{ #category : #testing }
-MrRuleFeedbackPresenter >> canBeAcceptedRadioButtons [
-	^ { canBeAcceptedYes }, canBeAcceptedYes associatedRadioButtons
-]
-
 { #category : #initialization }
 MrRuleFeedbackPresenter >> connectPresenters [
 	super connectPresenters.
@@ -61,44 +42,16 @@ MrRuleFeedbackPresenter >> connectPresenters [
 ]
 
 { #category : #initialization }
-MrRuleFeedbackPresenter >> initializeCanBeAcceptedRadioButtons [
-	canBeAcceptedYes := self newRadioButton.
-	canBeAcceptedNo := self newRadioButton.
-	canBeAcceptedNotSure := self newRadioButton.
-	
-	canBeAcceptedYes associatedRadioButtons: { canBeAcceptedNo . canBeAcceptedNotSure }.
-	canBeAcceptedNotSure state: true.
-	
-	canBeAcceptedYes label: 'Yes'.
-	canBeAcceptedNo label: 'No'.
-	canBeAcceptedNotSure label: 'Not sure'.
-]
-
-{ #category : #initialization }
 MrRuleFeedbackPresenter >> initializeEmptyRuleFeedback [
 	ruleFeedback := MrRuleFeedback new.
-]
-
-{ #category : #initialization }
-MrRuleFeedbackPresenter >> initializeIsReasonableRadioButtons [
-	isReasonableYes := self newRadioButton.
-	isReasonableNo := self newRadioButton.
-	isReasonableNotSure := self newRadioButton.
-	
-	isReasonableYes associatedRadioButtons: { isReasonableNo . isReasonableNotSure }.
-	isReasonableNotSure state: true.
-	
-	isReasonableYes label: 'Yes'.
-	isReasonableNo label: 'No'.
-	isReasonableNotSure label: 'Not sure'.
 ]
 
 { #category : #initialization }
 MrRuleFeedbackPresenter >> initializePresenters [ 
 	super initializePresenters.
 	
-	self initializeIsReasonableRadioButtons.
-	self initializeCanBeAcceptedRadioButtons.
+	isGoodRadio := MrRadioButtonGroup on: 'Is this a good rule?'.
+	canBeIntegratedRadio := MrRadioButtonGroup on: 'Can this rule be integrated into the project?'.
 	
 	commentText := self newText.
 	
@@ -113,11 +66,6 @@ MrRuleFeedbackPresenter >> initializePresenters [
 		
 	self initializeEmptyRuleFeedback.
 	self showRuleFeedback.
-]
-
-{ #category : #testing }
-MrRuleFeedbackPresenter >> isReasonableRadioButtons [
-	^ { isReasonableYes }, isReasonableYes associatedRadioButtons
 ]
 
 { #category : #'as yet unclassified' }
@@ -136,37 +84,17 @@ MrRuleFeedbackPresenter >> ruleFeedback: anObject [
 
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> saveFeedback [
-	ruleFeedback isReasonable:
-		(self isReasonableRadioButtons
-			detect: [ :radio | radio state ]
-			ifFound: [ :radio | radio label ]
-			ifNone: [ nil ]).
-		
-	ruleFeedback canBeAccepted:
-		(self canBeAcceptedRadioButtons
-			detect: [ :radio | radio state ]
-			ifFound: [ :radio | radio label ]
-			ifNone: [ nil ]).
-	
+	ruleFeedback isGood: isGoodRadio selectedOption.
+	ruleFeedback canBeIntegrated: canBeIntegratedRadio selectedOption.
 	ruleFeedback comment: commentText text.
+	
 	feedbackChangedCallback value: ruleFeedback.
 ]
 
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> showRuleFeedback [ 
-	ruleFeedback isReasonable
-		ifNil: [ isReasonableNotSure state: true ]
-		ifNotNil: [ 
-			(self isReasonableRadioButtons
-				detect: [ :radio | radio label = ruleFeedback isReasonable ])
-				state: true ].
-		
-	ruleFeedback canBeAccepted
-		ifNil: [ canBeAcceptedNotSure state: true ]
-		ifNotNil: [ 
-			(self canBeAcceptedRadioButtons
-				detect: [ :radio | radio label = ruleFeedback canBeAccepted ])
-				state: true ].
+	isGoodRadio selectOption: ruleFeedback isGood.
+	canBeIntegratedRadio selectOption: ruleFeedback canBeIntegrated.
 		
 	ruleFeedback comment
 		ifNil: [ commentText text: '' ]

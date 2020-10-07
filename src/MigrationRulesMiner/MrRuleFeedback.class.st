@@ -2,21 +2,35 @@ Class {
 	#name : #MrRuleFeedback,
 	#superclass : #Object,
 	#instVars : [
-		'isReasonable',
-		'canBeAccepted',
+		'isGood',
+		'canBeIntegrated',
+		'canBeExpressedWithTransformationRule',
+		'isProposedTransformationRuleGood',
+		'manualTransformationRule',
+		'isInterestingCase',
 		'comment'
 	],
 	#category : #'MigrationRulesMiner-Models'
 }
 
 { #category : #accessing }
-MrRuleFeedback >> canBeAccepted [
-	^ canBeAccepted
+MrRuleFeedback >> canBeExpressedWithTransformationRule [
+	^ canBeExpressedWithTransformationRule
 ]
 
 { #category : #accessing }
-MrRuleFeedback >> canBeAccepted: anObject [
-	canBeAccepted := anObject
+MrRuleFeedback >> canBeExpressedWithTransformationRule: anObject [
+	canBeExpressedWithTransformationRule := anObject
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> canBeIntegrated [
+	^ canBeIntegrated
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> canBeIntegrated: anObject [
+	canBeIntegrated := anObject
 ]
 
 { #category : #accessing }
@@ -30,11 +44,41 @@ MrRuleFeedback >> comment: anObject [
 ]
 
 { #category : #accessing }
-MrRuleFeedback >> isReasonable [
-	^ isReasonable
+MrRuleFeedback >> isGood [
+	^ isGood
 ]
 
 { #category : #accessing }
-MrRuleFeedback >> isReasonable: anObject [
-	isReasonable := anObject
+MrRuleFeedback >> isGood: anObject [
+	isGood := anObject
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> isInterestingCase [
+	^ isInterestingCase
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> isInterestingCase: anObject [
+	isInterestingCase := anObject
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> isProposedTransformationRuleGood [
+	^ isProposedTransformationRuleGood
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> isProposedTransformationRuleGood: anObject [
+	isProposedTransformationRuleGood := anObject
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> manualTransformationRule [
+	^ manualTransformationRule
+]
+
+{ #category : #accessing }
+MrRuleFeedback >> manualTransformationRule: anObject [
+	manualTransformationRule := anObject
 ]

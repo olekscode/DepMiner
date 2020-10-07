@@ -97,17 +97,17 @@ MrRule >> isAutomatable [
 
 { #category : #testing }
 MrRule >> isBad [
-	^ feedback isNotNil and: [ feedback isReasonable = 'No' ]
+	^ self hasFeedback and: [ feedback isGood = 'No' ]
 ]
 
 { #category : #testing }
 MrRule >> isGood [
-	^ feedback isNotNil and: [ feedback isReasonable = 'Yes' ]
+	^ self hasFeedback and: [ feedback isGood = 'Yes' ]
 ]
 
 { #category : #testing }
 MrRule >> isUncertain [
-	^ feedback isNotNil and: [ feedback isReasonable = 'Not sure' ]
+	^ self hasFeedback and: [ feedback isGood = 'Not sure' ]
 ]
 
 { #category : #accessing }
