@@ -23,10 +23,10 @@ Class {
 MrRuleFeedbackPresenter class >> defaultSpec [
 	^ SpBoxLayout newHorizontal
 		add: (SpBoxLayout newVertical
-			spacing: 5;
+			spacing: 10;
 			add: (SpBoxLayout newHorizontal
 				add: #isGoodRadio;
-				add: #canBeIntegratedRadio;
+				add: '';
 				yourself);
 			add: (SpBoxLayout newHorizontal
 				add: #canBeExpressedWithTransformationRuleRadio;

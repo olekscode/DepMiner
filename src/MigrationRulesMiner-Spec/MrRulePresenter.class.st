@@ -18,7 +18,7 @@ Class {
 { #category : #specs }
 MrRulePresenter class >> defaultSpec [ 
 	^ SpBoxLayout newVertical
-		spacing: 4;
+		spacing: 5;
 		add: (SpBoxLayout newHorizontal
 			spacing: 4;
 			add: (SpBoxLayout newVertical

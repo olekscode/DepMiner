@@ -26,9 +26,9 @@ MrRulesBrowser class >> menuCommandOn: aBuilder [
 	(aBuilder item: #'MrMiner Browser')
 		parent: #Tools;
 		action: [ self open ];
-		order: 30;
+		order: 15;
 		help: 'A tool for mining the migration rules that were mined from the commit history as well as  browsing and evaluating those rules';
-		icon: (self iconNamed: #user).
+		icon: (self iconNamed: #databaseAdd).
 ]
 
 { #category : #examples }

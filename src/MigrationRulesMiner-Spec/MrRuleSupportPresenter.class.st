@@ -13,16 +13,21 @@ Class {
 { #category : #specs }
 MrRuleSupportPresenter class >> defaultSpec [ 
 	^ SpBoxLayout newVertical
-		spacing: 4;
-		add: 'Method changes from which this rule was extracted' height: self labelHeight;
-		add: #methodChangesTable height: 200;
+		spacing: 10;
+		add: (SpBoxLayout newVertical
+		spacing: 2;
+			add: 'Method changes from which this rule was extracted' height: self labelHeight;
+			add: #methodChangesTable;
+			yourself) height: 200;
 		add: (SpBoxLayout newHorizontal
 			spacing: 4;
 			add: (SpBoxLayout newVertical
+				spacing: 2;
 				add: 'Old source code' height: self labelHeight;
 				add: #oldSourceCode;
 				yourself);
 			add: (SpBoxLayout newVertical
+				spacing: 2;
 				add: 'New source code' height: self labelHeight;
 				add: #newSourceCode;
 				yourself);
