@@ -90,6 +90,11 @@ MrRule >> hash [
 		sum bitXor: each hash ]
 ]
 
+{ #category : #testing }
+MrRule >> isAutomatable [
+	self subclassResponsibility
+]
+
 { #category : #accessing }
 MrRule >> lift [
 	^ lift

@@ -66,22 +66,23 @@ MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCom
 
 { #category : #'as yet unclassified' }
 MrExperimentManager >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfidence [
-	| aprioriMiner mapper rules |
+	| aprioriMiner associationRules rules rulesBuilder |
 	
 	experiment minCount: aMinCount.
 	experiment minConfidence: aMinConfidence.
 
 	aprioriMiner := MrAprioriMiner new.
 	
-	rules := aprioriMiner
+	associationRules := aprioriMiner
 		mineRulesFromMethodChanges: methodChanges
 		withMinCount: experiment minCount.
 		
-	rules := rules select: [ :rule |
+	associationRules := associationRules select: [ :rule |
 		rule confidence >= experiment minConfidence ].
-		
-	mapper := MrRuleMethodChangeMapper new.
-	mapper mapRules: rules toMethodChanges: methodChanges.
+	
+	rulesBuilder := MrRulesBuilder new.
+	rules := rulesBuilder buildMigrationRulesFromAssociationRules: associationRules.
+	rulesBuilder mapRules: rules toMethodChanges: methodChanges.
 	
 	experiment rules: rules.
 ]

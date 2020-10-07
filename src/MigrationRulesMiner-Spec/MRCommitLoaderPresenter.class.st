@@ -217,6 +217,6 @@ MrCommitLoaderPresenter >> onToCommitSelectionChanged: aCommit [
 ]
 
 { #category : #accessing }
-MrCommitLoaderPresenter >> whenReseltsAreReadyDo: aBlock [
+MrCommitLoaderPresenter >> whenResultsAreReadyDo: aBlock [
 	resultCallback := aBlock
 ]

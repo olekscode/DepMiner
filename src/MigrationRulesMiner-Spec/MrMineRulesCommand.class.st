@@ -22,7 +22,8 @@ MrMineRulesCommand class >> defaultName [
 { #category : #'as yet unclassified' }
 MrMineRulesCommand >> execute [
 	MrCommitLoaderPresenter new
-		whenReseltsAreReadyDo: [ :experiment |
+		whenResultsAreReadyDo: [ :experiment |
+			experiment inspect.
 			context addPageWithExperiment: experiment title: '(not saved)'.
 			context onChanged ];
 		openWithSpec.
