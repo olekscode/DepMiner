@@ -11,8 +11,7 @@ MrMineRulesCommand class >> defaultDescription [
 
 { #category : #accessing }
 MrMineRulesCommand class >> defaultIconName [
-	"^ #databaseAdd"
-	^ #glamourousInspect
+	^ #databaseAdd
 ]
 
 { #category : #default }

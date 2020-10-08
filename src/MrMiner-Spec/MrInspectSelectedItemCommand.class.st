@@ -11,7 +11,7 @@ MrInspectSelectedItemCommand class >> defaultDescription [
 
 { #category : #accessing }
 MrInspectSelectedItemCommand class >> defaultIconName [
-	^ #inspect
+	^ #glamorousInspect
 ]
 
 { #category : #default }

@@ -68,7 +68,8 @@ MrRadioButtonQuestion >> initializePresenters [
 MrRadioButtonQuestion >> selectOption: aString [
 	self buttons
 		detect: [ :radio | radio label = aString ]
-		ifFound: [ :radio | radio state: true ].
+		ifFound: [ :radio | radio state: true ]
+		ifNone: [ notSureButton state: true ].
 ]
 
 { #category : #accessing }

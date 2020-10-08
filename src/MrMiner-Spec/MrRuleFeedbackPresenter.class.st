@@ -109,8 +109,8 @@ MrRuleFeedbackPresenter >> saveFeedback [
 	ruleFeedback isProposedTransformationRuleGood: isProposedTransformationRuleGoodRadio selectedOption.
 	ruleFeedback canBeDeprecation: canBeDeprecationRadio selectedOption.
 	
-	ruleFeedback manualTransformationRule: manualTransformationRuleText text.
-	ruleFeedback comment: commentText text.
+	ruleFeedback manualTransformationRule: manualTransformationRuleText text asString.
+	ruleFeedback comment: commentText text asString.
 	
 	ruleFeedback isInterestingCase: isInterestingCaseCheckbox state.
 	
