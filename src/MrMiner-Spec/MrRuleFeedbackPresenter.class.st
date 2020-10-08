@@ -8,7 +8,10 @@ Class {
 		'canBeExpressedWithTransformationRuleRadio',
 		'isProposedTransformationRuleGoodRadio',
 		'manualTransformationRuleLabel',
-		'manualTransformationRuleText',
+		'manualTransformationRuleAntecedentText',
+		'manualTransformationRuleConsequentText',
+		'transformationRuleArrow',
+		'validationImage',
 		'validateTransformationRuleButton',
 		'helpTransformationRuleButton',
 		'canBeDeprecationRadio',
@@ -32,10 +35,15 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 		add: (SpBoxLayout newVertical
 			spacing: 5; 
 			add: #manualTransformationRuleLabel height: self labelHeight;
-			add: #manualTransformationRuleText height: 50;
+			add: (SpBoxLayout newHorizontal 
+				add: #manualTransformationRuleAntecedentText;
+				add: #transformationRuleArrow width: 20;
+				add: #manualTransformationRuleConsequentText;
+				yourself) height: 50;
 			add: (SpBoxLayout newHorizontal 
 				spacing: 2;
 				add: '';
+				add: #validationImage width: self buttonHeight;
 				add: #validateTransformationRuleButton width: self buttonWidth;
 				add: #helpTransformationRuleButton width: self buttonWidth;
 				yourself) height: self buttonHeight;
@@ -65,6 +73,24 @@ MrRuleFeedbackPresenter >> connectPresenters [
 	super connectPresenters.
 
 	saveButton action: [ self saveFeedback ].
+	
+	validateTransformationRuleButton action: [
+		self validateTransformationRule: self getManualTransformationRule ].
+]
+
+{ #category : #'as yet unclassified' }
+MrRuleFeedbackPresenter >> getManualTransformationRule [
+	| antecedentString consequentString |
+	antecedentString := manualTransformationRuleAntecedentText text asString.
+	consequentString := manualTransformationRuleConsequentText text asString.
+	
+	(antecedentString isEmpty and: [ consequentString isEmpty ])
+		ifTrue: [ ^ nil ].
+		
+	^ PDTransformationRule new
+		antecedent: antecedentString;
+		consequent: consequentString;
+		yourself.
 ]
 
 { #category : #initialization }
@@ -84,8 +110,13 @@ MrRuleFeedbackPresenter >> initializePresenters [
 	canBeDeprecationRadio := MrCanBeDeprecationQuestion new.
 	
 	manualTransformationRuleLabel := self newLabel.
-	manualTransformationRuleText := self newText.
+	manualTransformationRuleAntecedentText := self newText.
+	manualTransformationRuleConsequentText := self newText.
 	commentText := self newText.
+	
+	transformationRuleArrow := self newImage
+		image: (self iconNamed: #smallForward);
+		yourself.
 	
 	helpTransformationRuleButton := self newButton
 		label: 'Help';
@@ -95,6 +126,8 @@ MrRuleFeedbackPresenter >> initializePresenters [
 	validateTransformationRuleButton := self newButton
 		label: 'Validate';
 		yourself.
+		
+	validationImage := self newImage.
 		
 	isInterestingCaseCheckbox := self newCheckBox
 		label: 'Mark this rule as an interesting case that could be discussed';
@@ -124,7 +157,7 @@ MrRuleFeedbackPresenter >> saveFeedback [
 	ruleFeedback isProposedTransformationRuleGood: isProposedTransformationRuleGoodRadio selectedOption.
 	ruleFeedback canBeDeprecation: canBeDeprecationRadio selectedOption.
 	
-	ruleFeedback manualTransformationRule: manualTransformationRuleText text asString.
+	ruleFeedback manualTransformationRule: self getManualTransformationRule.
 	ruleFeedback comment: commentText text asString.
 	
 	ruleFeedback isInterestingCase: isInterestingCaseCheckbox state.
@@ -138,10 +171,14 @@ MrRuleFeedbackPresenter >> showRuleFeedback [
 	canBeExpressedWithTransformationRuleRadio selectOption: ruleFeedback canBeExpressedWithTransformationRule.
 	isProposedTransformationRuleGoodRadio selectOption: ruleFeedback isProposedTransformationRuleGood.
 	canBeDeprecationRadio selectOption: ruleFeedback canBeDeprecation.
-	
-	manualTransformationRuleText text: (ruleFeedback manualTransformationRule
-		ifNil: [ '' ]
-		ifNotNil: [ :value | value ]).
+		
+	ruleFeedback manualTransformationRule
+		ifNil: [ 
+			manualTransformationRuleAntecedentText text: ''.
+			manualTransformationRuleConsequentText text: '' ]
+		ifNotNil: [ :rule |
+			manualTransformationRuleAntecedentText text: rule antecedent.
+			manualTransformationRuleConsequentText text: rule consequent ].
 		
 	commentText text: (ruleFeedback comment
 		ifNil: [ '' ]
@@ -158,6 +195,18 @@ MrRuleFeedbackPresenter >> showRuleFeedback [
 		ifFalse: [
 			isProposedTransformationRuleGoodRadio hide.
 			manualTransformationRuleLabel label: 'Propose a transformation rule' ].
+]
+
+{ #category : #'as yet unclassified' }
+MrRuleFeedbackPresenter >> validateTransformationRule: aTransformationRule [
+	| isValid |
+	isValid := aTransformationRule isValid.
+	
+	validationImage image:
+		(self iconNamed:
+			(isValid ifTrue: [ #thumbsUp ] ifFalse: [ #thumbsDown ])).
+			
+	^ isValid
 ]
 
 { #category : #'api - events' }
