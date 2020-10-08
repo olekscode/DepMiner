@@ -21,7 +21,9 @@ MrMethodChangeCollector >> calculateDiffsForCommits: aCollectionOfIceCommits [
 	(1 to: aCollectionOfIceCommits size - 1)
 		do: [ :i |
 			commit := aCollectionOfIceCommits at: i.
-			diffs add: (commit diffTo: commit parent) ]
+			[ diffs add: (commit diffTo: commit parent) ]
+				on: Exception
+				do: [ "Nothing" ] ]
 		displayingProgress: [ :i | i asString, ' / ', aCollectionOfIceCommits size asString ].
 		
 	^ diffs
