@@ -35,6 +35,20 @@ MrRadioButtonQuestion >> connectPresenters [
 		(MrHelpPresenter on: self helpText) openWithSpec ].
 ]
 
+{ #category : #protocol }
+MrRadioButtonQuestion >> disable [
+	self buttons do: [ :each | each disable ].
+	helpLink disable.
+	textLabel disable.
+]
+
+{ #category : #protocol }
+MrRadioButtonQuestion >> enable [
+	self buttons do: [ :each | each enable ].
+	helpLink enable.
+	textLabel enable.
+]
+
 { #category : #accessing }
 MrRadioButtonQuestion >> helpText [
 	self subclassResponsibility
@@ -83,4 +97,24 @@ MrRadioButtonQuestion >> selectedOption [
 { #category : #accessing }
 MrRadioButtonQuestion >> text [
 	self subclassResponsibility
+]
+
+{ #category : #enumerating }
+MrRadioButtonQuestion >> whenNoDo: aBlock [
+	noButton whenActivatedDo: aBlock
+]
+
+{ #category : #enumerating }
+MrRadioButtonQuestion >> whenNoOrNotSureDo: aBlock [
+	yesButton whenDeactivatedDo: aBlock
+]
+
+{ #category : #enumerating }
+MrRadioButtonQuestion >> whenYesDo: aBlock [
+	yesButton whenActivatedDo: aBlock
+]
+
+{ #category : #enumerating }
+MrRadioButtonQuestion >> whenYesOrNotSureDo: aBlock [
+	noButton whenDeactivatedDo: aBlock
 ]

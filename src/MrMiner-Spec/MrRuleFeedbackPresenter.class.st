@@ -76,6 +76,18 @@ MrRuleFeedbackPresenter >> connectPresenters [
 	
 	validateTransformationRuleButton action: [
 		self validateTransformationRule: self getManualTransformationRule ].
+	
+	isGoodRadio
+		whenNoDo: [ self onBadRule ];
+		whenYesOrNotSureDo: [ self onCouldBeGoodRule ].
+		
+	canBeExpressedWithTransformationRuleRadio
+		whenNoDo: [ self onImpossibleToTransform ];
+		whenYesOrNotSureDo: [ self onCouldBePossibleToTransform ].
+		
+	isProposedTransformationRuleGoodRadio
+		whenYesDo: [ self onShouldNotWriteManualTransformationRule ];
+		whenNoOrNotSureDo: [ self onCouldWriteManualTransformationRule ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -140,6 +152,57 @@ MrRuleFeedbackPresenter >> initializePresenters [
 		
 	self initializeEmptyRuleFeedback.
 	self showRuleFeedback.
+]
+
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> onBadRule [
+	canBeExpressedWithTransformationRuleRadio disable.
+	self onImpossibleToTransform.
+]
+
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> onCouldBeGoodRule [
+	canBeExpressedWithTransformationRuleRadio enable.
+	
+	(canBeExpressedWithTransformationRuleRadio selectedOption = 'No')
+		ifFalse: [ self onCouldBePossibleToTransform ].
+]
+
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> onCouldBePossibleToTransform [
+	isProposedTransformationRuleGoodRadio enable.
+	canBeDeprecationRadio enable.
+	
+	(isProposedTransformationRuleGoodRadio selectedOption = 'Yes')
+		ifFalse: [ self onCouldWriteManualTransformationRule ].
+]
+
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> onCouldWriteManualTransformationRule [
+	manualTransformationRuleLabel enable.
+	manualTransformationRuleAntecedentText enable.
+	manualTransformationRuleConsequentText enable.
+	validateTransformationRuleButton enable.
+	helpTransformationRuleButton enable.
+]
+
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> onImpossibleToTransform [
+	isProposedTransformationRuleGoodRadio disable.
+	canBeDeprecationRadio disable.
+	self onShouldNotWriteManualTransformationRule.
+]
+
+{ #category : #initialization }
+MrRuleFeedbackPresenter >> onShouldNotWriteManualTransformationRule [
+	manualTransformationRuleAntecedentText clearContent.
+	manualTransformationRuleConsequentText clearContent.
+
+	manualTransformationRuleLabel disable.
+	manualTransformationRuleAntecedentText disable.
+	manualTransformationRuleConsequentText disable.
+	validateTransformationRuleButton disable.
+	helpTransformationRuleButton disable.
 ]
 
 { #category : #accessing }
