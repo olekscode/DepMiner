@@ -5,7 +5,6 @@ Class {
 		'experimentManager',
 		'commits',
 		'resultCallback',
-		'progressBar',
 		'fromCommitTable',
 		'repositoriesTable',
 		'toCommitTable',
@@ -52,7 +51,7 @@ MrCommitLoaderPresenter class >> defaultSpec [
 				add: #mineRulesButton height: self buttonHeight;
 				yourself);
 			yourself);
-		add: #progressBar height: self buttonHeight;
+		"add: #progressBar height: self buttonHeight;"
 		yourself.
 ]
 
@@ -102,9 +101,6 @@ MrCommitLoaderPresenter >> initializePresenters [
 	mineRulesButton := self newButton
 		label: 'Mine rules';
 		yourself.
-		
-	progressBar := self newProgressBar.
-	progressBar fixedAt: 0.3.
 	
 	minCountInput
 		minimum: 2;
