@@ -1,4 +1,4 @@
-# Migration Rules Miner
+# MrMiner (Migration Rules Miner)
 
 [![Build Status](https://travis-ci.org/olekscode/MrMiner.svg?branch=master)](https://travis-ci.org/olekscode/MrMiner)
 [![Build status](https://ci.appveyor.com/api/projects/status/ify7vkcfe4a5gp6b?svg=true)](https://ci.appveyor.com/project/olekscode/mrminer)
