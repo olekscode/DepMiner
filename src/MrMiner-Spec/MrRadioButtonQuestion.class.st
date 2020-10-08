@@ -14,8 +14,10 @@ Class {
 { #category : #specs }
 MrRadioButtonQuestion class >> defaultSpec [
 	^ SpBoxLayout newVertical
-		add: #textLabel height: self labelHeight;
-		add: #helpLink height: self labelHeight;
+		add: (SpBoxLayout newHorizontal
+			add: #helpLink width: 17;
+			add: #textLabel;
+			yourself) height: self labelHeight;
 		add: #yesButton height: self labelHeight;
 		add: #noButton height: self labelHeight;
 		add: #notSureButton height: self labelHeight;
@@ -47,7 +49,7 @@ MrRadioButtonQuestion >> initializePresenters [
 		yourself.
 		
 	helpLink := self newLink
-		label: '(help)';
+		label: '[?]';
 		yourself.
 	
 	yesButton := self newRadioButton.

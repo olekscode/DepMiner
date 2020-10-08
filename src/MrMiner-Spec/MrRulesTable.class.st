@@ -21,6 +21,11 @@ MrRulesTable >> feedbackIconForRule: aRule [
 MrRulesTable >> initialize [
 	super initialize.
 	self beResizable.
+	
+	self contextMenuFromCommandsGroup:
+		(CmCommandGroup forSpec
+			register: (MrInspectSelectedItemCommand forSpecContext: self);
+			yourself).
 ]
 
 { #category : #accessing }

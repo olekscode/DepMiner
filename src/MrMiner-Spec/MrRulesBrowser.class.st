@@ -39,7 +39,7 @@ MrRulesBrowser class >> open [
 
 { #category : #accessing }
 MrRulesBrowser class >> preferredExtent [
-	^ 1300@900
+	^ 1300@720
 ]
 
 { #category : #adding }
@@ -50,6 +50,7 @@ MrRulesBrowser >> addPageWithExperiment: anExperiment title: aTitle [
 		presenterProvider: [ (MrRulesBrowserPage on: anExperiment)
 			whenFeedbackChangedDo: [ self onChanged ];
 			yourself ];
+		beCloseable;
 		yourself.
 	
 	notebook addPage: newPage.

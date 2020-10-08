@@ -30,7 +30,7 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 		add: (SpBoxLayout newVertical
 			spacing: 5; 
 			add: 'Propose a different transformation rule:' height: self labelHeight;
-			add: #manualTransformationRuleText height: 100;
+			add: #manualTransformationRuleText height: 50;
 			add: (SpBoxLayout newHorizontal 
 				spacing: 2;
 				add: '';
@@ -40,7 +40,7 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 			yourself);
 		add: #canBeDeprecationRadio;
 		add: 'Comment:' height: self labelHeight;
-		add: #commentText height: 100;
+		add: #commentText height: 50;
 		add: (SpBoxLayout newHorizontal
 			add: #isInterestingCaseCheckbox;
 			add: #saveButton width: self buttonWidth;
@@ -105,7 +105,14 @@ MrRuleFeedbackPresenter >> ruleFeedback: anObject [
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> saveFeedback [
 	ruleFeedback isGood: isGoodRadio selectedOption.
+	ruleFeedback canBeExpressedWithTransformationRule: canBeExpressedWithTransformationRuleRadio selectedOption.
+	ruleFeedback isProposedTransformationRuleGood: isProposedTransformationRuleGoodRadio selectedOption.
+	ruleFeedback canBeDeprecation: canBeDeprecationRadio selectedOption.
+	
+	ruleFeedback manualTransformationRule: manualTransformationRuleText text.
 	ruleFeedback comment: commentText text.
+	
+	ruleFeedback isInterestingCase: isInterestingCaseCheckbox state.
 	
 	feedbackChangedCallback value: ruleFeedback.
 ]
@@ -113,10 +120,21 @@ MrRuleFeedbackPresenter >> saveFeedback [
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> showRuleFeedback [ 
 	isGoodRadio selectOption: ruleFeedback isGood.
+	canBeExpressedWithTransformationRuleRadio selectOption: ruleFeedback canBeExpressedWithTransformationRule.
+	isProposedTransformationRuleGoodRadio selectOption: ruleFeedback isProposedTransformationRuleGood.
+	canBeDeprecationRadio selectOption: ruleFeedback canBeDeprecation.
+	
+	manualTransformationRuleText text: (ruleFeedback manualTransformationRule
+		ifNil: [ '' ]
+		ifNotNil: [ :value | value ]).
 		
-	ruleFeedback comment
-		ifNil: [ commentText text: '' ]
-		ifNotNil: [ commentText text: ruleFeedback comment ].
+	commentText text: (ruleFeedback comment
+		ifNil: [ '' ]
+		ifNotNil: [ :value | value ]).
+		
+	isInterestingCaseCheckbox state: (ruleFeedback isInterestingCase
+		ifNil: [ false ]
+		ifNotNil: [ :value | value ]).
 ]
 
 { #category : #'api - events' }
