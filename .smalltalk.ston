@@ -1,14 +1,14 @@
 SmalltalkCISpec {
   #loading : [
     SCIMetacelloLoadSpec {
-      #baseline : 'MigrationRulesMiner',
+      #baseline : 'MrMiner',
       #directory : 'src',
       #platforms : [ #pharo ]
     }
   ],
   #testing : {
     #coverage : {
-      #packages : [ 'MigrationRulesMiner*' ]
+      #packages : [ 'MrMiner*' ]
     }
   }
 }
