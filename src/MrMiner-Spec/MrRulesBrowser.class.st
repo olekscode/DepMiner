@@ -23,7 +23,7 @@ MrRulesBrowser class >> defaultTitle [
 { #category : #'world menu' }
 MrRulesBrowser class >> menuCommandOn: aBuilder [
 	<worldMenu>
-	(aBuilder item: #'MrMiner Browser')
+	(aBuilder item: #'MrMiner')
 		parent: #Tools;
 		action: [ self open ];
 		order: 15;
