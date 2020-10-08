@@ -1,7 +1,7 @@
 # MrMiner (Migration Rules Miner)
 
 [![Build Status](https://travis-ci.org/olekscode/MrMiner.svg?branch=master)](https://travis-ci.org/olekscode/MrMiner)
-[![Build status](https://ci.appveyor.com/api/projects/status/ify7vkcfe4a5gp6b?svg=true)](https://ci.appveyor.com/project/olekscode/mrminer)
+[![Build status](https://ci.appveyor.com/api/projects/status/t7lxsakunjyl0dan?svg=true)](https://ci.appveyor.com/project/olekscode/mrminer)
 [![Coverage Status](https://coveralls.io/repos/github/olekscode/MrMiner/badge.svg?branch=master)](https://coveralls.io/github/olekscode/MrMiner?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/olekscode/MrMiner/master/LICENSE)
 
