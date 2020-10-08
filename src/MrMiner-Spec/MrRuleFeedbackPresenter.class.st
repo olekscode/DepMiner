@@ -3,9 +3,11 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'ruleFeedback',
+		'isRuleAutomatable',
 		'isGoodRadio',
 		'canBeExpressedWithTransformationRuleRadio',
 		'isProposedTransformationRuleGoodRadio',
+		'manualTransformationRuleLabel',
 		'manualTransformationRuleText',
 		'validateTransformationRuleButton',
 		'helpTransformationRuleButton',
@@ -29,7 +31,7 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 			yourself);
 		add: (SpBoxLayout newVertical
 			spacing: 5; 
-			add: 'Propose a different transformation rule:' height: self labelHeight;
+			add: #manualTransformationRuleLabel height: self labelHeight;
 			add: #manualTransformationRuleText height: 50;
 			add: (SpBoxLayout newHorizontal 
 				spacing: 2;
@@ -48,6 +50,16 @@ MrRuleFeedbackPresenter class >> defaultSpec [
 		yourself.
 ]
 
+{ #category : #'as yet unclassified' }
+MrRuleFeedbackPresenter >> beForAutomatableRule [
+	isRuleAutomatable := true.
+]
+
+{ #category : #'as yet unclassified' }
+MrRuleFeedbackPresenter >> beForNonAutomatableRule [
+	isRuleAutomatable := false.
+]
+
 { #category : #initialization }
 MrRuleFeedbackPresenter >> connectPresenters [
 	super connectPresenters.
@@ -64,11 +76,14 @@ MrRuleFeedbackPresenter >> initializeEmptyRuleFeedback [
 MrRuleFeedbackPresenter >> initializePresenters [ 
 	super initializePresenters.
 	
+	isRuleAutomatable := false.
+	
 	isGoodRadio := MrIsGoodQuestion new.
 	canBeExpressedWithTransformationRuleRadio := MrCanBeExpressedWithTransformationRuleQuestion new.
 	isProposedTransformationRuleGoodRadio := MrIsProposedTransformationRuleGoodQuestion new.
 	canBeDeprecationRadio := MrCanBeDeprecationQuestion new.
 	
+	manualTransformationRuleLabel := self newLabel.
 	manualTransformationRuleText := self newText.
 	commentText := self newText.
 	
@@ -135,6 +150,14 @@ MrRuleFeedbackPresenter >> showRuleFeedback [
 	isInterestingCaseCheckbox state: (ruleFeedback isInterestingCase
 		ifNil: [ false ]
 		ifNotNil: [ :value | value ]).
+		
+	isRuleAutomatable
+		ifTrue: [
+			isProposedTransformationRuleGoodRadio show.
+			manualTransformationRuleLabel label: 'Propose a different transformation rule' ]
+		ifFalse: [
+			isProposedTransformationRuleGoodRadio hide.
+			manualTransformationRuleLabel label: 'Propose a transformation rule' ].
 ]
 
 { #category : #'api - events' }

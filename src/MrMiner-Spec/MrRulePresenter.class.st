@@ -5,6 +5,7 @@ Class {
 		'rule',
 		'deletedCallsList',
 		'addedCallsList',
+		'transformationRuleLabel',
 		'notebook',
 		'ruleSupportPresenter',
 		'ruleFeedbackPresenter',
@@ -30,6 +31,7 @@ MrRulePresenter class >> defaultSpec [
 				add: #addedCallsList;
 				yourself);
 			yourself) height: 70;
+		add: #transformationRuleLabel height: self labelHeight;
 		add: #notebook;
 		yourself.
 ]
@@ -59,6 +61,8 @@ MrRulePresenter >> initializePresenters [
 	
 	deletedCallsList := self newList.
 	addedCallsList := self newList.
+	
+	transformationRuleLabel := self newLabel.
 	
 	deletedCallsList items: #().
 	addedCallsList items: #().
@@ -92,6 +96,11 @@ MrRulePresenter >> notebook [
 MrRulePresenter >> rule: aRule [
 	rule := aRule.
 	ruleSupportPresenter rule: aRule.
+	
+	aRule isAutomatable
+		ifTrue: [ ruleFeedbackPresenter beForAutomatableRule ]
+		ifFalse: [ ruleFeedbackPresenter beForNonAutomatableRule ].
+	
 	ruleFeedbackPresenter ruleFeedback: aRule feedback.
 	self showRule.
 ]
@@ -120,6 +129,11 @@ MrRulePresenter >> setModelBeforeInitialization: aRule [
 MrRulePresenter >> showRule [
 	deletedCallsList items: rule deletedMethodCalls asArray.
 	addedCallsList items: rule addedMethodCalls asArray.
+	
+	transformationRuleLabel label: ('Proposed transformation rule: ', 
+		(rule isAutomatable
+			ifTrue: [ rule transformationRule antecedent, ' -> ', rule transformationRule consequent ]
+			ifFalse: [ '(None)' ])).
 ]
 
 { #category : #announcing }
