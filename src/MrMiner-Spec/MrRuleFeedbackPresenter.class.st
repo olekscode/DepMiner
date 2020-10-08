@@ -81,8 +81,9 @@ MrRuleFeedbackPresenter >> connectPresenters [
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> getManualTransformationRule [
 	| antecedentString consequentString |
-	antecedentString := manualTransformationRuleAntecedentText text asString.
-	consequentString := manualTransformationRuleConsequentText text asString.
+	
+	antecedentString := manualTransformationRuleAntecedentText text asString trimBoth.
+	consequentString := manualTransformationRuleConsequentText text asString trimBoth.
 	
 	(antecedentString isEmpty and: [ consequentString isEmpty ])
 		ifTrue: [ ^ nil ].
@@ -152,12 +153,20 @@ MrRuleFeedbackPresenter >> ruleFeedback: anObject [
 
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> saveFeedback [
+	| transformationRule |
+	transformationRule := self getManualTransformationRule.
+	
+	(transformationRule isNil or: [ self validateTransformationRule: transformationRule ])
+		ifFalse: [ 
+			self inform: 'Transformation rule is invalid. Please check the help.'.
+			^ self ].
+
 	ruleFeedback isGood: isGoodRadio selectedOption.
 	ruleFeedback canBeExpressedWithTransformationRule: canBeExpressedWithTransformationRuleRadio selectedOption.
 	ruleFeedback isProposedTransformationRuleGood: isProposedTransformationRuleGoodRadio selectedOption.
 	ruleFeedback canBeDeprecation: canBeDeprecationRadio selectedOption.
 	
-	ruleFeedback manualTransformationRule: self getManualTransformationRule.
+	ruleFeedback manualTransformationRule: transformationRule.
 	ruleFeedback comment: commentText text asString.
 	
 	ruleFeedback isInterestingCase: isInterestingCaseCheckbox state.
@@ -195,16 +204,21 @@ MrRuleFeedbackPresenter >> showRuleFeedback [
 		ifFalse: [
 			isProposedTransformationRuleGoodRadio hide.
 			manualTransformationRuleLabel label: 'Propose a transformation rule' ].
+		
+	validationImage image: nil.
 ]
 
 { #category : #'as yet unclassified' }
 MrRuleFeedbackPresenter >> validateTransformationRule: aTransformationRule [
 	| isValid |
-	isValid := aTransformationRule isValid.
+	
+	isValid := aTransformationRule
+		ifNil: [ false ]
+		ifNotNil: [ :rule | rule isValid ].
 	
 	validationImage image:
 		(self iconNamed:
-			(isValid ifTrue: [ #thumbsUp ] ifFalse: [ #thumbsDown ])).
+			(isValid ifTrue: [ #smallOk ] ifFalse: [ #smallCancel ])).
 			
 	^ isValid
 ]
