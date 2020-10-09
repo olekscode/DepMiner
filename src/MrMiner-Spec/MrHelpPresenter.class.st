@@ -28,7 +28,7 @@ MrHelpPresenter class >> defaultTitle [
 
 { #category : #accessing }
 MrHelpPresenter class >> preferredExtent [ 
-	^ 400@300
+	^ 600@450
 ]
 
 { #category : #initialization }

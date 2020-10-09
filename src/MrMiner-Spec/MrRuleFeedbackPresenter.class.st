@@ -77,6 +77,9 @@ MrRuleFeedbackPresenter >> connectPresenters [
 	validateTransformationRuleButton action: [
 		self validateTransformationRule: self getManualTransformationRule ].
 	
+	helpTransformationRuleButton action: [ 
+		(MrHelpPresenter on: self transformationRulesHelpText) openWithSpec ].
+	
 	isGoodRadio
 		whenNoDo: [ self onBadRule ];
 		whenYesOrNotSureDo: [ self onCouldBeGoodRule ].
@@ -269,6 +272,27 @@ MrRuleFeedbackPresenter >> showRuleFeedback [
 			manualTransformationRuleLabel label: 'Propose a transformation rule' ].
 		
 	validationImage image: nil.
+]
+
+{ #category : #'as yet unclassified' }
+MrRuleFeedbackPresenter >> transformationRulesHelpText [
+	^ 'Transformation rules (a.k.a. Rewriter rules) are associations in the form antecedent -> consequent that can match the piece of source code defined by the expression in antecedent and replace it with another source code defined by consequent.
+	
+‘ defines a variable. ‘receiver foo matches x foo, Ordered- 37 Collection foo or self foo.
+‘@ matches any subtree. ‘@rec foo matches self foo (with 39 rec = foo), self size foo (with rec = self size or (x at: 2) 40 foo (with rec = (a at: 2)).
+‘. matches language statement (assignment, return, mes- sages,...).
+‘# matches literals (string, boolean, number, symbol in 44
+Pharo). ‘#lit size matches 3 size, ’foo’ size, true size.
+{ } is used to match the enclosed code.
+
+Example:
+
+‘@rec whenSelectionIndexChanged: ‘@arg -> ‘@rec selection whenChangedDo: [ :selection | ‘@arg value: selection selectedIndex ].
+
+Transformation rules are valid if:
+
+1. Both antecedent and consequent are not empty
+2. Antecedent and consequent are different'
 ]
 
 { #category : #'as yet unclassified' }
