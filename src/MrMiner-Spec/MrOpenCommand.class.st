@@ -34,5 +34,6 @@ MrOpenCommand >> open: aFileReference [
 	experiment := aFileReference readStreamDo: [ :readStream |
 		STON fromStream: readStream ].
 
+	experiment fileReference: aFileReference.
 	context addPageWithExperiment: experiment title: aFileReference basename.
 ]
