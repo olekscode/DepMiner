@@ -16,6 +16,30 @@ MrExperimentManager >> branch: aBranch [
 	experiment branchName: branch name.
 ]
 
+{ #category : #'as yet unclassified' }
+MrExperimentManager >> collectOldApiMethodNames [
+	| currentCommit oldCommit packages selectors |
+	
+	currentCommit := repository head commit.
+	oldCommit := repository commitAt: experiment fromCommit sha.
+	
+	oldCommit fetchPackageNames ifEmpty: [
+		Error signal: 'This commit had no packages. Please choose a later commit' ].
+	
+	repository branch commit: oldCommit.
+	repository checkoutAllPackages.
+	
+	packages := repository loadedPackages collect: [ :each | Smalltalk image packages detect: [ :package | package name = each name ] ].
+	
+	selectors := packages flatCollect: [ :package |
+		package methods collect: [ :method | method selector ] ].
+	
+	repository branch commit: currentCommit.
+	repository checkoutAllPackages.
+	
+	^ selectors asSet.
+]
+
 { #category : #accessing }
 MrExperimentManager >> experiment [
 	^ experiment
@@ -42,7 +66,7 @@ MrExperimentManager >> loadAllCommits [
 
 { #category : #'as yet unclassified' }
 MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCommit [
-	| methodChangeCollector methodCallCollector |
+	| methodChangeCollector methodCallCollector oldApiMethodNames |
 	
 	experiment
 		fromCommit: aFromCommit;
@@ -62,6 +86,12 @@ MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCom
 	
 	methodChanges do: [ :change |
 		methodCallCollector extractAddedAndDeletedMethodCallsFrom: change ].
+	
+	oldApiMethodNames := self collectOldApiMethodNames.
+	
+	methodChanges := methodChanges select: [ :change |
+		change deletedMethodCalls anySatisfy: [ :call |
+			oldApiMethodNames includes: call selector ] ].
 ]
 
 { #category : #'as yet unclassified' }
