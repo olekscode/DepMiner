@@ -19,56 +19,56 @@ MrRuleTest >> setUp [
 	| call1 call2 call3 call4 call5 method1 method2 commit1 commit2 change1 change2 |
 	super setUp.
 	
-	call1 := MrMethodCall new
+	call1 := RefrainMethodCall new
 		selector: #add:;
 		makeAdded;
 		yourself.
 		
-	call2 := MrMethodCall new
+	call2 := RefrainMethodCall new
 		selector: #insert:;
 		makeDeleted;
 		yourself.
 		
-	call3 := MrMethodCall new 
+	call3 := RefrainMethodCall new 
 		selector: #remove:;
 		makeAdded;
 		yourself.
 		
-	call4 := MrMethodCall new 
+	call4 := RefrainMethodCall new 
 		selector: #delete:;
 		makeDeleted;
 		yourself.
 		
-	call5 := MrMethodCall new
+	call5 := RefrainMethodCall new
 		selector: #sum;
 		makeAdded;
 		yourself.
 		
-	method1 := MrMethod new 
+	method1 := RefrainMethod new 
 		className: #Collection;
 		selector: #do:;
 		yourself.
 		
-	method2 := MrMethod new 
+	method2 := RefrainMethod new 
 		className: #Object;
 		selector: #new;
 		yourself.
 		
-	commit1 := MrCommit new
+	commit1 := RefrainCommit new
 		sha: '14164de82d938df2cc98186fa0225a49fe7c98e0';
 		message: 'Hello world';
 		tags: '1.0.1';
 		datetime: '10-12-2020' asDateAndTime;
 		yourself.
 	
-	commit2 := MrCommit new
+	commit2 := RefrainCommit new
 		sha: '3206cc82d9991e2acdd10916247c114e1b173e77';
 		message: 'Lorem ipsum';
 		tags: '2.0.0';
 		datetime: '11-21-2020' asDateAndTime;
 		yourself.	
 		
-	change1 := MrMethodChange new 
+	change1 := RefrainMethodChange new 
 		method: method1;
 		commit: commit1;
 		oldSourceCode: '1 + 2';
@@ -77,7 +77,7 @@ MrRuleTest >> setUp [
 		deletedMethodCalls: { call2 };
 		yourself.
 		
-	change2 := MrMethodChange new 
+	change2 := RefrainMethodChange new 
 		method: method2;
 		commit: commit2;
 		oldSourceCode: '3 * 5 asFloat';

@@ -3,12 +3,12 @@ Extension { #name : #IceModification }
 { #category : #'*MrMiner' }
 IceModification >> asMethodChange [
 	| method |
-	method := MrMethod new 
+	method := RefrainMethod new 
 		className: self definition className;
 		selector: self definition name;
 		yourself.
 		
-	^ MrMethodChange new
+	^ RefrainMethodChange new
 		method: method;
 		oldSourceCode: self oldNode sourceCode;
 		newSourceCode: self definition sourceCode;

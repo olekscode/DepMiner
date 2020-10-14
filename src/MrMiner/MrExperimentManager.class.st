@@ -72,7 +72,7 @@ MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCom
 		fromCommit: aFromCommit;
 		toCommit: aToCommit.
 	
-	methodChangeCollector := MrMethodChangeCollector
+	methodChangeCollector := RefrainMethodChangeCollector
 		forRepository: repository
 		branch: branch.
 	
@@ -82,7 +82,7 @@ MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCom
 		
 	experiment numberOfTransactions: methodChanges size.
 		
-	methodCallCollector := MrMethodCallCollector new.
+	methodCallCollector := RefrainMethodCallCollector new.
 	
 	methodChanges do: [ :change |
 		methodCallCollector extractAddedAndDeletedMethodCallsFrom: change ].
@@ -101,7 +101,7 @@ MrExperimentManager >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfi
 	experiment minCount: aMinCount.
 	experiment minConfidence: aMinConfidence.
 
-	aprioriMiner := MrAprioriMiner new.
+	aprioriMiner := RefrainAprioriMiner new.
 	
 	associationRules := aprioriMiner
 		mineRulesFromMethodChanges: methodChanges

@@ -2,7 +2,7 @@ Extension { #name : #IceGitCommit }
 
 { #category : #'*MrMiner' }
 IceGitCommit >> asMrCommit [
-	^ MrCommit new 
+	^ RefrainCommit new 
 		sha: self id;
 		message: self comment;
 		author: self author;

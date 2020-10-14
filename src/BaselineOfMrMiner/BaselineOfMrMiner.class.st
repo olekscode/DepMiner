@@ -10,12 +10,12 @@ BaselineOfMrMiner >> baseline: spec [
 	spec for: #common do: [	
 		"External dependencies"
 		spec
-			baseline: 'APriori'
-			with: [ spec repository: 'github://pharo-ai/APriori/src' ].
+			baseline: 'Refrain'
+			with: [ spec repository: 'github://olekscode/Refrain/src' ].
 			
 		spec
-			baseline: 'PharoDeprecationsCollector'
-			with: [ spec repository: 'github://olekscode/PharoDeprecationsCollector/src' ].
+			baseline: 'TransformationRule'
+			with: [ spec repository: 'github://olekscode/TransformationRule/src' ].
 			
 		spec
 			baseline: 'FileDialog'
@@ -23,7 +23,7 @@ BaselineOfMrMiner >> baseline: spec [
 				
 		"Packages"
 		spec 
-			package: 'MrMiner' with: [ spec requires: #('APriori' 'PharoDeprecationsCollector') ];
+			package: 'MrMiner' with: [ spec requires: #('Refrain' 'TransformationRule') ];
 			package: 'MrMiner-Tests' with: [ spec requires: #('MrMiner') ];
 			package: 'MrMiner-Spec' with: [ spec requires: #('MrMiner' 'FileDialog') ] ]
 ]
