@@ -147,7 +147,7 @@ MrCommitLoaderPresenter >> initializeWindow: aWindowPresenter [
 { #category : #'as yet unclassified' }
 MrCommitLoaderPresenter >> mineRules [
 	experimentManager
-		loadMethodChangesFromCommit: fromCommitTable selectedItem
+		fromCommit: fromCommitTable selectedItem;
 		toCommit: toCommitTable selectedItem.
 		
 	experimentManager

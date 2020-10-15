@@ -45,8 +45,8 @@ MrRulesBuilder >> canBeAutomated: anAssociationRule [
 MrRulesBuilder >> mapRules: aCollectionOfRules toMethodChanges: aCollectionOfMethodChanges [
 	aCollectionOfRules do: [ :rule |
 		rule methodChanges: (aCollectionOfMethodChanges select: [ :methodChange |
-			(methodChange deletedMethodCalls asArray includesAll: rule deletedMethodCalls) and: [ 
-				methodChange addedMethodCalls asArray includesAll: rule addedMethodCalls ] ]) ]
+			(methodChange deletedEntities asArray includesAll: rule deletedMethodCalls) and: [ 
+				methodChange addedEntities asArray includesAll: rule addedMethodCalls ] ]) ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -77,8 +77,7 @@ MrRulesBuilder >> transformationRuleFor: anAssociationRule [
 	deletedSelector := anAssociationRule key anyOne selector.
 	addedSelector := anAssociationRule value anyOne selector.
 	
-	^ PDTransformationRule new
-		antecedent: (self transformationRuleExpressionFor: deletedSelector);
-		consequent: (self transformationRuleExpressionFor: addedSelector);
-		yourself.
+	^ TransformationRule
+		antecedent: (self transformationRuleExpressionFor: deletedSelector)
+		consequent: (self transformationRuleExpressionFor: addedSelector).
 ]

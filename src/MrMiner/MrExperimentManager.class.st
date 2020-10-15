@@ -4,8 +4,7 @@ Class {
 	#instVars : [
 		'repository',
 		'branch',
-		'experiment',
-		'methodChanges'
+		'experiment'
 	],
 	#category : #'MrMiner-Controllers'
 }
@@ -45,6 +44,11 @@ MrExperimentManager >> experiment [
 	^ experiment
 ]
 
+{ #category : #'instance creation' }
+MrExperimentManager >> fromCommit: aCommit [
+	experiment fromCommit: aCommit
+]
+
 { #category : #initialization }
 MrExperimentManager >> initialize [
 	super initialize.
@@ -65,54 +69,27 @@ MrExperimentManager >> loadAllCommits [
 ]
 
 { #category : #'as yet unclassified' }
-MrExperimentManager >> loadMethodChangesFromCommit: aFromCommit toCommit: aToCommit [
-	| methodChangeCollector methodCallCollector oldApiMethodNames |
-	
-	experiment
-		fromCommit: aFromCommit;
-		toCommit: aToCommit.
-	
-	methodChangeCollector := RefrainMethodChangeCollector
-		forRepository: repository
-		branch: branch.
-	
-	methodChanges := methodChangeCollector
-		collectMethodChangesFromCommit: experiment fromCommit
-		toCommit: experiment toCommit.
-		
-	experiment numberOfTransactions: methodChanges size.
-		
-	methodCallCollector := RefrainMethodCallCollector new.
-	
-	methodChanges do: [ :change |
-		methodCallCollector extractAddedAndDeletedMethodCallsFrom: change ].
-	
-	oldApiMethodNames := self collectOldApiMethodNames.
-	
-	methodChanges := methodChanges select: [ :change |
-		change deletedMethodCalls anySatisfy: [ :call |
-			oldApiMethodNames includes: call selector ] ].
-]
-
-{ #category : #'as yet unclassified' }
 MrExperimentManager >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfidence [
-	| aprioriMiner associationRules rules rulesBuilder |
+	| refrain associationRules rules rulesBuilder |
 	
 	experiment minCount: aMinCount.
 	experiment minConfidence: aMinConfidence.
 
-	aprioriMiner := RefrainAprioriMiner new.
-	
-	associationRules := aprioriMiner
-		mineRulesFromMethodChanges: methodChanges
-		withMinCount: experiment minCount.
+	refrain := Refrain
+		repositoryName: experiment repositoryName
+		branchName: experiment branchName
+		firstCommit: experiment fromCommit sha
+		lastCommit: experiment toCommit sha.
+		
+	refrain minNumberOfRepetitions: experiment minCount.
+	associationRules := refrain mineRepetitiveChanges.
 		
 	associationRules := associationRules select: [ :rule |
 		rule confidence >= experiment minConfidence ].
 	
 	rulesBuilder := MrRulesBuilder new.
 	rules := rulesBuilder buildMigrationRulesFromAssociationRules: associationRules.
-	rulesBuilder mapRules: rules toMethodChanges: methodChanges.
+	rulesBuilder mapRules: rules toMethodChanges: refrain methodChanges.
 	
 	experiment rules: (self sortRules: rules).
 ]
@@ -133,4 +110,9 @@ MrExperimentManager >> sortRules: aCollectionOfRules [
 		a lift > b lift or: [ 
 			a lift = b lift and: [ a confidence > b confidence or: [ 
 				a confidence = b confidence and: [ a count > b count ] ] ] ] ].
+]
+
+{ #category : #'instance creation' }
+MrExperimentManager >> toCommit: aCommit [
+	experiment toCommit: aCommit
 ]
