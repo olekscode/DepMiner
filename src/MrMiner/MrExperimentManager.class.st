@@ -58,7 +58,7 @@ MrExperimentManager >> initialize [
 { #category : #'as yet unclassified' }
 MrExperimentManager >> loadAllCommits [
 	| commits |
-	commits := branch commits collect: [ :each | each asMrCommit ].
+	commits := branch commits collect: [ :each | each asRefrainCommit ].
 	
 	repository tags do: [ :tag |
 		commits
