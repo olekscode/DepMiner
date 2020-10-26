@@ -20,17 +20,6 @@ MrRulesBrowser class >> defaultTitle [
 	^ 'MrMiner Browser'
 ]
 
-{ #category : #'world menu' }
-MrRulesBrowser class >> menuCommandOn: aBuilder [
-	<worldMenu>
-	(aBuilder item: #'MrMiner')
-		parent: #Tools;
-		action: [ self open ];
-		order: 15;
-		help: 'A tool for mining the migration rules that were mined from the commit history as well as  browsing and evaluating those rules';
-		icon: (self iconNamed: #databaseAdd).
-]
-
 { #category : #examples }
 MrRulesBrowser class >> open [
 	<example>
