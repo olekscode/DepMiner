@@ -30,7 +30,7 @@ MrMinerController >> candidateCommitsForOldVersion [
 
 { #category : #'as yet unclassified' }
 MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
-	| packages classTree |
+	| packages classTree methodTree |
 	
 	packages := aCollectionOfClioMethods collect: [ :method |
 		MrMinerVersionTree new
@@ -38,7 +38,7 @@ MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
 			iconName: #package;
 			yourself ].
 		
-	packages := packages asSet.
+	packages := packages asSet asArray.
 		
 	aCollectionOfClioMethods do: [ :method |
 		classTree := MrMinerVersionTree new
@@ -49,6 +49,19 @@ MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
 		packages
 			detect: [ :package | package name = method packageName ]
 			ifFound: [ :package | package addChild: classTree ] ].
+		
+	aCollectionOfClioMethods do: [ :method |
+		methodTree := MrMinerVersionTreeLeaf new
+			name: method selector;
+			value: method;
+			iconName: #method;
+			yourself.
+			
+		packages
+			detect: [ :package | package name = method packageName ]
+			ifFound: [ :package | package children
+				detect: [ :aClass | aClass name = method className ]
+				ifFound: [ :aClass | aClass addChild: methodTree ] ] ].
 		
 	^ packages
 ]

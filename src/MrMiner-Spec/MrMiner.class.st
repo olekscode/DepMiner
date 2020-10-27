@@ -260,7 +260,7 @@ MrMiner >> newMethodTree [
 	| tree |
 	
 	tree := self newTree
-		children: [ :each | each children ];
+		children: [ :each | each children asArray ];
 		display: [ :each | each name ];
 		displayIcon: [ :each | self iconNamed: each iconName ].
 		
