@@ -1,41 +1,39 @@
 Class {
-	#name : #MrCommitSelect,
+	#name : #MrCommitInput,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'textEdit',
-		'selectButton'
+		'selectButton',
+		'textInput'
 	],
 	#category : #'MrMiner-Spec-NewViews'
 }
 
 { #category : #specs }
-MrCommitSelect class >> defaultSpec [
+MrCommitInput class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		add: (SpBoxLayout newHorizontal
-			add: #textEdit;
+			add: #textInput;
 			add: #selectButton width: self inputTextHeight;
 			yourself) height: (self inputTextHeight - 7);
 		yourself.
 ]
 
 { #category : #examples }
-MrCommitSelect class >> open [
+MrCommitInput class >> open [
 	<example>
 	self new openWithSpec.
 ]
 
-{ #category : #initialization }
-MrCommitSelect >> connectPresenters [
-	super connectPresenters.
-	
-	selectButton action: [  ]
+{ #category : #accessing }
+MrCommitInput >> action: aBlock [
+	selectButton action: aBlock
 ]
 
 { #category : #initialization }
-MrCommitSelect >> initializePresenters [
+MrCommitInput >> initializePresenters [
 	super initializePresenters.
 	
-	textEdit := self newTextInput.
+	textInput := self newTextInput.
 	
 	selectButton := self newButton
 		icon: (self iconNamed: #smallFind);
@@ -43,6 +41,11 @@ MrCommitSelect >> initializePresenters [
 ]
 
 { #category : #showing }
-MrCommitSelect >> show: aCommitSha [
-	textEdit text: aCommitSha
+MrCommitInput >> text [
+	^ textInput text
+]
+
+{ #category : #showing }
+MrCommitInput >> text: aCommitSha [
+	textInput text: aCommitSha
 ]

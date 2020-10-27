@@ -8,9 +8,9 @@ Class {
 		'projectNameInput',
 		'projectLoadedLabel',
 		'loadProjectButton',
-		'oldVersionSelect',
-		'newVersionSelect',
-		'calculateDiffsButton',
+		'oldVersionInput',
+		'newVersionInput',
+		'loadChangesButton',
 		'minCountSelect',
 		'minConfidenceSelect',
 		'mineRulesButton',
@@ -56,15 +56,15 @@ MrMiner class >> defaultSpec [
 			add: (SpBoxLayout newVertical
 				add: (SpBoxLayout newHorizontal
 					add: 'Old version';
-					add: #oldVersionSelect width: inputWidth;
+					add: #oldVersionInput width: inputWidth;
 					yourself) height: self inputTextHeight;
 				add: (SpBoxLayout newHorizontal
 					add: 'New version';
-					add: #newVersionSelect width: inputWidth;
+					add: #newVersionInput width: inputWidth;
 					yourself) height: self inputTextHeight;
 				add: (SpBoxLayout newHorizontal
 					add: '';
-					add: #calculateDiffsButton width: buttonWidth;
+					add: #loadChangesButton width: buttonWidth;
 					yourself) height: self buttonHeight;
 				yourself);
 			add: (SpBoxLayout newVertical
@@ -166,7 +166,19 @@ MrMiner >> buildToolbar [
 MrMiner >> connectPresenters [
 	super connectPresenters.
 	
-	loadProjectButton action: [ self onLoadProject ].
+	loadProjectButton action: [ self onLoadProjectClicked ].
+	
+	oldVersionInput action: [
+		(MrCommitSelector on: controller candidateCommitsForOldVersion)
+			callback: [ :commit | self onOldVersionSelected: commit ];
+			openWithSpec ].
+		
+	newVersionInput action: [
+		(MrCommitSelector on: controller candidateCommitsForNewVersion)
+			callback: [ :commit | self onNewVersionSelected: commit ];
+			openWithSpec ].
+		
+	loadChangesButton action: [ self onLoadChangesClicked ].
 ]
 
 { #category : #initialization }
@@ -193,10 +205,10 @@ MrMiner >> initializePresenters [
 		label: 'Load project';
 		yourself.
 		
-	oldVersionSelect := MrCommitSelect new.
-	newVersionSelect := MrCommitSelect new.
+	oldVersionInput := MrCommitInput new.
+	newVersionInput := MrCommitInput new.
 	
-	calculateDiffsButton := self newButton
+	loadChangesButton := self newButton
 		label: 'Load changes';
 		yourself.
 		
@@ -207,8 +219,8 @@ MrMiner >> initializePresenters [
 		label: 'Mine rules';
 		yourself.
 		
-	oldVersionTree := self newTree.
-	newVersionTree := self newTree.
+	oldVersionTree := self newMethodTree.
+	newVersionTree := self newMethodTree.
 	proposedDeprecationsTree := self newTree.
 	proposedReplacementsList := self newList.
 	
@@ -243,15 +255,96 @@ MrMiner >> initializeWindow: aWindowPresenter [
 		toolbar: self buildToolbar.
 ]
 
+{ #category : #initialization }
+MrMiner >> newMethodTree [
+	| tree |
+	
+	tree := self newTree
+		children: [ :each | each children ];
+		display: [ :each | each name ];
+		displayIcon: [ :each | self iconNamed: each iconName ].
+		
+	tree contextMenu: [
+		SpMenuPresenter new 
+			addGroup: [ :group | group 
+				addItem: [ :item | item
+					name: 'Inspect';
+					action: [ tree selectedItem inspect ] ] ] ].
+		
+	^ tree
+]
+
 { #category : #'as yet unclassified' }
-MrMiner >> onLoadProject [
+MrMiner >> onLoadChangesClicked [
+	| oldVersionString newVersionString |
+	
+	oldVersionString := oldVersionInput text.
+	newVersionString := newVersionInput text.
+
+	oldVersionString ifEmpty: [ 
+		self inform: 'Please select the old version'.
+		^ self ].
+
+	newVersionString ifEmpty: [ 
+		self inform: 'Please select the new version'.
+		^ self ].
+
+	(model oldVersionCommit isNotNil and: [ 
+		 model oldVersionCommit matches: oldVersionString ]) 
+		ifFalse: [ 
+			controller candidateCommitsForOldVersion
+				detect: [ :commit | commit matches: oldVersionString ]
+				ifFound: [ :commit | model oldVersionCommit: commit ]
+				ifNone: [ 
+					self inform:
+						'Old version with this commit SHA or tag was not found' ] ].
+				
+	(model newVersionCommit isNotNil and: [ 
+		 model newVersionCommit matches: newVersionString ]) 
+		ifFalse: [ 
+			controller candidateCommitsForNewVersion
+				detect: [ :commit | commit matches: newVersionString ]
+				ifFound: [ :commit | model newVersionCommit: commit ]
+				ifNone: [ 
+					self inform:
+						'New version with this commit SHA or tag was not found' ] ].
+				
+	controller loadChanges.
+	
+	self showOldVersion.
+	self showNewVersion.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> onLoadProjectClicked [
 	| ownerName projectName |
 	
 	ownerName := ownerNameInput text.
 	projectName := projectNameInput text.
 	
 	controller loadProject: projectName by: ownerName.
-	model inspect.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> onNewVersionSelected: aCommit [
+	newVersionInput text: aCommit shortSha.
+	model newVersionCommit: aCommit.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> onOldVersionSelected: aCommit [
+	oldVersionInput text: aCommit shortSha.
+	model oldVersionCommit: aCommit.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showNewVersion [
+	newVersionTree roots: controller newVersionTree
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showOldVersion [
+	oldVersionTree roots: controller oldVersionTree
 ]
 
 { #category : #building }

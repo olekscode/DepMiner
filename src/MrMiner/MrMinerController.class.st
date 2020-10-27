@@ -10,18 +10,47 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-MrMinerController class >> repository: aRepositoryName branch: aBranchName oldCommit: anOldCommitSha newCommit: aNewCommitSha [
-	^ self new
-		initializeRepository: aRepositoryName
-		branch: aBranchName
-		oldCommit: anOldCommitSha
-		newCommit: aNewCommitSha;
-		yourself.
+MrMinerController >> candidateCommitsForNewVersion [
+	| commits |
+	commits := self candidateCommitsForOldVersion.
+	
+	model oldVersionCommit ifNotNil: [ 
+		commits := commits select: [ :commit |
+			commit date > model oldVersionCommit date or: [ 
+				commit date = model oldVersionCommit date and: [ 
+					commit time > model oldVersionCommit time ] ] ] ].
+	
+	^ commits
 ]
 
 { #category : #'as yet unclassified' }
-MrMinerController >> deletedDeprecatedMethods [
-	^ clio deletedMethods select: [ :each | each isDeprecated ]
+MrMinerController >> candidateCommitsForOldVersion [
+	^ model repository branch commits collect: [ :each | each asRefrainCommit ]
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
+	| packages classTree |
+	
+	packages := aCollectionOfClioMethods collect: [ :method |
+		MrMinerVersionTree new
+			name: method packageName;
+			iconName: #package;
+			yourself ].
+		
+	packages := packages asSet.
+		
+	aCollectionOfClioMethods do: [ :method |
+		classTree := MrMinerVersionTree new
+			name: method className;
+			iconName: #class;
+			yourself.
+			
+		packages
+			detect: [ :package | package name = method packageName ]
+			ifFound: [ :package | package addChild: classTree ] ].
+		
+	^ packages
 ]
 
 { #category : #'as yet unclassified' }
@@ -33,19 +62,33 @@ MrMinerController >> getGitHubRepository: aRepositoryName by: anOwnerName [
 		do: [ ^ nil ]
 ]
 
-{ #category : #initialization }
-MrMinerController >> initializeRepository: aRepositoryName branch: aBranchName oldCommit: anOldCommitSha newCommit: aNewCommitSha [
-	
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadChanges [
 	refrain := Refrain
-		repositoryName: aRepositoryName
-		branchName: aBranchName
-		firstCommit: anOldCommitSha
-		lastCommit: aNewCommitSha.
+		repositoryName: model repository name
+		branchName: model repository branch name
+		firstCommit: model oldVersionCommit sha
+		lastCommit: model newVersionCommit sha.
 		
 	clio := Clio
-		for: aRepositoryName
-		between: anOldCommitSha
-		and: aNewCommitSha. 
+		for: model repository name
+		between: model oldVersionCommit sha
+		and: model newVersionCommit sha.
+		
+	self loadOldVersion.
+	self loadNewVersion.
+	
+	refrain loadMethodChanges.
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadNewVersion [
+	model newMethods: clio newMethods asArray.
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadOldVersion [
+	model oldMethods: clio oldMethods asArray.
 ]
 
 { #category : #'as yet unclassified' }
@@ -87,16 +130,11 @@ MrMinerController >> model: anObject [
 ]
 
 { #category : #'as yet unclassified' }
-MrMinerController >> newMethods [
-	^ clio newMethods
+MrMinerController >> newVersionTree [
+	^ self clioMethodsToVersionTrees: model newMethods
 ]
 
 { #category : #'as yet unclassified' }
-MrMinerController >> oldMethods [
-	^ clio oldMethods
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> preservedDeprecatedMethods [
-	^ clio unchangedMethods select: [ :each | each isDeprecated ]
+MrMinerController >> oldVersionTree [
+	^ self clioMethodsToVersionTrees: model oldMethods
 ]
