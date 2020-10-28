@@ -20,6 +20,8 @@ Class {
 		'newVersionNotebook',
 		'newVersionAllMethodsTree',
 		'newVersionAddedMethodsTree',
+		'proposedChangesNotebook',
+		'proposedMethodsToRemoveTree',
 		'proposedDeprecationsTree',
 		'proposedReplacementsList',
 		'proposedActionDescriptionLabel',
@@ -85,25 +87,22 @@ MrMiner class >> defaultSpec [
 					add: #mineRulesButton width: buttonWidth;
 					yourself) height: self buttonHeight;
 				yourself);
+			add: '';
 			yourself) width: 250;
 		add: (SpPanedLayout newVertical
 			add: (SpBoxLayout newHorizontal
 				spacing: spacing;
 				add: (SpBoxLayout newVertical
-					add: 'Old version' height: self labelHeight;
+					add: 'Methods in the old version' height: self labelHeight;
 					add: #oldVersionNotebook;
 					yourself);
 				add: (SpBoxLayout newVertical
-					add: 'New version' height: self labelHeight;
+					add: 'Methods in the new version' height: self labelHeight;
 					add: #newVersionNotebook;
 					yourself);
 				add: (SpBoxLayout newVertical
-					add: 'Proposed deprecations' height: self labelHeight;
-					add: #proposedDeprecationsTree;
-					yourself);
-				add: (SpBoxLayout newVertical
-					add: 'Proposed replacements' height: self labelHeight;
-					add: #proposedReplacementsList;
+					add: 'Proposed changes' height: self labelHeight;
+					add: #proposedChangesNotebook;
 					yourself);
 				yourself);
 			add: (SpBoxLayout newVertical
@@ -252,7 +251,20 @@ MrMiner >> initializePresenters [
 			yourself);
 		yourself.
 	
+	proposedMethodsToRemoveTree := self instantiate: MrMethodsTree.
 	proposedDeprecationsTree := self instantiate: MrMethodsTree.
+	
+	proposedChangesNotebook := self newNotebook
+		addPage: (self newNotebookPage
+			title: 'To Delete';
+			presenterProvider: [ proposedMethodsToRemoveTree ];
+			yourself);
+		addPage: (self newNotebookPage
+			title: 'To Deprecate';
+			presenterProvider: [ proposedDeprecationsTree ];
+			yourself);
+		yourself.
+	
 	proposedReplacementsList := self newList.
 	
 	proposedActionDescriptionLabel := self newLabel.
@@ -308,8 +320,8 @@ MrMiner >> onLoadChangesClicked [
 				detect: [ :commit | commit matches: oldVersionString ]
 				ifFound: [ :commit | model oldVersionCommit: commit ]
 				ifNone: [ 
-					self inform:
-						'Old version with this commit SHA or tag was not found' ] ].
+					self inform: 'Old version with this commit SHA or tag was not found'.
+					^ self ] ].
 				
 	(model newVersionCommit isNotNil and: [ 
 		 model newVersionCommit matches: newVersionString ]) 
@@ -318,13 +330,14 @@ MrMiner >> onLoadChangesClicked [
 				detect: [ :commit | commit matches: newVersionString ]
 				ifFound: [ :commit | model newVersionCommit: commit ]
 				ifNone: [ 
-					self inform:
-						'New version with this commit SHA or tag was not found' ] ].
+					self inform: 'New version with this commit SHA or tag was not found'.
+					^ self ] ].
 				
 	controller loadChanges.
 	
 	self showOldVersion.
 	self showNewVersion.
+	self showProposedChanges.
 ]
 
 { #category : #'as yet unclassified' }
@@ -357,12 +370,12 @@ MrMiner >> showNewVersion [
 
 { #category : #'as yet unclassified' }
 MrMiner >> showNewVersionAddedMethods [
-	newVersionAddedMethodsTree packages: controller addedMethodsTree
+	newVersionAddedMethodsTree methods: model addedMethods
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showNewVersionAllMethods [
-	newVersionAllMethodsTree packages: controller newVersionTree
+	newVersionAllMethodsTree methods: model newMethods
 ]
 
 { #category : #'as yet unclassified' }
@@ -373,12 +386,22 @@ MrMiner >> showOldVersion [
 
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersionAllMethods [
-	oldVersionAllMethodsTree packages: controller oldVersionTree
+	oldVersionAllMethodsTree methods: model oldMethods
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersionDeletedMethods [
-	oldVersionDeletedMethodsTree packages: controller deletedMethodsTree
+	oldVersionDeletedMethodsTree methods: model deletedMethods
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showProposedChanges [
+	self showProposedMethodsToDelete.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showProposedMethodsToDelete [
+	proposedMethodsToRemoveTree methods: model unchangedDeprecatedMethods
 ]
 
 { #category : #building }

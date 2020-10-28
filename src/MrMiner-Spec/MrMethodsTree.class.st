@@ -22,6 +22,32 @@ MrMethodsTree >> initialize [
 ]
 
 { #category : #accessing }
-MrMethodsTree >> packages: aCollectionOfPackageTrees [
-	self roots: aCollectionOfPackageTrees
+MrMethodsTree >> methods: aCollectionOfMethods [
+	self roots: (self methodsToVersionTrees: aCollectionOfMethods)
+]
+
+{ #category : #'as yet unclassified' }
+MrMethodsTree >> methodsToVersionTrees: aCollectionOfClioMethods [
+	| classes methodTree |
+		
+	classes := aCollectionOfClioMethods collect: [ :method |
+		MrMethodTreeModel new
+			name: method className;
+			iconName: #class;
+			yourself ].
+		
+	classes := classes asSet asArray sorted: [ :a :b | a name < b name ].
+		
+	aCollectionOfClioMethods do: [ :method |
+		methodTree := MrMethodTreeLeafModel new
+			name: method selector;
+			value: method;
+			iconName: #method;
+			yourself.
+			
+		classes
+			detect: [ :aClass | aClass name = method className ]
+			ifFound: [ :aClass | aClass addChild: methodTree ] ].
+		
+	^ classes
 ]

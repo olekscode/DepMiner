@@ -10,14 +10,9 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-MrMinerController >> addedMethodsTree [
-	^ self clioMethodsToVersionTrees: model addedMethods
-]
-
-{ #category : #'as yet unclassified' }
 MrMinerController >> candidateCommitsForNewVersion [
 	| commits |
-	commits := self candidateCommitsForOldVersion.
+	commits := model allCommits.
 	
 	model oldVersionCommit ifNotNil: [ 
 		commits := commits select: [ :commit |
@@ -30,50 +25,17 @@ MrMinerController >> candidateCommitsForNewVersion [
 
 { #category : #'as yet unclassified' }
 MrMinerController >> candidateCommitsForOldVersion [
-	^ model repository branch commits collect: [ :each | each asRefrainCommit ]
-]
+	model commitDictionary removeAll.
 
-{ #category : #'as yet unclassified' }
-MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
-	| packages classTree methodTree |
+	model repository branch commits do: [ :iceCommit |
+		model commitDictionary at: iceCommit id put: iceCommit asRefrainCommit ].
 	
-	packages := aCollectionOfClioMethods collect: [ :method |
-		MrMethodTreeModel new
-			name: method packageName;
-			iconName: #package;
-			yourself ].
-		
-	packages := packages asSet asArray.
-		
-	aCollectionOfClioMethods do: [ :method |
-		classTree := MrMethodTreeModel new
-			name: method className;
-			iconName: #class;
-			yourself.
-			
-		packages
-			detect: [ :package | package name = method packageName ]
-			ifFound: [ :package | package addChild: classTree ] ].
-		
-	aCollectionOfClioMethods do: [ :method |
-		methodTree := MrMethodTreeLeafModel new
-			name: method selector;
-			value: method;
-			iconName: #method;
-			yourself.
-			
-		packages
-			detect: [ :package | package name = method packageName ]
-			ifFound: [ :package | package children
-				detect: [ :aClass | aClass name = method className ]
-				ifFound: [ :aClass | aClass addChild: methodTree ] ] ].
-		
-	^ packages
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> deletedMethodsTree [
-	^ self clioMethodsToVersionTrees: model deletedMethods
+	model repository tags do: [ :tag |
+		model commitDictionary
+			at: tag commit id
+			ifPresent: [ :commit | commit tags add: tag name ] ].
+	
+	^ model allCommits
 ]
 
 { #category : #'as yet unclassified' }
@@ -107,6 +69,7 @@ MrMinerController >> loadChanges [
 	self loadNewVersion.
 	self loadDeletedMethods.
 	self loadAddedMethods.
+	self loadUnchangedDeprecatedMethods.
 	
 	"refrain loadMethodChanges."
 ]
@@ -141,6 +104,11 @@ MrMinerController >> loadProject: aProjectName by: anOwnerName [
 	model repository: repository.
 ]
 
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadUnchangedDeprecatedMethods [
+	model unchangedDeprecatedMethods: (clio unchangedMethods select: [ :method | method isDeprecated ]) asArray.
+]
+
 { #category : #accessing }
 MrMinerController >> minNumberOfRepetitions: aNumber [
 	refrain minNumberOfRepetitions: aNumber
@@ -162,14 +130,4 @@ MrMinerController >> mineRules [
 { #category : #accessing }
 MrMinerController >> model: anObject [
 	model := anObject
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> newVersionTree [
-	^ self clioMethodsToVersionTrees: model newMethods
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> oldVersionTree [
-	^ self clioMethodsToVersionTrees: model oldMethods
 ]

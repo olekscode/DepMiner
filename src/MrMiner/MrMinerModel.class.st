@@ -8,7 +8,9 @@ Class {
 		'oldMethods',
 		'newMethods',
 		'deletedMethods',
-		'addedMethods'
+		'addedMethods',
+		'unchangedDeprecatedMethods',
+		'commitDictionary'
 	],
 	#category : #'MrMiner-Models'
 }
@@ -23,6 +25,16 @@ MrMinerModel >> addedMethods: anObject [
 	addedMethods := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+MrMinerModel >> allCommits [
+	^ commitDictionary values
+]
+
+{ #category : #accessing }
+MrMinerModel >> commitDictionary [
+	^ commitDictionary
+]
+
 { #category : #accessing }
 MrMinerModel >> deletedMethods [
 	^ deletedMethods
@@ -31,6 +43,12 @@ MrMinerModel >> deletedMethods [
 { #category : #accessing }
 MrMinerModel >> deletedMethods: anObject [
 	deletedMethods := anObject
+]
+
+{ #category : #initialization }
+MrMinerModel >> initialize [
+	super initialize.
+	commitDictionary := Dictionary new.
 ]
 
 { #category : #accessing }
@@ -81,4 +99,14 @@ MrMinerModel >> repository [
 { #category : #accessing }
 MrMinerModel >> repository: anObject [
 	repository := anObject
+]
+
+{ #category : #accessing }
+MrMinerModel >> unchangedDeprecatedMethods [
+	^ unchangedDeprecatedMethods
+]
+
+{ #category : #accessing }
+MrMinerModel >> unchangedDeprecatedMethods: anObject [
+	unchangedDeprecatedMethods := anObject
 ]

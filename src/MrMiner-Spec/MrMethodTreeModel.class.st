@@ -48,7 +48,7 @@ MrMethodTreeModel >> iconName: anObject [
 { #category : #initialization }
 MrMethodTreeModel >> initialize [
 	super initialize.
-	children := Set new.
+	children := OrderedCollection new.
 ]
 
 { #category : #accessing }
