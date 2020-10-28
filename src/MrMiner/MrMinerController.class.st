@@ -69,6 +69,8 @@ MrMinerController >> loadChanges [
 	self loadNewVersion.
 	self loadDeletedMethods.
 	self loadAddedMethods.
+	self loadOldDeprecatedMethods.
+	self loadNewDeprecatedMethods.
 	self loadUnchangedDeprecatedMethods.
 	
 	"refrain loadMethodChanges."
@@ -80,8 +82,18 @@ MrMinerController >> loadDeletedMethods [
 ]
 
 { #category : #'as yet unclassified' }
+MrMinerController >> loadNewDeprecatedMethods [
+	model newDeprecatedMethods: (model newMethods select: [ :method | method isDeprecated ]).
+]
+
+{ #category : #'as yet unclassified' }
 MrMinerController >> loadNewVersion [
 	model newMethods: clio newMethods asArray.
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadOldDeprecatedMethods [
+	model oldDeprecatedMethods: (model oldMethods select: [ :method | method isDeprecated ]).
 ]
 
 { #category : #'as yet unclassified' }

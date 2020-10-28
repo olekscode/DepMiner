@@ -17,9 +17,11 @@ Class {
 		'oldVersionNotebook',
 		'oldVersionAllMethodsTree',
 		'oldVersionDeletedMethodsTree',
+		'oldVersionDeprecatedMethodsTree',
 		'newVersionNotebook',
 		'newVersionAllMethodsTree',
 		'newVersionAddedMethodsTree',
+		'newVersionDeprecatedMethodsTree',
 		'proposedChangesNotebook',
 		'proposedMethodsToRemoveTree',
 		'proposedDeprecationsTree',
@@ -225,6 +227,7 @@ MrMiner >> initializePresenters [
 		
 	oldVersionAllMethodsTree := self instantiate: MrMethodsTree.	
 	oldVersionDeletedMethodsTree := self instantiate: MrMethodsTree.
+	oldVersionDeprecatedMethodsTree := self instantiate: MrMethodsTree.
 	
 	oldVersionNotebook := self newNotebook
 		addPage: (self newNotebookPage
@@ -235,10 +238,15 @@ MrMiner >> initializePresenters [
 			title: 'Deleted';
 			presenterProvider: [ oldVersionDeletedMethodsTree ];
 			yourself);
+		addPage: (self newNotebookPage
+			title: 'Deprecated';
+			presenterProvider: [ oldVersionDeprecatedMethodsTree ];
+			yourself);
 		yourself.
 		
 	newVersionAllMethodsTree := self instantiate: MrMethodsTree.
 	newVersionAddedMethodsTree := self instantiate: MrMethodsTree.
+	newVersionDeprecatedMethodsTree := self instantiate: MrMethodsTree.
 	
 	newVersionNotebook := self newNotebook
 		addPage: (self newNotebookPage
@@ -248,6 +256,10 @@ MrMiner >> initializePresenters [
 		addPage: (self newNotebookPage
 			title: 'Added';
 			presenterProvider: [ newVersionAddedMethodsTree ];
+			yourself);
+		addPage: (self newNotebookPage
+			title: 'Deprecated';
+			presenterProvider: [ newVersionDeprecatedMethodsTree ];
 			yourself);
 		yourself.
 	
@@ -366,6 +378,7 @@ MrMiner >> onOldVersionSelected: aCommit [
 MrMiner >> showNewVersion [
 	self showNewVersionAllMethods.
 	self showNewVersionAddedMethods.
+	self showNewVersionDeprecatedMethods.
 ]
 
 { #category : #'as yet unclassified' }
@@ -379,9 +392,15 @@ MrMiner >> showNewVersionAllMethods [
 ]
 
 { #category : #'as yet unclassified' }
+MrMiner >> showNewVersionDeprecatedMethods [
+	newVersionDeprecatedMethodsTree methods: model newDeprecatedMethods
+]
+
+{ #category : #'as yet unclassified' }
 MrMiner >> showOldVersion [
 	self showOldVersionAllMethods.
 	self showOldVersionDeletedMethods.
+	self showOldVersionDeprecatedMethods.
 ]
 
 { #category : #'as yet unclassified' }
@@ -392,6 +411,11 @@ MrMiner >> showOldVersionAllMethods [
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersionDeletedMethods [
 	oldVersionDeletedMethodsTree methods: model deletedMethods
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showOldVersionDeprecatedMethods [
+	oldVersionDeprecatedMethodsTree methods: model oldDeprecatedMethods
 ]
 
 { #category : #'as yet unclassified' }

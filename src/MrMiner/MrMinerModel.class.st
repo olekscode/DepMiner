@@ -3,14 +3,16 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'repository',
+		'commitDictionary',
 		'oldVersionCommit',
 		'newVersionCommit',
 		'oldMethods',
 		'newMethods',
 		'deletedMethods',
 		'addedMethods',
-		'unchangedDeprecatedMethods',
-		'commitDictionary'
+		'oldDeprecatedMethods',
+		'newDeprecatedMethods',
+		'unchangedDeprecatedMethods'
 	],
 	#category : #'MrMiner-Models'
 }
@@ -52,6 +54,16 @@ MrMinerModel >> initialize [
 ]
 
 { #category : #accessing }
+MrMinerModel >> newDeprecatedMethods [
+	^ newDeprecatedMethods
+]
+
+{ #category : #accessing }
+MrMinerModel >> newDeprecatedMethods: anObject [
+	newDeprecatedMethods := anObject
+]
+
+{ #category : #accessing }
 MrMinerModel >> newMethods [
 	^ newMethods
 ]
@@ -69,6 +81,16 @@ MrMinerModel >> newVersionCommit [
 { #category : #accessing }
 MrMinerModel >> newVersionCommit: anObject [
 	newVersionCommit := anObject
+]
+
+{ #category : #accessing }
+MrMinerModel >> oldDeprecatedMethods [
+	^ oldDeprecatedMethods
+]
+
+{ #category : #accessing }
+MrMinerModel >> oldDeprecatedMethods: anObject [
+	oldDeprecatedMethods := anObject
 ]
 
 { #category : #accessing }
