@@ -6,10 +6,32 @@ Class {
 		'oldVersionCommit',
 		'newVersionCommit',
 		'oldMethods',
-		'newMethods'
+		'newMethods',
+		'deletedMethods',
+		'addedMethods'
 	],
 	#category : #'MrMiner-Models'
 }
+
+{ #category : #accessing }
+MrMinerModel >> addedMethods [
+	^ addedMethods
+]
+
+{ #category : #accessing }
+MrMinerModel >> addedMethods: anObject [
+	addedMethods := anObject
+]
+
+{ #category : #accessing }
+MrMinerModel >> deletedMethods [
+	^ deletedMethods
+]
+
+{ #category : #accessing }
+MrMinerModel >> deletedMethods: anObject [
+	deletedMethods := anObject
+]
 
 { #category : #accessing }
 MrMinerModel >> newMethods [

@@ -14,8 +14,12 @@ Class {
 		'minCountSelect',
 		'minConfidenceSelect',
 		'mineRulesButton',
-		'oldVersionTree',
-		'newVersionTree',
+		'oldVersionNotebook',
+		'oldVersionAllMethodsTree',
+		'oldVersionDeletedMethodsTree',
+		'newVersionNotebook',
+		'newVersionAllMethodsTree',
+		'newVersionAddedMethodsTree',
 		'proposedDeprecationsTree',
 		'proposedReplacementsList',
 		'proposedActionDescriptionLabel',
@@ -88,11 +92,11 @@ MrMiner class >> defaultSpec [
 				spacing: spacing;
 				add: (SpBoxLayout newVertical
 					add: 'Old version' height: self labelHeight;
-					add: #oldVersionTree;
+					add: #oldVersionNotebook;
 					yourself);
 				add: (SpBoxLayout newVertical
 					add: 'New version' height: self labelHeight;
-					add: #newVersionTree;
+					add: #newVersionNotebook;
 					yourself);
 				add: (SpBoxLayout newVertical
 					add: 'Proposed deprecations' height: self labelHeight;
@@ -219,9 +223,35 @@ MrMiner >> initializePresenters [
 		label: 'Mine rules';
 		yourself.
 		
-	oldVersionTree := self newMethodTree.
-	newVersionTree := self newMethodTree.
-	proposedDeprecationsTree := self newTree.
+	oldVersionAllMethodsTree := self instantiate: MrMethodsTree.	
+	oldVersionDeletedMethodsTree := self instantiate: MrMethodsTree.
+	
+	oldVersionNotebook := self newNotebook
+		addPage: (self newNotebookPage
+			title: 'All';
+			presenterProvider: [ oldVersionAllMethodsTree ];
+			yourself);
+		addPage: (self newNotebookPage
+			title: 'Deleted';
+			presenterProvider: [ oldVersionDeletedMethodsTree ];
+			yourself);
+		yourself.
+		
+	newVersionAllMethodsTree := self instantiate: MrMethodsTree.
+	newVersionAddedMethodsTree := self instantiate: MrMethodsTree.
+	
+	newVersionNotebook := self newNotebook
+		addPage: (self newNotebookPage
+			title: 'All';
+			presenterProvider: [ newVersionAllMethodsTree ];
+			yourself);
+		addPage: (self newNotebookPage
+			title: 'Added';
+			presenterProvider: [ newVersionAddedMethodsTree ];
+			yourself);
+		yourself.
+	
+	proposedDeprecationsTree := self instantiate: MrMethodsTree.
 	proposedReplacementsList := self newList.
 	
 	proposedActionDescriptionLabel := self newLabel.
@@ -253,25 +283,6 @@ MrMiner >> initializeWindow: aWindowPresenter [
 		title: self class defaultTitle;
 		initialExtent: self class preferredExtent;
 		toolbar: self buildToolbar.
-]
-
-{ #category : #initialization }
-MrMiner >> newMethodTree [
-	| tree |
-	
-	tree := self newTree
-		children: [ :each | each children asArray ];
-		display: [ :each | each name ];
-		displayIcon: [ :each | self iconNamed: each iconName ].
-		
-	tree contextMenu: [
-		SpMenuPresenter new 
-			addGroup: [ :group | group 
-				addItem: [ :item | item
-					name: 'Inspect';
-					action: [ tree selectedItem inspect ] ] ] ].
-		
-	^ tree
 ]
 
 { #category : #'as yet unclassified' }
@@ -339,12 +350,34 @@ MrMiner >> onOldVersionSelected: aCommit [
 
 { #category : #'as yet unclassified' }
 MrMiner >> showNewVersion [
-	newVersionTree roots: controller newVersionTree
+	self showNewVersionAllMethods.
+	self showNewVersionAddedMethods.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showNewVersionAddedMethods [
+	newVersionAddedMethodsTree packages: controller addedMethodsTree
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showNewVersionAllMethods [
+	newVersionAllMethodsTree packages: controller newVersionTree
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersion [
-	oldVersionTree roots: controller oldVersionTree
+	self showOldVersionAllMethods.
+	self showOldVersionDeletedMethods.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showOldVersionAllMethods [
+	oldVersionAllMethodsTree packages: controller oldVersionTree
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showOldVersionDeletedMethods [
+	oldVersionDeletedMethodsTree packages: controller deletedMethodsTree
 ]
 
 { #category : #building }

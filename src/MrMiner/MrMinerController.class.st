@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+MrMinerController >> addedMethodsTree [
+	^ self clioMethodsToVersionTrees: model addedMethods
+]
+
+{ #category : #'as yet unclassified' }
 MrMinerController >> candidateCommitsForNewVersion [
 	| commits |
 	commits := self candidateCommitsForOldVersion.
@@ -33,7 +38,7 @@ MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
 	| packages classTree methodTree |
 	
 	packages := aCollectionOfClioMethods collect: [ :method |
-		MrMinerVersionTree new
+		MrMethodTreeModel new
 			name: method packageName;
 			iconName: #package;
 			yourself ].
@@ -41,7 +46,7 @@ MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
 	packages := packages asSet asArray.
 		
 	aCollectionOfClioMethods do: [ :method |
-		classTree := MrMinerVersionTree new
+		classTree := MrMethodTreeModel new
 			name: method className;
 			iconName: #class;
 			yourself.
@@ -51,7 +56,7 @@ MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
 			ifFound: [ :package | package addChild: classTree ] ].
 		
 	aCollectionOfClioMethods do: [ :method |
-		methodTree := MrMinerVersionTreeLeaf new
+		methodTree := MrMethodTreeLeafModel new
 			name: method selector;
 			value: method;
 			iconName: #method;
@@ -67,12 +72,22 @@ MrMinerController >> clioMethodsToVersionTrees: aCollectionOfClioMethods [
 ]
 
 { #category : #'as yet unclassified' }
+MrMinerController >> deletedMethodsTree [
+	^ self clioMethodsToVersionTrees: model deletedMethods
+]
+
+{ #category : #'as yet unclassified' }
 MrMinerController >> getGitHubRepository: aRepositoryName by: anOwnerName [
 	[ ^ IceGitHubAPI new
 		beAnonymous;
 		getRepository: anOwnerName project: aRepositoryName ]
 		on: LGitNoCredentialsProvided
 		do: [ ^ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadAddedMethods [
+	model addedMethods: clio addedMethods asArray.
 ]
 
 { #category : #'as yet unclassified' }
@@ -90,8 +105,15 @@ MrMinerController >> loadChanges [
 		
 	self loadOldVersion.
 	self loadNewVersion.
+	self loadDeletedMethods.
+	self loadAddedMethods.
 	
 	refrain loadMethodChanges.
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadDeletedMethods [
+	model deletedMethods: clio deletedMethods asArray.
 ]
 
 { #category : #'as yet unclassified' }

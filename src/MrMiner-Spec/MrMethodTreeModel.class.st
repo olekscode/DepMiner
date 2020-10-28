@@ -1,16 +1,16 @@
 Class {
-	#name : #MrMinerVersionTree,
+	#name : #MrMethodTreeModel,
 	#superclass : #Object,
 	#instVars : [
 		'iconName',
 		'children',
 		'name'
 	],
-	#category : #'MrMiner-Models'
+	#category : #'MrMiner-Spec-ViewModels'
 }
 
 { #category : #comparing }
-MrMinerVersionTree >> = anObject [
+MrMethodTreeModel >> = anObject [
 	"Answer whether the receiver and anObject represent the same object."
 
 	self == anObject ifTrue: [ ^ true ].
@@ -19,49 +19,59 @@ MrMinerVersionTree >> = anObject [
 ]
 
 { #category : #adding }
-MrMinerVersionTree >> addChild: aTree [
+MrMethodTreeModel >> addChild: aTree [
 	children add: aTree
 ]
 
 { #category : #accessing }
-MrMinerVersionTree >> children [
+MrMethodTreeModel >> children [
 	^ children
 ]
 
 { #category : #comparing }
-MrMinerVersionTree >> hash [
+MrMethodTreeModel >> hash [
 	"Answer an integer value that is related to the identity of the receiver."
 
 	^ name hash
 ]
 
 { #category : #accessing }
-MrMinerVersionTree >> iconName [
+MrMethodTreeModel >> iconName [
 	^ iconName
 ]
 
 { #category : #accessing }
-MrMinerVersionTree >> iconName: anObject [
+MrMethodTreeModel >> iconName: anObject [
 	iconName := anObject
 ]
 
 { #category : #initialization }
-MrMinerVersionTree >> initialize [
+MrMethodTreeModel >> initialize [
 	super initialize.
 	children := Set new.
 ]
 
 { #category : #accessing }
-MrMinerVersionTree >> name [
+MrMethodTreeModel >> name [
 	^ name
 ]
 
 { #category : #accessing }
-MrMinerVersionTree >> name: anObject [
+MrMethodTreeModel >> name: anObject [
 	name := anObject
 ]
 
+{ #category : #private }
+MrMethodTreeModel >> numberOfMethods [
+	^ children inject: 0 into: [ :sum :each | sum + each numberOfMethods ]
+]
+
 { #category : #accessing }
-MrMinerVersionTree >> printOn: aStream [
-	aStream nextPutAll: name
+MrMethodTreeModel >> printOn: aStream [
+	aStream
+		nextPutAll: name;
+		space;
+		nextPut: $(;
+		nextPutAll: self numberOfMethods asString;
+		nextPut: $).
 ]
