@@ -86,8 +86,7 @@ MrMiner class >> defaultSpec [
 					yourself) height: self buttonHeight;
 				yourself);
 			yourself) width: 250;
-		add: (SpBoxLayout newVertical
-			spacing: spacing;
+		add: (SpPanedLayout newVertical
 			add: (SpBoxLayout newHorizontal
 				spacing: spacing;
 				add: (SpBoxLayout newVertical
@@ -106,26 +105,28 @@ MrMiner class >> defaultSpec [
 					add: 'Proposed replacements' height: self labelHeight;
 					add: #proposedReplacementsList;
 					yourself);
-				yourself) height: 200;
-			add: (SpBoxLayout newHorizontal
-				add: #proposedActionDescriptionLabel;
-				add: #whyButton width: self buttonWidth;
-				yourself) height: self buttonHeight;
-			add: (SpBoxLayout newHorizontal
-				spacing: spacing;
-				add: (SpBoxLayout newVertical
-					add: 'Old code' height: self labelHeight;
-					add: #oldCode;
-					yourself);
-				add: (SpBoxLayout newVertical
-					add: 'New code' height: self labelHeight;
-					add: #newCode;
-					yourself);
 				yourself);
-			add: (SpBoxLayout newHorizontal
-				add: '';
-				add: #applyButton width: self buttonWidth;
-				yourself) height: self buttonHeight;
+			add: (SpBoxLayout newVertical
+				add: (SpBoxLayout newHorizontal
+					add: #proposedActionDescriptionLabel;
+					add: #whyButton width: self buttonWidth;
+					yourself) height: self buttonHeight;
+				add: (SpBoxLayout newHorizontal
+					spacing: spacing;
+					add: (SpBoxLayout newVertical
+						add: 'Old code' height: self labelHeight;
+						add: #oldCode;
+						yourself);
+					add: (SpBoxLayout newVertical
+						add: 'New code' height: self labelHeight;
+						add: #newCode;
+						yourself);
+					yourself);
+				add: (SpBoxLayout newHorizontal
+					add: '';
+					add: #applyButton width: self buttonWidth;
+					yourself) height: self buttonHeight;
+				yourself);
 			yourself);
 		yourself.
 ]

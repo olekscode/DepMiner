@@ -108,7 +108,7 @@ MrMinerController >> loadChanges [
 	self loadDeletedMethods.
 	self loadAddedMethods.
 	
-	refrain loadMethodChanges.
+	"refrain loadMethodChanges."
 ]
 
 { #category : #'as yet unclassified' }
