@@ -12,7 +12,8 @@ Class {
 		'addedMethods',
 		'oldDeprecatedMethods',
 		'newDeprecatedMethods',
-		'unchangedDeprecatedMethods'
+		'unchangedDeprecatedMethods',
+		'rules'
 	],
 	#category : #'MrMiner-Models'
 }
@@ -121,6 +122,16 @@ MrMinerModel >> repository [
 { #category : #accessing }
 MrMinerModel >> repository: anObject [
 	repository := anObject
+]
+
+{ #category : #accessing }
+MrMinerModel >> rules [
+	^ rules
+]
+
+{ #category : #accessing }
+MrMinerModel >> rules: anObject [
+	rules := anObject
 ]
 
 { #category : #accessing }

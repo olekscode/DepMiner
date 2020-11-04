@@ -185,6 +185,7 @@ MrMiner >> connectPresenters [
 			openWithSpec ].
 		
 	loadChangesButton action: [ self onLoadChangesClicked ].
+	mineRulesButton action: [ self onMineRulesClicked ].
 ]
 
 { #category : #initialization }
@@ -360,6 +361,16 @@ MrMiner >> onLoadProjectClicked [
 	projectName := projectNameInput text.
 	
 	controller loadProject: projectName by: ownerName.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> onMineRulesClicked [
+	| minCount minConfidence |
+	
+	minCount := minCountSelect number.
+	minConfidence := minConfidenceSelect number.
+	
+	controller mineRulesWithMinCount: minCount minConfidence:  minConfidence.
 ]
 
 { #category : #'as yet unclassified' }

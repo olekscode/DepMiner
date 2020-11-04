@@ -73,7 +73,7 @@ MrMinerController >> loadChanges [
 	self loadNewDeprecatedMethods.
 	self loadUnchangedDeprecatedMethods.
 	
-	"refrain loadMethodChanges."
+	refrain loadMethodChanges.
 ]
 
 { #category : #'as yet unclassified' }
@@ -137,6 +137,14 @@ MrMinerController >> mineRules [
 		
 	refrain entityCollector: methodCallCollector.
 	^ refrain mineRepetitiveChanges.
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfidence [
+	refrain minNumberOfRepetitions: aMinCount.
+	refrain mineRules.
+	
+	model rules: (refrain rules select: [ :rule | rule confidence >= aMinConfidence ]).
 ]
 
 { #category : #accessing }
