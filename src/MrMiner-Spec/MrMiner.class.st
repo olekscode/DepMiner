@@ -2,6 +2,7 @@ Class {
 	#name : #MrMiner,
 	#superclass : #SpPresenter,
 	#instVars : [
+		'settings',
 		'model',
 		'controller',
 		'ownerNameInput',
@@ -192,6 +193,7 @@ MrMiner >> connectPresenters [
 MrMiner >> initialize [
 	super initialize.
 	
+	settings := DepSettings new.
 	model := MrMinerModel new.
 	
 	controller := MrMinerController new
@@ -350,7 +352,7 @@ MrMiner >> onLoadChangesClicked [
 	
 	self showOldVersion.
 	self showNewVersion.
-	self showProposedChanges.
+	self showProposedMethodsToDelete.
 ]
 
 { #category : #'as yet unclassified' }
@@ -371,6 +373,7 @@ MrMiner >> onMineRulesClicked [
 	minConfidence := minConfidenceSelect number.
 	
 	controller mineRulesWithMinCount: minCount minConfidence:  minConfidence.
+	self showProposedMethodsToDeprecate.
 ]
 
 { #category : #'as yet unclassified' }
@@ -430,13 +433,13 @@ MrMiner >> showOldVersionDeprecatedMethods [
 ]
 
 { #category : #'as yet unclassified' }
-MrMiner >> showProposedChanges [
-	self showProposedMethodsToDelete.
+MrMiner >> showProposedMethodsToDelete [
+	proposedMethodsToRemoveTree methods: model unchangedDeprecatedMethods
 ]
 
 { #category : #'as yet unclassified' }
-MrMiner >> showProposedMethodsToDelete [
-	proposedMethodsToRemoveTree methods: model unchangedDeprecatedMethods
+MrMiner >> showProposedMethodsToDeprecate [
+	proposedDeprecationsTree methods: model methodsToDeprecate.
 ]
 
 { #category : #building }

@@ -121,11 +121,6 @@ MrMinerController >> loadUnchangedDeprecatedMethods [
 	model unchangedDeprecatedMethods: (clio unchangedMethods select: [ :method | method isDeprecated ]) asArray.
 ]
 
-{ #category : #accessing }
-MrMinerController >> minNumberOfRepetitions: aNumber [
-	refrain minNumberOfRepetitions: aNumber
-]
-
 { #category : #'as yet unclassified' }
 MrMinerController >> mineRules [
 	| methodCallCollector |

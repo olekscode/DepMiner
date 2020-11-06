@@ -13,7 +13,8 @@ Class {
 		'oldDeprecatedMethods',
 		'newDeprecatedMethods',
 		'unchangedDeprecatedMethods',
-		'rules'
+		'rules',
+		'methodsToDeprecate'
 	],
 	#category : #'MrMiner-Models'
 }
