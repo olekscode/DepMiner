@@ -2,7 +2,10 @@ Class {
 	#name : #MrMinerController,
 	#superclass : #Object,
 	#instVars : [
+		'settings',
+		'projectHistory',
 		'model',
+		'repository',
 		'refrain',
 		'clio'
 	],
@@ -12,30 +15,30 @@ Class {
 { #category : #'as yet unclassified' }
 MrMinerController >> candidateCommitsForNewVersion [
 	| commits |
-	commits := model allCommits.
 	
-	model oldVersionCommit ifNotNil: [ 
-		commits := commits select: [ :commit |
-			commit date > model oldVersionCommit date or: [ 
-				commit date = model oldVersionCommit date and: [ 
-					commit time > model oldVersionCommit time ] ] ] ].
+	commits := projectHistory commits values.
 	
+	projectHistory commits
+		at: settings oldCommitSha
+		ifPresent: [ :oldCommit |
+			commits := commits select: [ :commit |
+				commit date > model oldVersionCommit date or: [ 
+					commit date = model oldVersionCommit date and: [ 
+						commit time > model oldVersionCommit time ] ] ] ].
 	^ commits
 ]
 
 { #category : #'as yet unclassified' }
 MrMinerController >> candidateCommitsForOldVersion [
-	model commitDictionary removeAll.
+	^ projectHistory commits values
+]
 
-	model repository branch commits do: [ :iceCommit |
-		model commitDictionary at: iceCommit id put: iceCommit asRefrainCommit ].
+{ #category : #'as yet unclassified' }
+MrMinerController >> extractAllCommitsFromRepository [
+	projectHistory commits removeAll.
 	
-	model repository tags do: [ :tag |
-		model commitDictionary
-			at: tag commit id
-			ifPresent: [ :commit | commit tags add: tag name ] ].
-	
-	^ model allCommits
+	refrain commits do: [ :commit |
+		projectHistory at: commit sha put: commit ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -55,15 +58,16 @@ MrMinerController >> loadAddedMethods [
 { #category : #'as yet unclassified' }
 MrMinerController >> loadChanges [
 	refrain := Refrain
-		repositoryName: model repository name
-		branchName: model repository branch name
-		firstCommit: model oldVersionCommit sha
-		lastCommit: model newVersionCommit sha.
+		repository: repository
+		firstCommit: settings oldCommitSha
+		lastCommit: settings newCommitSha.
 		
 	clio := Clio
-		for: model repository name
-		between: model oldVersionCommit sha
-		and: model newVersionCommit sha.
+		forRepository: repository
+		between: settings oldCommitSha
+		and: settings newCommitSha.
+		
+	projectHistory commits: refrain commitDictionary.
 		
 	self loadOldVersion.
 	self loadNewVersion.
@@ -103,7 +107,7 @@ MrMinerController >> loadOldVersion [
 
 { #category : #'as yet unclassified' }
 MrMinerController >> loadProject: aProjectName by: anOwnerName [
-	| repository |
+	"Load a project from GitHub or select the existing one"
 	
 	repository := IceRepository registry
 		detect: [ :repo |
@@ -112,8 +116,6 @@ MrMinerController >> loadProject: aProjectName by: anOwnerName [
 					repo name = aProjectName ] ] ]
 		ifFound: [ :repo | repo ]
 		ifNone: [ self getGitHubRepository: aProjectName by: anOwnerName ].
-		
-	model repository: repository.
 ]
 
 { #category : #'as yet unclassified' }
@@ -145,4 +147,14 @@ MrMinerController >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfide
 { #category : #accessing }
 MrMinerController >> model: anObject [
 	model := anObject
+]
+
+{ #category : #accessing }
+MrMinerController >> projectHistory: anObject [
+	projectHistory := anObject
+]
+
+{ #category : #accessing }
+MrMinerController >> settings: anObject [
+	settings := anObject
 ]

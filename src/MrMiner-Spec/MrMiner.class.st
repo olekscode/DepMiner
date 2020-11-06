@@ -3,6 +3,7 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'settings',
+		'projectHistory',
 		'model',
 		'controller',
 		'ownerNameInput',
@@ -194,9 +195,13 @@ MrMiner >> initialize [
 	super initialize.
 	
 	settings := DepSettings new.
+	projectHistory := DepProjectHistory new.
+	
 	model := MrMinerModel new.
 	
 	controller := MrMinerController new
+		settings: settings;
+		projectHistory: projectHistory;
 		model: model;
 		yourself.
 ]
@@ -315,7 +320,7 @@ MrMiner >> initializeWindow: aWindowPresenter [
 
 { #category : #'as yet unclassified' }
 MrMiner >> onLoadChangesClicked [
-	| oldVersionString newVersionString |
+	| oldVersionString newVersionString oldCommit newCommit |
 	
 	oldVersionString := oldVersionInput text.
 	newVersionString := newVersionInput text.
@@ -327,26 +332,21 @@ MrMiner >> onLoadChangesClicked [
 	newVersionString ifEmpty: [ 
 		self inform: 'Please select the new version'.
 		^ self ].
-
-	(model oldVersionCommit isNotNil and: [ 
-		 model oldVersionCommit matches: oldVersionString ]) 
-		ifFalse: [ 
-			controller candidateCommitsForOldVersion
-				detect: [ :commit | commit matches: oldVersionString ]
-				ifFound: [ :commit | model oldVersionCommit: commit ]
-				ifNone: [ 
-					self inform: 'Old version with this commit SHA or tag was not found'.
-					^ self ] ].
-				
-	(model newVersionCommit isNotNil and: [ 
-		 model newVersionCommit matches: newVersionString ]) 
-		ifFalse: [ 
-			controller candidateCommitsForNewVersion
-				detect: [ :commit | commit matches: newVersionString ]
-				ifFound: [ :commit | model newVersionCommit: commit ]
-				ifNone: [ 
-					self inform: 'New version with this commit SHA or tag was not found'.
-					^ self ] ].
+	
+	oldCommit := projectHistory
+		commitThatMatches: oldVersionString
+		ifNone: [
+			self inform: 'Old version with this commit SHA or tag was not found'.
+			^ self ].
+		
+	newCommit := projectHistory
+		commitThatMatches: newVersionString
+		ifNone: [
+			self inform: 'New version with this commit SHA or tag was not found'.
+			^ self ].
+		
+	settings oldCommitSha: oldCommit sha.
+	settings newCommitSha: newCommit sha.
 				
 	controller loadChanges.
 	
