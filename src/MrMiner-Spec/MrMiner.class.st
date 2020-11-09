@@ -177,6 +177,7 @@ MrMiner >> connectPresenters [
 	loadProjectButton action: [ self onLoadProjectClicked ].
 	
 	oldVersionInput action: [
+		self haltOnce.
 		(MrCommitSelector on: controller candidateCommitsForOldVersion)
 			callback: [ :commit | self onOldVersionSelected: commit ];
 			openWithSpec ].
@@ -357,12 +358,10 @@ MrMiner >> onLoadChangesClicked [
 
 { #category : #'as yet unclassified' }
 MrMiner >> onLoadProjectClicked [
-	| ownerName projectName |
+	settings ownerName: ownerNameInput text.
+	settings projectName: projectNameInput text.
 	
-	ownerName := ownerNameInput text.
-	projectName := projectNameInput text.
-	
-	controller loadProject: projectName by: ownerName.
+	controller loadProject.
 ]
 
 { #category : #'as yet unclassified' }

@@ -106,16 +106,18 @@ MrMinerController >> loadOldVersion [
 ]
 
 { #category : #'as yet unclassified' }
-MrMinerController >> loadProject: aProjectName by: anOwnerName [
+MrMinerController >> loadProject [
 	"Load a project from GitHub or select the existing one"
 	
 	repository := IceRepository registry
 		detect: [ :repo |
 			repo isValid and: [
-				repo location path parent basename = anOwnerName and: [
-					repo name = aProjectName ] ] ]
+				repo location path parent basename = settings ownerName and: [
+					repo name = settings projectName ] ] ]
 		ifFound: [ :repo | repo ]
-		ifNone: [ self getGitHubRepository: aProjectName by: anOwnerName ].
+		ifNone: [ self getGitHubRepository: settings projectName by: settings ownerName ].
+		
+	
 ]
 
 { #category : #'as yet unclassified' }
