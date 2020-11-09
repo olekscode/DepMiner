@@ -35,19 +35,18 @@ MrMinerController >> candidateCommitsForOldVersion [
 
 { #category : #'as yet unclassified' }
 MrMinerController >> extractAllCommitsFromRepository [
+	| iceCommits |
+	
+	iceCommits := (repository allBranches flatCollect: [ :branch | branch commits ]) asSet.
 	projectHistory commits removeAll.
 	
-	refrain commits do: [ :commit |
-		projectHistory at: commit sha put: commit ].
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> getGitHubRepository: aRepositoryName by: anOwnerName [
-	[ ^ IceGitHubAPI new
-		beAnonymous;
-		getRepository: anOwnerName project: aRepositoryName ]
-		on: LGitNoCredentialsProvided
-		do: [ ^ nil ]
+	iceCommits do: [ :iceCommit |
+		projectHistory commits at: iceCommit id put: iceCommit asDepCommit ].
+	
+	repository tags do: [ :tag |
+		projectHistory commits
+			at: tag commit id
+			ifPresent: [ :commit | commit tags add: tag name ] ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -67,8 +66,6 @@ MrMinerController >> loadChanges [
 		between: settings oldCommitSha
 		and: settings newCommitSha.
 		
-	projectHistory commits: refrain commitDictionary.
-		
 	self loadOldVersion.
 	self loadNewVersion.
 	self loadDeletedMethods.
@@ -83,6 +80,15 @@ MrMinerController >> loadChanges [
 { #category : #'as yet unclassified' }
 MrMinerController >> loadDeletedMethods [
 	model deletedMethods: clio deletedMethods asArray.
+]
+
+{ #category : #'as yet unclassified' }
+MrMinerController >> loadGitHubRepository [
+	[ ^ IceGitHubAPI new
+		beAnonymous;
+		getRepository: settings ownerName project: settings projectName ]
+		on: LGitNoCredentialsProvided
+		do: [ ^ nil ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -115,8 +121,9 @@ MrMinerController >> loadProject [
 				repo location path parent basename = settings ownerName and: [
 					repo name = settings projectName ] ] ]
 		ifFound: [ :repo | repo ]
-		ifNone: [ self getGitHubRepository: settings projectName by: settings ownerName ].
+		ifNone: [ self loadGitHubRepository ].
 		
+	self extractAllCommitsFromRepository.
 	
 ]
 
