@@ -177,7 +177,6 @@ MrMiner >> connectPresenters [
 	loadProjectButton action: [ self onLoadProjectClicked ].
 	
 	oldVersionInput action: [
-		self haltOnce.
 		(MrCommitSelector on: controller candidateCommitsForOldVersion)
 			callback: [ :commit | self onOldVersionSelected: commit ];
 			openWithSpec ].
@@ -378,13 +377,13 @@ MrMiner >> onMineRulesClicked [
 { #category : #'as yet unclassified' }
 MrMiner >> onNewVersionSelected: aCommit [
 	newVersionInput text: aCommit shortSha.
-	model newVersionCommit: aCommit.
+	settings newCommitSha: aCommit sha.
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> onOldVersionSelected: aCommit [
 	oldVersionInput text: aCommit shortSha.
-	model oldVersionCommit: aCommit.
+	settings oldCommitSha: aCommit sha.
 ]
 
 { #category : #'as yet unclassified' }

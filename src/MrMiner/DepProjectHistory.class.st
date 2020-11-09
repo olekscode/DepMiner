@@ -2,40 +2,37 @@ Class {
 	#name : #DepProjectHistory,
 	#superclass : #Object,
 	#instVars : [
-		'commits',
-		'methods'
+		'commitDictionary',
+		'methodDictionary'
 	],
 	#category : #'MrMiner-Models'
 }
+
+{ #category : #accessing }
+DepProjectHistory >> commitDictionary [
+	^ commitDictionary
+]
 
 { #category : #enumerating }
 DepProjectHistory >> commitThatMatches: aShaShortShaOrTag ifNone: anAbsentBlock [
 	"Return a commit that has a SHA, short SHA, or a tag that matches the given string. If none, evaluate the given block"
 	
-	^ commits at: aShaShortShaOrTag
-		ifAbsent: [ commits values
+	^ commitDictionary at: aShaShortShaOrTag
+		ifAbsent: [ commitDictionary values
 			detect: [ :commit | commit matches: aShaShortShaOrTag ]
 			ifNone: [ anAbsentBlock value ] ]
-]
-
-{ #category : #accessing }
-DepProjectHistory >> commits [
-	^ commits
-]
-
-{ #category : #accessing }
-DepProjectHistory >> commits: aCommitDictionary [
-	commits := aCommitDictionary
 ]
 
 { #category : #initialization }
 DepProjectHistory >> initialize [
 	super initialize.
-	commits := Dictionary new.
-	methods := Dictionary new.
+	commitDictionary := Dictionary new.
+	methodDictionary := Dictionary new.
 ]
 
 { #category : #accessing }
-DepProjectHistory >> methods [
-	^ methods
+DepProjectHistory >> sortedCommits [
+	^ commitDictionary values sorted: [ :a :b |
+		a date > b date or: [
+			a date = b date and: [ a time > b time ] ] ]
 ]

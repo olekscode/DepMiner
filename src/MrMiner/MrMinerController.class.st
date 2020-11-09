@@ -16,21 +16,21 @@ Class {
 MrMinerController >> candidateCommitsForNewVersion [
 	| commits |
 	
-	commits := projectHistory commits values.
+	commits := projectHistory sortedCommits.
 	
-	projectHistory commits
+	projectHistory commitDictionary
 		at: settings oldCommitSha
 		ifPresent: [ :oldCommit |
 			commits := commits select: [ :commit |
-				commit date > model oldVersionCommit date or: [ 
-					commit date = model oldVersionCommit date and: [ 
-						commit time > model oldVersionCommit time ] ] ] ].
+				commit date > oldCommit date or: [ 
+					commit date = oldCommit date and: [ 
+						commit time > oldCommit time ] ] ] ].
 	^ commits
 ]
 
 { #category : #'as yet unclassified' }
 MrMinerController >> candidateCommitsForOldVersion [
-	^ projectHistory commits values
+	^ projectHistory sortedCommits
 ]
 
 { #category : #'as yet unclassified' }
@@ -38,13 +38,13 @@ MrMinerController >> extractAllCommitsFromRepository [
 	| iceCommits |
 	
 	iceCommits := (repository allBranches flatCollect: [ :branch | branch commits ]) asSet.
-	projectHistory commits removeAll.
+	projectHistory commitDictionary removeAll.
 	
 	iceCommits do: [ :iceCommit |
-		projectHistory commits at: iceCommit id put: iceCommit asDepCommit ].
+		projectHistory commitDictionary at: iceCommit id put: iceCommit asDepCommit ].
 	
 	repository tags do: [ :tag |
-		projectHistory commits
+		projectHistory commitDictionary
 			at: tag commit id
 			ifPresent: [ :commit | commit tags add: tag name ] ].
 ]
