@@ -17,6 +17,11 @@ MrMethodTreeLeafModel >> printOn: aStream [
 	aStream nextPutAll: name
 ]
 
+{ #category : #'as yet unclassified' }
+MrMethodTreeLeafModel >> receiveClickActionFrom: aView [
+	aView onMethodClicked: self valueToInspect
+]
+
 { #category : #evaluating }
 MrMethodTreeLeafModel >> value [
 	^ value

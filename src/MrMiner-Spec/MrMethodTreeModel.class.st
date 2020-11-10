@@ -77,6 +77,11 @@ MrMethodTreeModel >> printOn: aStream [
 ]
 
 { #category : #'as yet unclassified' }
+MrMethodTreeModel >> receiveClickActionFrom: aView [
+	aView onPackageOrClassClicked: self valueToInspect
+]
+
+{ #category : #'as yet unclassified' }
 MrMethodTreeModel >> valueToInspect [
 	^ children collect: [ :child | child valueToInspect ]
 ]

@@ -182,6 +182,18 @@ MrMiner >> connectPresenters [
 		
 	loadChangesButton action: [ self onLoadChangesClicked ].
 	mineRulesButton action: [ self onMineRulesClicked ].
+	
+	{
+		oldVersionAllMethodsTree .
+		oldVersionDeletedMethodsTree .
+		oldVersionDeprecatedMethodsTree .
+		newVersionAllMethodsTree .
+		newVersionAddedMethodsTree .
+		newVersionDeprecatedMethodsTree
+	} do: [ :tree | tree actionOnMethodClicked: [ :method | self onMethodClicked: method ] ].
+	
+	proposedDeprecationsTree actionOnMethodClicked: [ :method | self onProposedDeprecationClicked: method ].
+	
 ]
 
 { #category : #initialization }
@@ -264,15 +276,11 @@ MrMiner >> initializePresenters [
 			yourself);
 		yourself.
 	
-	staleDeprecationsTree := self instantiate: MrMethodsTree.
 	proposedDeprecationsTree := self instantiate: MrMethodsTree.
 	missingRulesTree := self instantiate: MrMethodsTree.
+	staleDeprecationsTree := self instantiate: MrMethodsTree.
 	
 	recommendationsNotebook := self newNotebook
-		addPage: (self newNotebookPage
-			title: 'Stale Deprecations';
-			presenterProvider: [ staleDeprecationsTree ];
-			yourself);
 		addPage: (self newNotebookPage
 			title: 'Proposed Deprecations';
 			presenterProvider: [ proposedDeprecationsTree ];
@@ -280,6 +288,10 @@ MrMiner >> initializePresenters [
 		addPage: (self newNotebookPage
 			title: 'Missing Rules';
 			presenterProvider: [ missingRulesTree ];
+			yourself);
+		addPage: (self newNotebookPage
+			title: 'Stale Deprecations';
+			presenterProvider: [ staleDeprecationsTree ];
 			yourself);
 		yourself.
 	
@@ -339,10 +351,6 @@ MrMiner >> onLoadChangesClicked [
 	
 	self showOldVersion.
 	self showNewVersion.
-	
-	self showStaleDeprecations.
-	self showProposedDeprecations.
-	self showMissingRules.
 ]
 
 { #category : #'as yet unclassified' }
@@ -353,6 +361,11 @@ MrMiner >> onLoadProjectClicked [
 	controller loadProject.
 ]
 
+{ #category : #events }
+MrMiner >> onMethodClicked: aMethod [
+	generatedCode text: aMethod sourceCode
+]
+
 { #category : #'as yet unclassified' }
 MrMiner >> onMineRulesClicked [
 	| minCount minConfidence |
@@ -360,7 +373,8 @@ MrMiner >> onMineRulesClicked [
 	minCount := minCountSelect number.
 	minConfidence := minConfidenceSelect number.
 	
-	controller mineRulesWithMinCount: minCount minConfidence:  minConfidence.
+	controller mineRulesWithMinCount: minCount minConfidence: minConfidence.
+	self showRecommendations.
 ]
 
 { #category : #'as yet unclassified' }
@@ -373,6 +387,20 @@ MrMiner >> onNewVersionSelected: aCommit [
 MrMiner >> onOldVersionSelected: aCommit [
 	oldVersionInput text: aCommit shortSha.
 	settings oldCommitSha: aCommit sha.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> onProposedDeprecationClicked: aMethod [
+	| applicableRules |
+	
+	applicableRules := recommendations rules select: [ :rule |
+		rule key size = 1 and: [ rule key anyOne = aMethod selector ] ].
+	
+	replacementsList
+		items: applicableRules;
+		display: [ :rule | ', ' join: rule value ].
+		
+	generatedCode text: aMethod sourceCode.
 ]
 
 { #category : #'as yet unclassified' }
@@ -433,7 +461,22 @@ MrMiner >> showOldVersionDeprecatedMethods [
 { #category : #'as yet unclassified' }
 MrMiner >> showProposedDeprecations [
 	proposedDeprecationsTree methods:
-		(projectHistory sortedMethods select: [ :method | method wasDeleted and: [ method isDeprecated not ] ]).
+		(projectHistory sortedMethods select: [ :method |
+			method wasDeleted and: [ method isDeprecated not and: [ recommendations rules anySatisfy: [ :rule | rule key includes: method selector ] ] ] ]).
+	
+	(projectHistory sortedMethods select: [ :method |
+			method wasDeleted and: [ method isDeprecated not ] ]) inspect.
+		
+	recommendations rules inspect.
+	
+	self haltOnce.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showRecommendations [
+	self showStaleDeprecations.
+	self showProposedDeprecations.
+	self showMissingRules.
 ]
 
 { #category : #'as yet unclassified' }
