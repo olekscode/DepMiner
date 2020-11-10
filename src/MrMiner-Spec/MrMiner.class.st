@@ -24,15 +24,13 @@ Class {
 		'newVersionAllMethodsTree',
 		'newVersionAddedMethodsTree',
 		'newVersionDeprecatedMethodsTree',
-		'proposedChangesNotebook',
-		'proposedMethodsToRemoveTree',
+		'recommendationsNotebook',
+		'staleDeprecationsTree',
 		'proposedDeprecationsTree',
-		'proposedReplacementsList',
-		'proposedActionDescriptionLabel',
-		'whyButton',
-		'oldCode',
-		'newCode',
-		'applyButton'
+		'missingRulesTree',
+		'replacementsList',
+		'generatedCode',
+		'generateButton'
 	],
 	#category : #'MrMiner-Spec-NewViews'
 }
@@ -105,29 +103,25 @@ MrMiner class >> defaultSpec [
 					add: #newVersionNotebook;
 					yourself);
 				add: (SpBoxLayout newVertical
-					add: 'Proposed changes' height: self labelHeight;
-					add: #proposedChangesNotebook;
+					add: 'Recommendations' height: self labelHeight;
+					add: #recommendationsNotebook;
 					yourself);
 				yourself);
 			add: (SpBoxLayout newVertical
 				add: (SpBoxLayout newHorizontal
-					add: #proposedActionDescriptionLabel;
-					add: #whyButton width: self buttonWidth;
-					yourself) height: self buttonHeight;
-				add: (SpBoxLayout newHorizontal
 					spacing: spacing;
 					add: (SpBoxLayout newVertical
-						add: 'Old code' height: self labelHeight;
-						add: #oldCode;
-						yourself);
+						add: 'Replacements' height: self labelHeight;
+						add: #replacementsList;
+						yourself) width: 250;
 					add: (SpBoxLayout newVertical
-						add: 'New code' height: self labelHeight;
-						add: #newCode;
+						add: 'Generated code' height: self labelHeight;
+						add: #generatedCode;
 						yourself);
 					yourself);
 				add: (SpBoxLayout newHorizontal
 					add: '';
-					add: #applyButton width: self buttonWidth;
+					add: #generateButton width: self buttonWidth;
 					yourself) height: self buttonHeight;
 				yourself);
 			yourself);
@@ -158,7 +152,7 @@ MrMiner class >> open [
 
 { #category : #accessing }
 MrMiner class >> preferredExtent [
-	^ 1000@600
+	^ 1300@700
 ]
 
 { #category : #'private builder' }
@@ -270,40 +264,34 @@ MrMiner >> initializePresenters [
 			yourself);
 		yourself.
 	
-	proposedMethodsToRemoveTree := self instantiate: MrMethodsTree.
+	staleDeprecationsTree := self instantiate: MrMethodsTree.
 	proposedDeprecationsTree := self instantiate: MrMethodsTree.
+	missingRulesTree := self instantiate: MrMethodsTree.
 	
-	proposedChangesNotebook := self newNotebook
+	recommendationsNotebook := self newNotebook
 		addPage: (self newNotebookPage
-			title: 'To Delete';
-			presenterProvider: [ proposedMethodsToRemoveTree ];
+			title: 'Stale Deprecations';
+			presenterProvider: [ staleDeprecationsTree ];
 			yourself);
 		addPage: (self newNotebookPage
-			title: 'To Deprecate';
+			title: 'Proposed Deprecations';
 			presenterProvider: [ proposedDeprecationsTree ];
 			yourself);
+		addPage: (self newNotebookPage
+			title: 'Missing Rules';
+			presenterProvider: [ missingRulesTree ];
+			yourself);
 		yourself.
 	
-	proposedReplacementsList := self newList.
+	replacementsList := self newList.
 	
-	proposedActionDescriptionLabel := self newLabel.
-	
-	whyButton := self newButton
-		icon: (self iconNamed: #help);
-		label: 'Why?';
-		yourself.
-	
-	oldCode := self newCode
+	generatedCode := self newCode
 		withoutLineNumbers;
 		beNotEditable;
 		yourself.
-		
-	newCode := self newCode
-		withoutLineNumbers;
-		yourself.
 	
-	applyButton := self newButton
-		label: 'Apply';
+	generateButton := self newButton
+		label: 'Generate';
 		yourself.
 ]
 
@@ -351,7 +339,10 @@ MrMiner >> onLoadChangesClicked [
 	
 	self showOldVersion.
 	self showNewVersion.
-	self showProposedMethodsToDelete.
+	
+	self showStaleDeprecations.
+	self showProposedDeprecations.
+	self showMissingRules.
 ]
 
 { #category : #'as yet unclassified' }
@@ -370,7 +361,6 @@ MrMiner >> onMineRulesClicked [
 	minConfidence := minConfidenceSelect number.
 	
 	controller mineRulesWithMinCount: minCount minConfidence:  minConfidence.
-	self showProposedMethodsToDeprecate.
 ]
 
 { #category : #'as yet unclassified' }
@@ -383,6 +373,11 @@ MrMiner >> onNewVersionSelected: aCommit [
 MrMiner >> onOldVersionSelected: aCommit [
 	oldVersionInput text: aCommit shortSha.
 	settings oldCommitSha: aCommit sha.
+]
+
+{ #category : #'as yet unclassified' }
+MrMiner >> showMissingRules [
+	proposedDeprecationsTree methods: (projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated and: [ method hasTransformationRule not ] ] ]).
 ]
 
 { #category : #'as yet unclassified' }
@@ -436,14 +431,15 @@ MrMiner >> showOldVersionDeprecatedMethods [
 ]
 
 { #category : #'as yet unclassified' }
-MrMiner >> showProposedMethodsToDelete [
-	proposedMethodsToRemoveTree methods:
-		(projectHistory sortedMethods select: [ :method | method isDeprecated and: [ method wasUnchanged ] ])
+MrMiner >> showProposedDeprecations [
+	proposedDeprecationsTree methods:
+		(projectHistory sortedMethods select: [ :method | method wasDeleted and: [ method isDeprecated not ] ]).
 ]
 
 { #category : #'as yet unclassified' }
-MrMiner >> showProposedMethodsToDeprecate [
-	"proposedDeprecationsTree methods: model methodsToDeprecate."
+MrMiner >> showStaleDeprecations [
+	staleDeprecationsTree methods:
+		(projectHistory sortedMethods select: [ :method | method isDeprecated and: [ method wasUnchanged ] ])
 ]
 
 { #category : #building }
