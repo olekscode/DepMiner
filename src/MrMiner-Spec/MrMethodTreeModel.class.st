@@ -75,3 +75,8 @@ MrMethodTreeModel >> printOn: aStream [
 		nextPutAll: self numberOfMethods asString;
 		nextPut: $).
 ]
+
+{ #category : #'as yet unclassified' }
+MrMethodTreeModel >> valueToInspect [
+	^ children collect: [ :child | child valueToInspect ]
+]

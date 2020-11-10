@@ -18,7 +18,7 @@ MrMethodsTree >> initialize [
 			addGroup: [ :group | group 
 				addItem: [ :item | item
 					name: 'Inspect';
-					action: [ self selectedItem inspect ] ] ] ].
+					action: [ self selectedItem valueToInspect inspect ] ] ] ].
 ]
 
 { #category : #accessing }

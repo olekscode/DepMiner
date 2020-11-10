@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'settings',
 		'projectHistory',
-		'model',
+		'recommendations',
 		'controller',
 		'ownerNameInput',
 		'projectNameInput',
@@ -196,13 +196,12 @@ MrMiner >> initialize [
 	
 	settings := DepSettings new.
 	projectHistory := DepProjectHistory new.
-	
-	model := MrMinerModel new.
+	recommendations := DepRecommendations new.
 	
 	controller := MrMinerController new
 		settings: settings;
 		projectHistory: projectHistory;
-		model: model;
+		recommendations: recommendations;
 		yourself.
 ]
 
@@ -395,17 +394,20 @@ MrMiner >> showNewVersion [
 
 { #category : #'as yet unclassified' }
 MrMiner >> showNewVersionAddedMethods [
-	newVersionAddedMethodsTree methods: model addedMethods
+	newVersionAddedMethodsTree methods:
+		(projectHistory sortedMethods select: [ :method | method wasAdded ]).
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showNewVersionAllMethods [
-	newVersionAllMethodsTree methods: model newMethods
+	newVersionAllMethodsTree methods:
+		(projectHistory sortedMethods select: [ :method | method isInNewVersion ])
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showNewVersionDeprecatedMethods [
-	newVersionDeprecatedMethodsTree methods: model newDeprecatedMethods
+	newVersionDeprecatedMethodsTree methods:
+		(projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated ] ])
 ]
 
 { #category : #'as yet unclassified' }
@@ -417,27 +419,31 @@ MrMiner >> showOldVersion [
 
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersionAllMethods [
-	oldVersionAllMethodsTree methods: model oldMethods
+	oldVersionAllMethodsTree methods:
+		(projectHistory sortedMethods select: [ :method | method wasInOldVersion ])
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersionDeletedMethods [
-	oldVersionDeletedMethodsTree methods: model deletedMethods
+	oldVersionDeletedMethodsTree methods:
+		(projectHistory sortedMethods select: [ :method | method wasDeleted ])
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showOldVersionDeprecatedMethods [
-	oldVersionDeprecatedMethodsTree methods: model oldDeprecatedMethods
+	oldVersionDeprecatedMethodsTree methods:
+		(projectHistory sortedMethods select: [ :method | method wasInOldVersion and: [ method wasDeprecatedInOldVersion ] ])
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showProposedMethodsToDelete [
-	proposedMethodsToRemoveTree methods: model unchangedDeprecatedMethods
+	proposedMethodsToRemoveTree methods:
+		(projectHistory sortedMethods select: [ :method | method isDeprecated and: [ method wasUnchanged ] ])
 ]
 
 { #category : #'as yet unclassified' }
 MrMiner >> showProposedMethodsToDeprecate [
-	proposedDeprecationsTree methods: model methodsToDeprecate.
+	"proposedDeprecationsTree methods: model methodsToDeprecate."
 ]
 
 { #category : #building }

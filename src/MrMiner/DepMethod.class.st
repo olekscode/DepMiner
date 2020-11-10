@@ -1,56 +1,16 @@
 Class {
 	#name : #DepMethod,
-	#superclass : #Object,
+	#superclass : #ClioMethod,
 	#instVars : [
-		'className',
-		'selector',
-		'sourceCode',
-		'ast',
-		'isDeprecated',
-		'wasAdded',
-		'wasDeleted'
+		'wasInOldVersion',
+		'isInNewVersion',
+		'wasModified',
+		'oldSourceCode',
+		'oldAst',
+		'oldDeprecation'
 	],
 	#category : #'MrMiner-Models'
 }
-
-{ #category : #comparing }
-DepMethod >> = anObject [
-
-	"Answer whether the receiver and anObject represent the same object."
-
-	self == anObject ifTrue: [ ^ true ].
-	self class = anObject class ifFalse: [ ^ false ].
-	^ ast = anObject ast and: [ 
-		  className = anObject className and: [ 
-			  isDeprecated = anObject isDeprecated and: [ 
-				  selector = anObject selector and: [ 
-					  sourceCode = anObject sourceCode and: [ 
-						  wasAdded = anObject wasAdded and: [ 
-							  wasDeleted = anObject wasDeleted ] ] ] ] ] ]
-]
-
-{ #category : #converting }
-DepMethod >> asModifiedMethod [
-	| newMethod |
-	
-	newMethod := DepModifiedMethod new
-		className: className;
-		selector: selector;
-		sourceCode: sourceCode;
-		ast: ast;
-		yourself.
-		
-	self wasAdded ifTrue: [ newMethod markAsAdded ].
-	self wasDeleted ifTrue: [ newMethod markAsDeleted ].
-	self isDeprecated ifTrue: [ newMethod markAsDeprecated ].
-	
-	^ newMethod
-]
-
-{ #category : #accessing }
-DepMethod >> ast [
-	^ ast
-]
 
 { #category : #accessing }
 DepMethod >> ast: anObject [
@@ -58,89 +18,96 @@ DepMethod >> ast: anObject [
 ]
 
 { #category : #accessing }
-DepMethod >> className [
-	^ className
-]
-
-{ #category : #accessing }
-DepMethod >> className: anObject [
-	className := anObject
-]
-
-{ #category : #comparing }
-DepMethod >> hash [
-
-	"Answer an integer value that is related to the identity of the receiver."
-
-	^ ast hash bitXor: (className hash bitXor:
-			   (isDeprecated hash bitXor: (selector hash bitXor:
-					     (sourceCode hash bitXor:
-						      (wasAdded hash bitXor: wasDeleted hash)))))
+DepMethod >> deprecation: anObject [
+	deprecation := anObject
 ]
 
 { #category : #initialization }
 DepMethod >> initialize [
 	super initialize.
-	wasAdded := false.
-	wasDeleted := false.
-	isDeprecated := false.
+	wasInOldVersion := false.
+	isInNewVersion := false.
+	wasModified := false.
 ]
 
 { #category : #accessing }
-DepMethod >> isDeprecated [
-	^ isDeprecated
+DepMethod >> isInNewVersion [
+	^ isInNewVersion
 ]
 
 { #category : #accessing }
-DepMethod >> markAsAdded [
-	wasDeleted := false.
-	wasAdded := true.
+DepMethod >> markAsModified [
+	wasModified := true
 ]
 
 { #category : #accessing }
-DepMethod >> markAsDeleted [
-	wasDeleted := true.
-	wasAdded := false.
+DepMethod >> markAsNewMethod [
+	isInNewVersion := true
 ]
 
 { #category : #accessing }
-DepMethod >> markAsDeprecated [
-	isDeprecated := true
+DepMethod >> markAsOldMethod [
+	wasInOldVersion := true
 ]
 
 { #category : #accessing }
-DepMethod >> selector [
-	^ selector
+DepMethod >> oldAst [
+	^ oldAst
 ]
 
 { #category : #accessing }
-DepMethod >> selector: anObject [
-	selector := anObject
+DepMethod >> oldAst: anObject [
+	oldAst := anObject
 ]
 
 { #category : #accessing }
-DepMethod >> sourceCode [
-	^ sourceCode
+DepMethod >> oldDeprecation [
+	^ oldDeprecation
 ]
 
 { #category : #accessing }
-DepMethod >> sourceCode: anObject [
-	sourceCode := anObject
+DepMethod >> oldDeprecation: anObject [
+	oldDeprecation := anObject
+]
+
+{ #category : #accessing }
+DepMethod >> oldSourceCode [
+	^ oldSourceCode
+]
+
+{ #category : #accessing }
+DepMethod >> oldSourceCode: anObject [
+	oldSourceCode := anObject
+]
+
+{ #category : #'as yet unclassified' }
+DepMethod >> oldTransformationRule [
+	^ oldDeprecation transformationRule
 ]
 
 { #category : #accessing }
 DepMethod >> wasAdded [
-	^ wasAdded
+	^ wasInOldVersion not and: isInNewVersion
 ]
 
 { #category : #accessing }
 DepMethod >> wasDeleted [
-	^ wasDeleted
+	^ wasInOldVersion and: isInNewVersion not
+]
+
+{ #category : #accessing }
+DepMethod >> wasDeprecatedInOldVersion [
+	^ oldDeprecation isNotNil
+]
+
+{ #category : #accessing }
+DepMethod >> wasInOldVersion [
+	^ wasInOldVersion
 ]
 
 { #category : #testing }
 DepMethod >> wasModified [
-	^ false
+	^ wasModified
 ]
 
 { #category : #'as yet unclassified' }

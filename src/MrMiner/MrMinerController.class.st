@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'settings',
 		'projectHistory',
-		'model',
+		'recommendations',
 		'repository',
 		'refrain',
 		'clio'
@@ -50,11 +50,6 @@ MrMinerController >> extractAllCommitsFromRepository [
 ]
 
 { #category : #'as yet unclassified' }
-MrMinerController >> loadAddedMethods [
-	model addedMethods: clio addedMethods asArray.
-]
-
-{ #category : #'as yet unclassified' }
 MrMinerController >> loadChanges [
 	refrain := Refrain
 		repository: repository
@@ -68,18 +63,9 @@ MrMinerController >> loadChanges [
 		
 	self loadOldVersion.
 	self loadNewVersion.
-	self loadDeletedMethods.
-	self loadAddedMethods.
-	self loadOldDeprecatedMethods.
-	self loadNewDeprecatedMethods.
-	self loadUnchangedDeprecatedMethods.
+	self loadModifiedMethods.
 	
 	refrain loadMethodChanges.
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> loadDeletedMethods [
-	model deletedMethods: clio deletedMethods asArray.
 ]
 
 { #category : #'as yet unclassified' }
@@ -92,23 +78,38 @@ MrMinerController >> loadGitHubRepository [
 ]
 
 { #category : #'as yet unclassified' }
-MrMinerController >> loadNewDeprecatedMethods [
-	model newDeprecatedMethods: (model newMethods select: [ :method | method isDeprecated ]).
+MrMinerController >> loadModifiedMethods [
+	| oldMethod newMethod |
+	
+	clio modifiedMethods do: [ :assoc |
+		oldMethod := assoc key.
+		newMethod := assoc value.
+		
+		projectHistory addMethodIfDoesNotExist: newMethod.
+			
+		(projectHistory methodDictionary at: newMethod signature)
+			markAsModified;
+			oldSourceCode: oldMethod sourceCode;
+			oldAst: oldMethod ast;
+			oldDeprecation: oldMethod deprecation ].
 ]
 
 { #category : #'as yet unclassified' }
 MrMinerController >> loadNewVersion [
-	model newMethods: clio newMethods asArray.
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> loadOldDeprecatedMethods [
-	model oldDeprecatedMethods: (model oldMethods select: [ :method | method isDeprecated ]).
+	clio newMethods do: [ :method |
+		projectHistory addMethodIfDoesNotExist: method.
+			
+		(projectHistory methodDictionary at: method signature)
+			markAsNewMethod ].
 ]
 
 { #category : #'as yet unclassified' }
 MrMinerController >> loadOldVersion [
-	model oldMethods: clio oldMethods asArray.
+	clio oldMethods do: [ :method |
+		projectHistory addMethodIfDoesNotExist: method.
+			
+		(projectHistory methodDictionary at: method signature)
+			markAsOldMethod ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -125,11 +126,6 @@ MrMinerController >> loadProject [
 		
 	self extractAllCommitsFromRepository.
 	
-]
-
-{ #category : #'as yet unclassified' }
-MrMinerController >> loadUnchangedDeprecatedMethods [
-	model unchangedDeprecatedMethods: (clio unchangedMethods select: [ :method | method isDeprecated ]) asArray.
 ]
 
 { #category : #'as yet unclassified' }
@@ -150,17 +146,17 @@ MrMinerController >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfide
 	refrain minNumberOfRepetitions: aMinCount.
 	refrain mineRules.
 	
-	model rules: (refrain rules select: [ :rule | rule confidence >= aMinConfidence ]).
-]
-
-{ #category : #accessing }
-MrMinerController >> model: anObject [
-	model := anObject
+	recommendations rules: (refrain rules select: [ :rule | rule confidence >= aMinConfidence ]).
 ]
 
 { #category : #accessing }
 MrMinerController >> projectHistory: anObject [
 	projectHistory := anObject
+]
+
+{ #category : #accessing }
+MrMinerController >> recommendations: anObject [
+	recommendations := anObject
 ]
 
 { #category : #accessing }

@@ -8,6 +8,12 @@ Class {
 	#category : #'MrMiner-Models'
 }
 
+{ #category : #adding }
+DepProjectHistory >> addMethodIfDoesNotExist: aMethod [
+	methodDictionary at: aMethod signature
+		ifAbsentPut: [ aMethod asDepMethod ]
+]
+
 { #category : #accessing }
 DepProjectHistory >> commitDictionary [
 	^ commitDictionary
@@ -31,8 +37,19 @@ DepProjectHistory >> initialize [
 ]
 
 { #category : #accessing }
+DepProjectHistory >> methodDictionary [
+	^ methodDictionary
+]
+
+{ #category : #accessing }
 DepProjectHistory >> sortedCommits [
 	^ commitDictionary values sorted: [ :a :b |
 		a date > b date or: [
 			a date = b date and: [ a time > b time ] ] ]
+]
+
+{ #category : #accessing }
+DepProjectHistory >> sortedMethods [
+	^ methodDictionary values sorted: [ :a :b |
+		a signature > b signature ]
 ]

@@ -26,3 +26,8 @@ MrMethodTreeLeafModel >> value [
 MrMethodTreeLeafModel >> value: anObject [
 	value := anObject
 ]
+
+{ #category : #'as yet unclassified' }
+MrMethodTreeLeafModel >> valueToInspect [
+	^ value
+]
