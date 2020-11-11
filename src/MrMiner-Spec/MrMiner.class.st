@@ -463,13 +463,6 @@ MrMiner >> showProposedDeprecations [
 	proposedDeprecationsTree methods:
 		(projectHistory sortedMethods select: [ :method |
 			method wasDeleted and: [ method isDeprecated not and: [ recommendations rules anySatisfy: [ :rule | rule key includes: method selector ] ] ] ]).
-	
-	(projectHistory sortedMethods select: [ :method |
-			method wasDeleted and: [ method isDeprecated not ] ]) inspect.
-		
-	recommendations rules inspect.
-	
-	self haltOnce.
 ]
 
 { #category : #'as yet unclassified' }
