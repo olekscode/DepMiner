@@ -23,7 +23,7 @@ Class {
 		'totalRulesCountLabel',
 		'relevantRulesCountLabel',
 		'automatableRulesCountLabel',
-		'inspectRulesLink',
+		'inspectRecommendationsLink',
 		'oldVersionNotebook',
 		'oldVersionAllMethodsTree',
 		'oldVersionDeletedMethodsTree',
@@ -107,7 +107,7 @@ DepMiner class >> defaultSpec [
 				add: #totalRulesCountLabel height: self labelHeight;
 				add: #relevantRulesCountLabel height: self labelHeight;
 				add: #automatableRulesCountLabel height: self labelHeight;
-				add: #inspectRulesLink height: self labelHeight;
+				add: #inspectRecommendationsLink height: self labelHeight;
 				yourself);
 			add: '';
 			yourself) width: 250;
@@ -204,7 +204,7 @@ DepMiner >> connectPresenters [
 	mineRulesButton action: [ self onMineRulesClicked ].
 	
 	inspectProjectHistoryLink action: [ projectHistory inspect ].
-	inspectRulesLink action: [ recommendations rules inspect ].
+	inspectRecommendationsLink action: [ recommendations inspect ].
 	
 	{
 		oldVersionAllMethodsTree .
@@ -273,8 +273,8 @@ DepMiner >> initializePresenters [
 	relevantRulesCountLabel := self newLabel.
 	automatableRulesCountLabel := self newLabel.
 		
-	inspectRulesLink := self newLink
-		label: '(inspect rules)';
+	inspectRecommendationsLink := self newLink
+		label: '(inspect recommendations)';
 		yourself.
 		
 	oldVersionAllMethodsTree := self instantiate: DepMethodsTree.	
@@ -527,7 +527,11 @@ DepMiner >> showProjectHistoryStats [
 DepMiner >> showProposedDeprecations [
 	proposedDeprecationsTree methods:
 		(projectHistory sortedMethods select: [ :method |
-			method wasDeleted and: [ method isDeprecated not and: [ recommendations rules anySatisfy: [ :rule | rule key includes: method selector ] ] ] ]).
+			method wasDeleted and: [
+				method isDeprecated not and: [
+					recommendations rules anySatisfy: [ :rule |
+						rule deletedMethodCalls anySatisfy: [ :methodCall |
+							methodCall selector = method selector ] ] ] ] ]).
 ]
 
 { #category : #'as yet unclassified' }
@@ -549,8 +553,8 @@ DepMiner >> showRulesStats [
 		fractionOfAutomatableRules := 0. ]
 	ifNotNil: [
 		totalNumberOfRules := recommendations rules size.
-		numberOfRelevantRules := recommendations rules size.
-		numberOfAutomatableRules := recommendations rules size.
+		numberOfRelevantRules := recommendations relevantRules size.
+		numberOfAutomatableRules := recommendations transformationRules size.
 		fractionOfRelevantRules := numberOfRelevantRules / totalNumberOfRules.
 		fractionOfAutomatableRules := numberOfAutomatableRules / totalNumberOfRules ].
 	

@@ -8,7 +8,8 @@ Class {
 		'confidence',
 		'lift',
 		'methodChanges',
-		'feedback'
+		'feedback',
+		'transformationRule'
 	],
 	#category : #'DepMiner-Models'
 }
@@ -81,6 +82,11 @@ DepAssociationRule >> hasFeedback [
 	^ feedback isNotNil
 ]
 
+{ #category : #accessing }
+DepAssociationRule >> hasTransformationRule [
+	^ transformationRule isNotNil
+]
+
 { #category : #comparing }
 DepAssociationRule >> hash [
 	| fields |
@@ -91,11 +97,6 @@ DepAssociationRule >> hash [
 ]
 
 { #category : #testing }
-DepAssociationRule >> isAutomatable [
-	self subclassResponsibility
-]
-
-{ #category : #testing }
 DepAssociationRule >> isBad [
 	^ self hasFeedback and: [ feedback isGood = 'No' ]
 ]
@@ -103,6 +104,12 @@ DepAssociationRule >> isBad [
 { #category : #testing }
 DepAssociationRule >> isGood [
 	^ self hasFeedback and: [ feedback isGood = 'Yes' ]
+]
+
+{ #category : #testing }
+DepAssociationRule >> isRelevant [
+	"Only one-to-one and one-to-many rules can be used in deprecations"
+	^ deletedMethodCalls size = 1
 ]
 
 { #category : #testing }
@@ -130,6 +137,13 @@ DepAssociationRule >> methodChanges: anObject [
 	methodChanges := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+DepAssociationRule >> numberOfArgumentsFor: aSelector [
+	^ (aSelector anySatisfy: [ :char | char isAlphaNumeric or: [ char = $: ] ])
+		ifTrue: [ aSelector occurrencesOf: $: ] "not an operator"
+		ifFalse: [ 1 ]. "an operator"
+]
+
 { #category : #printing }
 DepAssociationRule >> printOn: aStream [
 	aStream 
@@ -138,4 +152,14 @@ DepAssociationRule >> printOn: aStream [
 		nextPutAll: '} => {';
 		nextPutAll: (', ' join: addedMethodCalls);
 		nextPut: $}
+]
+
+{ #category : #accessing }
+DepAssociationRule >> transformationRule [
+	^ transformationRule
+]
+
+{ #category : #accessing }
+DepAssociationRule >> transformationRule: anObject [
+	transformationRule := anObject
 ]

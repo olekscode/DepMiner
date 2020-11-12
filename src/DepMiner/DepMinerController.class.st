@@ -13,6 +13,22 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DepMinerController >> buildRulesFrom: aCollectionOfSimpleRules [
+	| rules rulesBuilder |
+	
+	rules := aCollectionOfSimpleRules collect: [ :simpleRule | simpleRule asDepAssociationRule ].
+	
+	rulesBuilder := DepRulesBuilder new.
+	rulesBuilder mapRules: rules toMethodChanges: projectHistory relevantMethodChanges.
+	
+	rules do: [ :rule |
+		(rulesBuilder canGenerateTransformationRuleFrom: rule) ifTrue: [ 
+			rule transformationRule: (rulesBuilder generateTransformationRuleFrom: rule) ] ].
+	
+	^ rules
+]
+
+{ #category : #'as yet unclassified' }
 DepMinerController >> candidateCommitsForNewVersion [
 	| commits |
 	
@@ -140,10 +156,12 @@ DepMinerController >> loadProject [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfidence [
+	| rules |
 	refrain minNumberOfRepetitions: aMinCount.
 	refrain mineRules.
 	
-	recommendations rules: (refrain rules select: [ :rule | rule confidence >= aMinConfidence ]).
+	rules := refrain rules select: [ :rule | rule confidence >= aMinConfidence ].
+	recommendations rules: (self buildRulesFrom: rules).
 ]
 
 { #category : #accessing }

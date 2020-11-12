@@ -4,41 +4,31 @@ Class {
 	#category : #'DepMiner-Controllers'
 }
 
-{ #category : #'as yet unclassified' }
-DepRulesBuilder >> buildMigrationRulesFromAssociationRules: aCollectionOfAssociationRules [
-	| rule |
-	
-	^ aCollectionOfAssociationRules collect: [ :associationRule |
-		rule := (self canBeAutomated: associationRule)
-			ifFalse: [ 
-				DepNonAutomatableRule new ]
-			ifTrue: [
-				DepAutomatableRule new
-					transformationRule: (self transformationRuleFor: associationRule);
-					yourself ].
-			
-		rule
-			deletedMethodCalls: associationRule key asSet;
-			addedMethodCalls: associationRule value asSet;
-			count: associationRule count;
-			confidence: associationRule confidence;
-			lift: associationRule lift.
-			
-		rule ].
-]
-
 { #category : #testing }
-DepRulesBuilder >> canBeAutomated: anAssociationRule [
-	| numberOfArgumentsInDeletedMethod numberOfArgumentsInAddedMethod | 
+DepRulesBuilder >> canGenerateTransformationRuleFrom: anAssociationRule [
+
+	| deletedSelector addedSelector |
 	
 	"Only one-to-one rules can be automated"
-	((anAssociationRule key size = 1) and: [ anAssociationRule value size = 1 ])
-		ifFalse: [ ^ false ].
-		
-	numberOfArgumentsInDeletedMethod := self numberOfArgumentsFor: anAssociationRule key anyOne selector.
-	numberOfArgumentsInAddedMethod := self numberOfArgumentsFor: anAssociationRule value anyOne selector.
+	(anAssociationRule deletedMethodCalls size = 1 and: [ 
+		 anAssociationRule addedMethodCalls size = 1 ]) ifFalse: [ ^ false ].
 	
-	^ numberOfArgumentsInDeletedMethod = numberOfArgumentsInAddedMethod
+	deletedSelector := anAssociationRule deletedMethodCalls anyOne selector.
+	addedSelector := anAssociationRule addedMethodCalls anyOne selector.
+
+	^ (self numberOfArgumentsFor: deletedSelector) = (self numberOfArgumentsFor: addedSelector)
+]
+
+{ #category : #'as yet unclassified' }
+DepRulesBuilder >> generateTransformationRuleFrom: anAssociationRule [
+	| deletedSelector addedSelector |
+	
+	deletedSelector := anAssociationRule deletedMethodCalls anyOne selector.
+	addedSelector := anAssociationRule addedMethodCalls anyOne selector.
+	
+	^ TransformationRule
+		antecedent: (self transformationRuleExpressionFor: deletedSelector)
+		consequent: (self transformationRuleExpressionFor: addedSelector).
 ]
 
 { #category : #'as yet unclassified' }
@@ -68,16 +58,4 @@ DepRulesBuilder >> transformationRuleExpressionFor: aSelector [
 		ifTrue: [ ^ '`@rec ', aSelector, '`@arg' ].
 	
 	^ '`@rec ', (' ' join: (((aSelector splitOn: $:) copyFrom: 1 to: numberOfArguments) withIndexCollect: [ :selectorPart :i | selectorPart, ': `@arg', i asString ])).
-]
-
-{ #category : #'as yet unclassified' }
-DepRulesBuilder >> transformationRuleFor: anAssociationRule [
-	| deletedSelector addedSelector |
-	
-	deletedSelector := anAssociationRule key anyOne selector.
-	addedSelector := anAssociationRule value anyOne selector.
-	
-	^ TransformationRule
-		antecedent: (self transformationRuleExpressionFor: deletedSelector)
-		consequent: (self transformationRuleExpressionFor: addedSelector).
 ]
