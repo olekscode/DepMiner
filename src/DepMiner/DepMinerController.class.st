@@ -51,10 +51,7 @@ DepMinerController >> extractAllCommitsFromRepository [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> loadChanges [
-	refrain := Refrain
-		repository: repository
-		firstCommit: settings oldCommitSha
-		lastCommit: settings newCommitSha.
+	| methodCallCollector |
 		
 	clio := Clio
 		forRepository: repository
@@ -65,6 +62,17 @@ DepMinerController >> loadChanges [
 	self loadNewVersion.
 	self loadModifiedMethods.
 	
+	refrain := Refrain
+		repository: repository
+		firstCommit: settings oldCommitSha
+		lastCommit: settings newCommitSha.
+	
+	methodCallCollector := DepSelectorCollector new
+		oldSelectors: (clio oldMethods collect: [ :method | method selector ]);
+		newSelectors: (clio newMethods collect: [ :method | method selector ]);
+		yourself.
+		
+	refrain entityCollector: methodCallCollector.
 	refrain loadMethodChanges.
 ]
 
@@ -126,19 +134,6 @@ DepMinerController >> loadProject [
 		
 	self extractAllCommitsFromRepository.
 	
-]
-
-{ #category : #'as yet unclassified' }
-DepMinerController >> mineRules [
-	| methodCallCollector |
-	
-	methodCallCollector := DepSelectorCollector new
-		oldSelectors: (clio oldMethods collect: [ :method | method selector ]);
-		newSelectors: (clio newMethods collect: [ :method | method selector ]);
-		yourself.
-		
-	refrain entityCollector: methodCallCollector.
-	^ refrain mineRepetitiveChanges.
 ]
 
 { #category : #'as yet unclassified' }

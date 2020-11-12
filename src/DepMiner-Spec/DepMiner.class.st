@@ -375,6 +375,7 @@ DepMiner >> onMineRulesClicked [
 	
 	controller mineRulesWithMinCount: minCount minConfidence: minConfidence.
 	self showRecommendations.
+	recommendations inspect.
 ]
 
 { #category : #'as yet unclassified' }
