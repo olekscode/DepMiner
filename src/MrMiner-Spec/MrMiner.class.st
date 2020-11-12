@@ -32,7 +32,7 @@ Class {
 		'generatedCode',
 		'generateButton'
 	],
-	#category : #'MrMiner-Spec-NewViews'
+	#category : #'MrMiner-Spec-Views'
 }
 
 { #category : #specs }

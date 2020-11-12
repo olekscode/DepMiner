@@ -5,7 +5,7 @@ Class {
 		'actionOnMethodClicked',
 		'actionOnPackageOrClassClicked'
 	],
-	#category : #'MrMiner-Spec-NewViews'
+	#category : #'MrMiner-Spec-Views'
 }
 
 { #category : #accessing }

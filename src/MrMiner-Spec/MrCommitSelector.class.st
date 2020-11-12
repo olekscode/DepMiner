@@ -7,7 +7,7 @@ Class {
 		'commits',
 		'callback'
 	],
-	#category : #'MrMiner-Spec-NewViews'
+	#category : #'MrMiner-Spec-Views'
 }
 
 { #category : #specs }

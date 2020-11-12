@@ -5,7 +5,7 @@ Class {
 		'selectButton',
 		'textInput'
 	],
-	#category : #'MrMiner-Spec-NewViews'
+	#category : #'MrMiner-Spec-Views'
 }
 
 { #category : #specs }
