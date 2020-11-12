@@ -74,6 +74,8 @@ DepMinerController >> loadChanges [
 		
 	refrain entityCollector: methodCallCollector.
 	refrain loadMethodChanges.
+	
+	projectHistory methodChanges: refrain methodChanges.
 ]
 
 { #category : #'as yet unclassified' }

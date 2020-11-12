@@ -514,13 +514,13 @@ DepMiner >> showProjectHistoryStats [
 		fractionOfRelevantMethodChanges := 0. ]
 	ifNotNil: [
 		numberOfCommits := projectHistory commitDictionary size.
-		numberOfMethodChanges := projectHistory methodDictionary size.
-		numberOfRelevantMethodChanges := projectHistory methodDictionary size.
+		numberOfMethodChanges := projectHistory methodChanges size.
+		numberOfRelevantMethodChanges := projectHistory relevantMethodChanges size.
 		fractionOfRelevantMethodChanges := numberOfRelevantMethodChanges / numberOfMethodChanges ].
 	
 	numberOfCommitsLabel label: (numberOfCommits asString, ' commits between those two versions').
 	numberOfMethodChangesLabel label: (numberOfMethodChanges asString, ' method changes').
-	numberOfRelevantMethodChangesLabel label: (numberOfRelevantMethodChanges asString, ' relevant method changes (', (fractionOfRelevantMethodChanges * 100) asString, '%)').
+	numberOfRelevantMethodChangesLabel label: (numberOfRelevantMethodChanges asString, ' relevant method changes (', ((fractionOfRelevantMethodChanges * 100) asFloat round: 1) asString, '%)').
 ]
 
 { #category : #'as yet unclassified' }
@@ -555,8 +555,8 @@ DepMiner >> showRulesStats [
 		fractionOfAutomatableRules := numberOfAutomatableRules / totalNumberOfRules ].
 	
 	totalRulesCountLabel label: (totalNumberOfRules asString, ' rules were found').
-	relevantRulesCountLabel label: (numberOfRelevantRules asString, ' relevant rules (', (fractionOfRelevantRules * 100) asString, '%)').
-	automatableRulesCountLabel label: (numberOfAutomatableRules asString, ' automatable rules (', (fractionOfAutomatableRules * 100) asString, '%)').
+	relevantRulesCountLabel label: (numberOfRelevantRules asString, ' relevant rules (', ((fractionOfRelevantRules * 100) asFloat round: 1) asString, '%)').
+	automatableRulesCountLabel label: (numberOfAutomatableRules asString, ' automatable rules (', ((fractionOfAutomatableRules * 100) asFloat round: 1) asString, '%)').
 ]
 
 { #category : #'as yet unclassified' }

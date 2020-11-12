@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'commitDictionary',
-		'methodDictionary'
+		'methodDictionary',
+		'methodChanges'
 	],
 	#category : #'DepMiner-Models'
 }
@@ -37,8 +38,23 @@ DepProjectHistory >> initialize [
 ]
 
 { #category : #accessing }
+DepProjectHistory >> methodChanges [
+	^ methodChanges
+]
+
+{ #category : #accessing }
+DepProjectHistory >> methodChanges: anObject [
+	methodChanges := anObject
+]
+
+{ #category : #accessing }
 DepProjectHistory >> methodDictionary [
 	^ methodDictionary
+]
+
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> relevantMethodChanges [
+	^ methodChanges select: [ :each | each isRelevant ]
 ]
 
 { #category : #accessing }
