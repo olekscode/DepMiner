@@ -13,9 +13,17 @@ Class {
 		'oldVersionInput',
 		'newVersionInput',
 		'loadChangesButton',
+		'numberOfCommitsLabel',
+		'numberOfMethodChangesLabel',
+		'numberOfRelevantMethodChangesLabel',
+		'inspectProjectHistoryLink',
 		'minCountSelect',
 		'minConfidenceSelect',
 		'mineRulesButton',
+		'totalRulesCountLabel',
+		'relevantRulesCountLabel',
+		'automatableRulesCountLabel',
+		'inspectRulesLink',
 		'oldVersionNotebook',
 		'oldVersionAllMethodsTree',
 		'oldVersionDeletedMethodsTree',
@@ -76,6 +84,12 @@ DepMiner class >> defaultSpec [
 					yourself) height: self buttonHeight;
 				yourself);
 			add: (SpBoxLayout newVertical
+				add: #numberOfCommitsLabel height: self labelHeight;
+				add: #numberOfMethodChangesLabel height: self labelHeight;
+				add: #numberOfRelevantMethodChangesLabel height: self labelHeight;
+				add: #inspectProjectHistoryLink height: self labelHeight;
+				yourself);
+			add: (SpBoxLayout newVertical
 				add: (SpBoxLayout newHorizontal
 					add: 'Min count';
 					add: #minCountSelect width: inputWidth;
@@ -88,6 +102,12 @@ DepMiner class >> defaultSpec [
 					add: '';
 					add: #mineRulesButton width: buttonWidth;
 					yourself) height: self buttonHeight;
+				yourself);
+			add: (SpBoxLayout newVertical
+				add: #totalRulesCountLabel height: self labelHeight;
+				add: #relevantRulesCountLabel height: self labelHeight;
+				add: #automatableRulesCountLabel height: self labelHeight;
+				add: #inspectRulesLink height: self labelHeight;
 				yourself);
 			add: '';
 			yourself) width: 250;
@@ -183,6 +203,9 @@ DepMiner >> connectPresenters [
 	loadChangesButton action: [ self onLoadChangesClicked ].
 	mineRulesButton action: [ self onMineRulesClicked ].
 	
+	inspectProjectHistoryLink action: [ projectHistory inspect ].
+	inspectRulesLink action: [ recommendations rules inspect ].
+	
 	{
 		oldVersionAllMethodsTree .
 		oldVersionDeletedMethodsTree .
@@ -231,11 +254,27 @@ DepMiner >> initializePresenters [
 		label: 'Load changes';
 		yourself.
 		
+	numberOfCommitsLabel := self newLabel.
+	numberOfMethodChangesLabel := self newLabel.
+	numberOfRelevantMethodChangesLabel := self newLabel.
+		
+	inspectProjectHistoryLink := self newLink
+		label: '(inspect project history)';
+		yourself.
+		
 	minCountSelect := self newNumberInput.
 	minConfidenceSelect := self newNumberInput.
 	
 	mineRulesButton := self newButton
 		label: 'Mine rules';
+		yourself.
+		
+	totalRulesCountLabel := self newLabel.
+	relevantRulesCountLabel := self newLabel.
+	automatableRulesCountLabel := self newLabel.
+		
+	inspectRulesLink := self newLink
+		label: '(inspect rules)';
 		yourself.
 		
 	oldVersionAllMethodsTree := self instantiate: DepMethodsTree.	
@@ -305,6 +344,9 @@ DepMiner >> initializePresenters [
 	generateButton := self newButton
 		label: 'Generate';
 		yourself.
+		
+	self showProjectHistoryStats.
+	self showRulesStats.
 ]
 
 { #category : #initialization }
@@ -351,6 +393,8 @@ DepMiner >> onLoadChangesClicked [
 	
 	self showOldVersion.
 	self showNewVersion.
+	
+	self showProjectHistoryStats.
 ]
 
 { #category : #'as yet unclassified' }
@@ -375,7 +419,7 @@ DepMiner >> onMineRulesClicked [
 	
 	controller mineRulesWithMinCount: minCount minConfidence: minConfidence.
 	self showRecommendations.
-	recommendations inspect.
+	self showRulesStats.
 ]
 
 { #category : #'as yet unclassified' }
@@ -460,6 +504,26 @@ DepMiner >> showOldVersionDeprecatedMethods [
 ]
 
 { #category : #'as yet unclassified' }
+DepMiner >> showProjectHistoryStats [
+	| numberOfCommits numberOfMethodChanges numberOfRelevantMethodChanges fractionOfRelevantMethodChanges |
+	
+	recommendations ifNil: [ 
+		numberOfCommits := 0.
+		numberOfMethodChanges := 0.
+		numberOfRelevantMethodChanges := 0.
+		fractionOfRelevantMethodChanges := 0. ]
+	ifNotNil: [
+		numberOfCommits := projectHistory commitDictionary size.
+		numberOfMethodChanges := projectHistory methodDictionary size.
+		numberOfRelevantMethodChanges := projectHistory methodDictionary size.
+		fractionOfRelevantMethodChanges := numberOfRelevantMethodChanges / numberOfMethodChanges ].
+	
+	numberOfCommitsLabel label: (numberOfCommits asString, ' commits between those two versions').
+	numberOfMethodChangesLabel label: (numberOfMethodChanges asString, ' method changes').
+	numberOfRelevantMethodChangesLabel label: (numberOfRelevantMethodChanges asString, ' relevant method changes (', (fractionOfRelevantMethodChanges * 100) asString, '%)').
+]
+
+{ #category : #'as yet unclassified' }
 DepMiner >> showProposedDeprecations [
 	proposedDeprecationsTree methods:
 		(projectHistory sortedMethods select: [ :method |
@@ -471,6 +535,28 @@ DepMiner >> showRecommendations [
 	self showStaleDeprecations.
 	self showProposedDeprecations.
 	self showMissingRules.
+]
+
+{ #category : #'as yet unclassified' }
+DepMiner >> showRulesStats [
+	| totalNumberOfRules numberOfRelevantRules numberOfAutomatableRules fractionOfRelevantRules fractionOfAutomatableRules |
+	
+	recommendations ifNil: [ 
+		totalNumberOfRules := 0.
+		numberOfRelevantRules := 0.
+		numberOfAutomatableRules := 0.
+		fractionOfRelevantRules := 0.
+		fractionOfAutomatableRules := 0. ]
+	ifNotNil: [
+		totalNumberOfRules := recommendations rules size.
+		numberOfRelevantRules := recommendations rules size.
+		numberOfAutomatableRules := recommendations rules size.
+		fractionOfRelevantRules := numberOfRelevantRules / totalNumberOfRules.
+		fractionOfAutomatableRules := numberOfAutomatableRules / totalNumberOfRules ].
+	
+	totalRulesCountLabel label: (totalNumberOfRules asString, ' rules were found').
+	relevantRulesCountLabel label: (numberOfRelevantRules asString, ' relevant rules (', (fractionOfRelevantRules * 100) asString, '%)').
+	automatableRulesCountLabel label: (numberOfAutomatableRules asString, ' automatable rules (', (fractionOfAutomatableRules * 100) asString, '%)').
 ]
 
 { #category : #'as yet unclassified' }
