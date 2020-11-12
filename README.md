@@ -1,7 +1,7 @@
 # DepMiner
 
 [![Build Status](https://travis-ci.org/olekscode/DepMiner.svg?branch=master)](https://travis-ci.org/olekscode/DepMiner)
-[![Build status](https://ci.appveyor.com/api/projects/status/t7lxsakunjyl0dan?svg=true)](https://ci.appveyor.com/project/olekscode/depminer)
+[![Build status](https://ci.appveyor.com/api/projects/status/li5wapipc5ypgqj0?svg=true)](https://ci.appveyor.com/project/olekscode/depminer)
 [![Coverage Status](https://coveralls.io/repos/github/olekscode/DepMiner/badge.svg?branch=master)](https://coveralls.io/github/olekscode/DepMiner?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/olekscode/DepMiner/master/LICENSE)
 
