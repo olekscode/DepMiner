@@ -14,16 +14,15 @@ Class {
 
 { #category : #'as yet unclassified' }
 DepMinerController >> buildRulesFrom: aCollectionOfSimpleRules [
-	| rules rulesBuilder |
+	| rules |
 	
 	rules := aCollectionOfSimpleRules collect: [ :simpleRule | simpleRule asDepAssociationRule ].
 	
-	rulesBuilder := DepRulesBuilder new.
-	rulesBuilder mapRules: rules toMethodChanges: projectHistory relevantMethodChanges.
+	self mapRules: rules toMethodChanges: projectHistory relevantMethodChanges.
 	
 	rules do: [ :rule |
-		(rulesBuilder canGenerateTransformationRuleFrom: rule) ifTrue: [ 
-			rule transformationRule: (rulesBuilder generateTransformationRuleFrom: rule) ] ].
+		rule isAutomatable
+			ifTrue: [ rule generateTransformationRule ] ].
 	
 	^ rules
 ]
@@ -152,6 +151,14 @@ DepMinerController >> loadProject [
 		
 	self extractAllCommitsFromRepository.
 	
+]
+
+{ #category : #'as yet unclassified' }
+DepMinerController >> mapRules: aCollectionOfRules toMethodChanges: aCollectionOfMethodChanges [
+	aCollectionOfRules do: [ :rule |
+		rule methodChanges: (aCollectionOfMethodChanges select: [ :methodChange |
+			(methodChange deletedEntities asArray includesAll: rule deletedMethodCalls) and: [ 
+				methodChange addedEntities asArray includesAll: rule addedMethodCalls ] ]) ]
 ]
 
 { #category : #'as yet unclassified' }

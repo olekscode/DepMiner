@@ -33,7 +33,6 @@ Class {
 		'newVersionAddedMethodsTree',
 		'newVersionDeprecatedMethodsTree',
 		'recommendationsNotebook',
-		'staleDeprecationsTree',
 		'proposedDeprecationsTree',
 		'missingRulesTree',
 		'replacementsList',
@@ -317,7 +316,6 @@ DepMiner >> initializePresenters [
 	
 	proposedDeprecationsTree := self instantiate: DepMethodsTree.
 	missingRulesTree := self instantiate: DepMethodsTree.
-	staleDeprecationsTree := self instantiate: DepMethodsTree.
 	
 	recommendationsNotebook := self newNotebook
 		addPage: (self newNotebookPage
@@ -328,13 +326,18 @@ DepMiner >> initializePresenters [
 			title: 'Missing Rules';
 			presenterProvider: [ missingRulesTree ];
 			yourself);
-		addPage: (self newNotebookPage
-			title: 'Stale Deprecations';
-			presenterProvider: [ staleDeprecationsTree ];
-			yourself);
 		yourself.
 	
-	replacementsList := self newList.
+	replacementsList := self newList
+		display: [ :rule | rule addedMethodCalls anyOne selector ];
+		yourself.
+		
+	replacementsList contextMenu: [
+		SpMenuPresenter new 
+			addGroup: [ :group | group 
+				addItem: [ :item | item
+					name: 'Inspect';
+					action: [ replacementsList selectedItem inspect ] ] ] ].
 	
 	generatedCode := self newCode
 		withoutLineNumbers;
@@ -438,19 +441,21 @@ DepMiner >> onOldVersionSelected: aCommit [
 DepMiner >> onProposedDeprecationClicked: aMethod [
 	| applicableRules |
 	
-	applicableRules := recommendations rules select: [ :rule |
-		rule key size = 1 and: [ rule key anyOne = aMethod selector ] ].
+	applicableRules := recommendations automatableRules select: [ :rule |
+		rule deletedMethodCalls anyOne selector = aMethod selector ].
 	
-	replacementsList
-		items: applicableRules;
-		display: [ :rule | ', ' join: rule value ].
+	replacementsList items: applicableRules.
 		
 	generatedCode text: aMethod sourceCode.
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showMissingRules [
-	proposedDeprecationsTree methods: (projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated and: [ method hasTransformationRule not ] ] ]).
+	| methodsWithMissingRules |
+	
+	methodsWithMissingRules := projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated and: [ method hasTransformationRule not ] ] ].
+
+	missingRulesTree methods: methodsWithMissingRules.
 ]
 
 { #category : #'as yet unclassified' }
@@ -525,18 +530,20 @@ DepMiner >> showProjectHistoryStats [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showProposedDeprecations [
-	proposedDeprecationsTree methods:
-		(projectHistory sortedMethods select: [ :method |
-			method wasDeleted and: [
-				method isDeprecated not and: [
-					recommendations rules anySatisfy: [ :rule |
-						rule deletedMethodCalls anySatisfy: [ :methodCall |
-							methodCall selector = method selector ] ] ] ] ]).
+	| methodsToDeprecate |
+	
+	methodsToDeprecate := projectHistory sortedMethods select: [ :method |
+		method wasDeleted and: [
+			method isDeprecated not and: [
+				recommendations automatableRules anySatisfy: [ :rule |
+					rule deletedMethodCalls anySatisfy: [ :methodCall |
+						methodCall selector = method selector ] ] ] ] ].
+
+	proposedDeprecationsTree methods: methodsToDeprecate.
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showRecommendations [
-	self showStaleDeprecations.
 	self showProposedDeprecations.
 	self showMissingRules.
 ]
@@ -561,12 +568,6 @@ DepMiner >> showRulesStats [
 	totalRulesCountLabel label: (totalNumberOfRules asString, ' rules were found').
 	relevantRulesCountLabel label: (numberOfRelevantRules asString, ' relevant rules (', ((fractionOfRelevantRules * 100) asFloat round: 1) asString, '%)').
 	automatableRulesCountLabel label: (numberOfAutomatableRules asString, ' automatable rules (', ((fractionOfAutomatableRules * 100) asFloat round: 1) asString, '%)').
-]
-
-{ #category : #'as yet unclassified' }
-DepMiner >> showStaleDeprecations [
-	staleDeprecationsTree methods:
-		(projectHistory sortedMethods select: [ :method | method isDeprecated and: [ method wasUnchanged ] ])
 ]
 
 { #category : #building }

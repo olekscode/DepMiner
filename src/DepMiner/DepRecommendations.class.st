@@ -8,6 +8,12 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
+{ #category : #'as yet unclassified' }
+DepRecommendations >> automatableRules [
+	"Association rules for which the transformation rules can be generated automatically"
+	^ rules select: [ :rule | rule isAutomatable ]
+]
+
 { #category : #initialization }
 DepRecommendations >> initialize [
 	super initialize.

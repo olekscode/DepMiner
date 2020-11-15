@@ -97,7 +97,9 @@ DepMethod >> wasDeleted [
 
 { #category : #accessing }
 DepMethod >> wasDeprecatedInOldVersion [
-	^ oldDeprecation isNotNil
+	^ self wasModified
+		ifTrue: [ oldDeprecation isNotNil ]
+		ifFalse: [ deprecation isNotNil ]
 ]
 
 { #category : #accessing }

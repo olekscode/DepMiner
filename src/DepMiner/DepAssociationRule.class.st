@@ -77,6 +77,18 @@ DepAssociationRule >> feedback: anObject [
 	feedback := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+DepAssociationRule >> generateTransformationRule [
+	| deletedSelector addedSelector |
+	
+	deletedSelector := deletedMethodCalls anyOne selector.
+	addedSelector := addedMethodCalls anyOne selector.
+	
+	transformationRule := TransformationRule
+		antecedent: (self transformationRuleExpressionFor: deletedSelector)
+		consequent: (self transformationRuleExpressionFor: addedSelector).
+]
+
 { #category : #testing }
 DepAssociationRule >> hasFeedback [
 	^ feedback isNotNil
@@ -94,6 +106,22 @@ DepAssociationRule >> hash [
 	
 	^ fields inject: self class hash into: [ :sum :each |
 		sum bitXor: each hash ]
+]
+
+{ #category : #testing }
+DepAssociationRule >> isAutomatable [
+	"An association rule is automatable if we can use it to generate a transformation rule without any human intervention. This is only possible for one-to-one rules where the deleted and the added method call have the same number of arguments"
+	| deletedSelector addedSelector |
+	
+	(deletedMethodCalls size = 1 and: [ addedMethodCalls size = 1 ])
+		ifFalse: [ ^ false ].
+		
+	deletedSelector := deletedMethodCalls anyOne selector.
+	addedSelector := addedMethodCalls anyOne selector.
+	
+	^ (self numberOfArgumentsFor: deletedSelector) = (self numberOfArgumentsFor: addedSelector)
+		
+	
 ]
 
 { #category : #testing }
@@ -162,4 +190,18 @@ DepAssociationRule >> transformationRule [
 { #category : #accessing }
 DepAssociationRule >> transformationRule: anObject [
 	transformationRule := anObject
+]
+
+{ #category : #'as yet unclassified' }
+DepAssociationRule >> transformationRuleExpressionFor: aSelector [
+	| numberOfArguments |
+	numberOfArguments := self numberOfArgumentsFor: aSelector.
+
+	numberOfArguments = 0
+		ifTrue: [ ^ '`@rec ', aSelector ].
+	
+	numberOfArguments = 1
+		ifTrue: [ ^ '`@rec ', aSelector, '`@arg' ].
+	
+	^ '`@rec ', (' ' join: (((aSelector splitOn: $:) copyFrom: 1 to: numberOfArguments) withIndexCollect: [ :selectorPart :i | selectorPart, ': `@arg', i asString ])).
 ]
