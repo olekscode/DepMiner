@@ -74,6 +74,7 @@ DepRecommendationPresenter >> initializePresenters [
 		yourself.
 		
 	self showReplacements.
+	self onReplacementSelectionChanged.
 ]
 
 { #category : #'as yet unclassified' }
