@@ -2,11 +2,13 @@ Class {
 	#name : #DepAutomatableRecommendationPresenter,
 	#superclass : #DepMinerMainAreaPagePresenter,
 	#instVars : [
-		'projectHistory',
 		'method',
 		'rules',
+		'projectHistory',
+		'replacementImplementations',
 		'replacementsList',
 		'generatedCode',
+		'replacementCode',
 		'generateButton'
 	],
 	#category : #'DepMiner-Spec-Views'
@@ -24,6 +26,8 @@ DepAutomatableRecommendationPresenter class >> defaultSpec [
 			add: (SpBoxLayout newVertical
 				add: 'Generated code' height: self labelHeight;
 				add: #generatedCode;
+				add: 'Implementation of a proposed replacement' height: self labelHeight;
+				add: #replacementCode;
 				yourself);
 			yourself);
 		add: (SpBoxLayout newHorizontal
@@ -34,12 +38,36 @@ DepAutomatableRecommendationPresenter class >> defaultSpec [
 ]
 
 { #category : #'as yet unclassified' }
-DepAutomatableRecommendationPresenter class >> forProjectHistory: aProjectHistory method: aMethod applicableRules: aCollectionOfRules [
+DepAutomatableRecommendationPresenter class >> forMethod: aMethod applicableRules: aCollectionOfRules projectHistory: aProjectHistory [
 	^ self new
-		initializeProjectHistory: aProjectHistory
-		method: aMethod
-		applicableRules: aCollectionOfRules;
+		initializeMethod: aMethod
+		applicableRules: aCollectionOfRules
+		projectHistory: aProjectHistory;
 		yourself.
+]
+
+{ #category : #initialization }
+DepAutomatableRecommendationPresenter >> connectPresenters [
+	super connectPresenters.
+	
+	replacementsList whenSelectionChangedDo: [ :selectionMode |
+		self onReplacementSelectionChanged ].
+]
+
+{ #category : #'as yet unclassified' }
+DepAutomatableRecommendationPresenter >> findReplacementProposedBy: aRule [
+	^ projectHistory sortedMethods detect: [ :aMethod |
+		"aMethod className = method className and: [ "
+			aMethod selector = aRule addedMethodCalls anyOne selector "]" ] ifNone: [ nil ].
+]
+
+{ #category : #accessing }
+DepAutomatableRecommendationPresenter >> initializeMethod: aMethod applicableRules: aCollectionOfRules projectHistory: aProjectHistory [
+	method := aMethod.
+	rules := aCollectionOfRules.
+	projectHistory := aProjectHistory.
+	
+	self showReplacements.
 ]
 
 { #category : #initialization }
@@ -55,14 +83,14 @@ DepAutomatableRecommendationPresenter >> initializePresenters [
 			addGroup: [ :group | group 
 				addItem: [ :item | item
 					name: 'Inspect';
-					action: [ replacementsList selectedItem inspect ] ];
-				addItem: [ :item | item
-					name: 'Browse implementations';
-					action: [ (DepImplementationsBrowser on: (projectHistory sortedMethods
-						select: [ :aMethod | aMethod isInNewVersion and: [
-								aMethod selector = replacementsList selectedItem addedMethodCalls anyOne selector ] ])) openWithSpec ] ] ] ].
+					action: [ replacementsList selectedItem inspect ] ] ] ].
 	
 	generatedCode := self newCode
+		withoutLineNumbers;
+		beNotEditable;
+		yourself.
+		
+	replacementCode := self newCode
 		withoutLineNumbers;
 		beNotEditable;
 		yourself.
@@ -72,22 +100,31 @@ DepAutomatableRecommendationPresenter >> initializePresenters [
 		yourself.
 ]
 
-{ #category : #accessing }
-DepAutomatableRecommendationPresenter >> initializeProjectHistory: aProjectHistory method: aMethod applicableRules: aCollectionOfRules [
-	projectHistory := aProjectHistory.
-	method := aMethod.
-	rules := aCollectionOfRules.
+{ #category : #'as yet unclassified' }
+DepAutomatableRecommendationPresenter >> onReplacementSelectionChanged [
+	| rule |
+	rule := replacementsList selectedItem.
 	
-	self showReplacements.
-	self showGeneratedCode.
+	rule ifNotNil: [
+		self showCodeGeneratedBy: rule.
+		self showImplementationOfReplacementProposedBy: rule ].
 ]
 
 { #category : #'as yet unclassified' }
-DepAutomatableRecommendationPresenter >> showGeneratedCode [
-	generatedCode text: method sourceCode
+DepAutomatableRecommendationPresenter >> showCodeGeneratedBy: aRule [
+	generatedCode text: (aRule snapshotOfSourceCodeWithGeneratedDeprecationFor: method)
+]
+
+{ #category : #'as yet unclassified' }
+DepAutomatableRecommendationPresenter >> showImplementationOfReplacementProposedBy: aRule [
+	| replacementMethod |
+	replacementMethod := self findReplacementProposedBy: aRule.
+	
+	replacementMethod ifNotNil: [ replacementCode text: replacementMethod sourceCode ].
 ]
 
 { #category : #'as yet unclassified' }
 DepAutomatableRecommendationPresenter >> showReplacements [
-	replacementsList items: rules
+	replacementsList items: rules.
+	replacementsList selectIndex: 1.
 ]

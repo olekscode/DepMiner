@@ -426,9 +426,9 @@ DepMiner >> onProposedDeprecationClicked: aMethod [
 		title: 'Automatable rules';
 		presenterProvider: [
 			DepAutomatableRecommendationPresenter
-				forProjectHistory: projectHistory
-				method: aMethod
-				applicableRules: applicableRules ];
+				forMethod: aMethod
+				applicableRules: applicableRules
+				projectHistory: projectHistory ];
 		yourself).
 		
 	mainAreaNotebook selectPageIndex: 1.

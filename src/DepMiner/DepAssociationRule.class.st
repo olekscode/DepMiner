@@ -78,6 +78,13 @@ DepAssociationRule >> feedback: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+DepAssociationRule >> generateDeprecationFor: aMethod [
+	^ 'self
+		deprecated: ''Use #', addedMethodCalls anyOne selector, ' instead''
+		transformWith: ''', transformationRule antecedent, ''' -> ''', transformationRule consequent, '''.' 
+]
+
+{ #category : #'as yet unclassified' }
 DepAssociationRule >> generateTransformationRule [
 	| deletedSelector addedSelector |
 	
@@ -182,6 +189,16 @@ DepAssociationRule >> printOn: aStream [
 		nextPut: $}
 ]
 
+{ #category : #'as yet unclassified' }
+DepAssociationRule >> snapshotOfSourceCodeWithGeneratedDeprecationFor: aMethod [
+	| newAst |
+	newAst := aMethod ast copy.
+	newAst statements:
+		(aMethod ast statements copyWithFirst:
+			(RBParser parseExpression: (self generateDeprecationFor: aMethod))).
+	^ newAst formattedCode
+]
+
 { #category : #accessing }
 DepAssociationRule >> transformationRule [
 	^ transformationRule
@@ -201,7 +218,7 @@ DepAssociationRule >> transformationRuleExpressionFor: aSelector [
 		ifTrue: [ ^ '`@rec ', aSelector ].
 	
 	numberOfArguments = 1
-		ifTrue: [ ^ '`@rec ', aSelector, '`@arg' ].
+		ifTrue: [ ^ '`@rec ', aSelector, ' `@arg' ].
 	
 	^ '`@rec ', (' ' join: (((aSelector splitOn: $:) copyFrom: 1 to: numberOfArguments) withIndexCollect: [ :selectorPart :i | selectorPart, ': `@arg', i asString ])).
 ]
