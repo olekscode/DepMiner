@@ -12,21 +12,6 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
-{ #category : #'instance creation' }
-DepMethod class >> fromSton: stonReader [
-	| method |
-	self haltOnce.
-	method := super fromSton: stonReader.
-	
-	method sourceCode ifNotNil: [
-		method ast: (RBParser parseMethod: method sourceCode) ].
-	
-	method oldSourceCode ifNotNil: [
-		method oldAst: (RBParser parseMethod: method oldSourceCode) ].
-	
-	^ method
-]
-
 { #category : #converting }
 DepMethod >> asDepRecommendation [
 	| recommendation |
@@ -121,6 +106,12 @@ DepMethod >> oldSourceCode: anObject [
 { #category : #'as yet unclassified' }
 DepMethod >> oldTransformationRule [
 	^ oldDeprecation transformationRule
+]
+
+{ #category : #parsing }
+DepMethod >> parseOldSourceCode [
+	oldSourceCode ifNotNil: [ 
+		oldAst := RBParser parseMethod: oldSourceCode ]
 ]
 
 { #category : #'ston persistence' }

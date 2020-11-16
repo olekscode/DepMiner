@@ -26,12 +26,16 @@ DepMethodTest >> testSton [
 	| originalObject stonString recoveredObject |
 	
 	originalObject := method.
-
+	
 	stonString := STON toString: originalObject.
 	recoveredObject := STON fromString: stonString.
 	
 	self assert: recoveredObject equals: originalObject.
 	
-	"We need to check ast separeately because the equality operator ignores ast"
+	"After parsing a metod from a STON string, we need to parse its source code again."
+	recoveredObject parseSourceCode.
+	recoveredObject parseOldSourceCode.
+	
 	self assert: recoveredObject ast equals: originalObject ast.
+	self assert: recoveredObject oldAst equals: originalObject oldAst.
 ]
