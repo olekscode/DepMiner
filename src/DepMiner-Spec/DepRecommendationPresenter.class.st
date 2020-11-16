@@ -5,12 +5,15 @@ Class {
 		'recommendation',
 		'replacementImplementations',
 		'replacementsList',
-		'generatedCode',
-		'replacementCode',
 		'generateButton'
 	],
 	#category : #'DepMiner-Spec-Views'
 }
+
+{ #category : #specs }
+DepRecommendationPresenter class >> codeLayout [
+	self subclassResponsibility
+]
 
 { #category : #specs }
 DepRecommendationPresenter class >> defaultSpec [
@@ -21,12 +24,7 @@ DepRecommendationPresenter class >> defaultSpec [
 				add: 'Replacements' height: self labelHeight;
 				add: #replacementsList;
 				yourself) width: 250;
-			add: (SpBoxLayout newVertical
-				add: 'Generated code' height: self labelHeight;
-				add: #generatedCode;
-				add: 'Implementation of a proposed replacement' height: self labelHeight;
-				add: #replacementCode;
-				yourself);
+			add: self codeLayout;
 			yourself);
 		add: (SpBoxLayout newHorizontal
 			add: '';
@@ -41,6 +39,11 @@ DepRecommendationPresenter >> connectPresenters [
 	
 	replacementsList whenSelectionChangedDo: [ :selectionMode |
 		self onReplacementSelectionChanged ].
+]
+
+{ #category : #initialization }
+DepRecommendationPresenter >> initializeCode [
+	self subclassResponsibility
 ]
 
 { #category : #initialization }
@@ -64,15 +67,7 @@ DepRecommendationPresenter >> initializePresenters [
 						(DepMethodChangeBrowser on: replacementsList selectedItem)
 							openWithSpec ] ] ] ].
 	
-	generatedCode := self newCode
-		withoutLineNumbers;
-		beNotEditable;
-		yourself.
-		
-	replacementCode := self newCode
-		withoutLineNumbers;
-		beNotEditable;
-		yourself.
+	self initializeCode.
 	
 	generateButton := self newButton
 		label: 'Generate';
@@ -83,27 +78,12 @@ DepRecommendationPresenter >> initializePresenters [
 
 { #category : #'as yet unclassified' }
 DepRecommendationPresenter >> onReplacementSelectionChanged [
-	| rule |
-	rule := replacementsList selectedItem.
-	
-	rule ifNotNil: [
-		self showCodeGeneratedBy: rule.
-		self showImplementationOfReplacementProposedBy: rule ].
+	self subclassResponsibility
 ]
 
 { #category : #'accessing model' }
 DepRecommendationPresenter >> setModelBeforeInitialization: aRecommendation [
 	recommendation := aRecommendation
-]
-
-{ #category : #'as yet unclassified' }
-DepRecommendationPresenter >> showCodeGeneratedBy: aRule [
-	generatedCode text: (aRule snapshotOfSourceCodeWithGeneratedDeprecationFor: recommendation)
-]
-
-{ #category : #'as yet unclassified' }
-DepRecommendationPresenter >> showImplementationOfReplacementProposedBy: aRule [
-	self subclassResponsibility.
 ]
 
 { #category : #'as yet unclassified' }
