@@ -6,7 +6,7 @@ Class {
 
 { #category : #accessing }
 DepSaveCommand class >> defaultDescription [
-	^ 'Save rules and rule feedback into a file'
+	^ 'Save settings, project history, and recommendation into a file'
 ]
 
 { #category : #accessing }
@@ -21,22 +21,18 @@ DepSaveCommand class >> defaultName [
 
 { #category : #executing }
 DepSaveCommand >> execute [
-	| saveFileDialog |
-	context currentExperiment fileReference
-		ifNotNil: [ self save ]
-		ifNil: [ 
-			saveFileDialog := FDSaveFileDialog new whenSelected: [ :selectedFile |
-				context currentExperiment fileReference: selectedFile.
-				self save ].
+	| modelDictionary saveFileDialog |
+	
+	modelDictionary := { 
+		"'settings' -> context settings .
+		'projectHistory' -> context projectHistory ."
+		'recommendations' -> context recommendations
+	} asDictionary.
+	
+	saveFileDialog := FDSaveFileDialog new whenSelected: [ :selectedFile |
+		selectedFile writeStreamDo: [ :writeStream |
+			STON put: modelDictionary onStream: writeStream  ] ].
 		
-			saveFileDialog openWithSpec ].
+	saveFileDialog openWithSpec.
 	
-]
-
-{ #category : #files }
-DepSaveCommand >> save [
-	context currentExperiment fileReference writeStreamDo: [ :writeStream |
-		STON put: context currentExperiment onStream: writeStream  ].
-	
-	context onSaved.
 ]

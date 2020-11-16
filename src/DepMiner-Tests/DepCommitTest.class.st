@@ -135,3 +135,15 @@ DepCommitTest >> testSet [
 	self assert: (set includes: commit7).
 	self assert: (set includes: commit8).
 ]
+
+{ #category : #tests }
+DepCommitTest >> testSton [
+	| originalObject stonString recoveredObject |
+	
+	originalObject := commit1.
+	
+	stonString := STON toString: originalObject.
+	recoveredObject := STON fromString: stonString.
+	
+	self assert: recoveredObject equals: originalObject.
+]

@@ -6,7 +6,7 @@ Class {
 
 { #category : #default }
 DepOpenCommand class >> defaultDescription [
-	^ 'Open the file containing the rules and rule feedback'
+	^ 'Open the file containing the settings, project history, and recommendation'
 ]
 
 { #category : #default }
@@ -21,19 +21,16 @@ DepOpenCommand class >> defaultName [
 
 { #category : #executing }
 DepOpenCommand >> execute [
-	| openFileDialog |
+	| openFileDialog modelDictionary |
+	
 	openFileDialog := FDOpenFileDialog new whenSelected: [ :selectedFile |
-		self open: selectedFile ].
+		modelDictionary := selectedFile readStreamDo: [ :readStream |
+			STON fromStream: readStream ].
+
+		context
+			loadWithSettings: (modelDictionary at: 'settings')
+			projectHistory: (modelDictionary at: 'projectHistory')
+			recommendations: (modelDictionary at: 'recommendations') ].
 	
 	openFileDialog openWithSpec 
-]
-
-{ #category : #executing }
-DepOpenCommand >> open: aFileReference [
-	| experiment |
-	experiment := aFileReference readStreamDo: [ :readStream |
-		STON fromStream: readStream ].
-
-	experiment fileReference: aFileReference.
-	context addPageWithExperiment: experiment title: aFileReference basename.
 ]

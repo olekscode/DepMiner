@@ -432,6 +432,21 @@ DepMiner >> onProposedDeprecationClicked: aRecommendation [
 	mainAreaNotebook selectPageIndex: 1.
 ]
 
+{ #category : #accessing }
+DepMiner >> projectHistory [
+	^ projectHistory
+]
+
+{ #category : #accessing }
+DepMiner >> recommendations [
+	^ recommendations
+]
+
+{ #category : #accessing }
+DepMiner >> settings [
+	^ settings
+]
+
 { #category : #'as yet unclassified' }
 DepMiner >> showMissingRules [
 	missingRulesTree methods: recommendations methodsWithMissingRules.
