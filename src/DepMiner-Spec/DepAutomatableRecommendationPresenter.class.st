@@ -83,7 +83,12 @@ DepAutomatableRecommendationPresenter >> initializePresenters [
 			addGroup: [ :group | group 
 				addItem: [ :item | item
 					name: 'Inspect';
-					action: [ replacementsList selectedItem inspect ] ] ] ].
+					action: [ replacementsList selectedItem inspect ] ];
+				addItem: [ :item | item
+					name: 'Explain why';
+					action: [
+						(DepMethodChangeBrowser on: replacementsList selectedItem)
+							openWithSpec ] ] ] ].
 	
 	generatedCode := self newCode
 		withoutLineNumbers;
