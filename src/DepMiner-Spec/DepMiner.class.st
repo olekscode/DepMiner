@@ -337,7 +337,12 @@ DepMiner >> initializePresenters [
 			addGroup: [ :group | group 
 				addItem: [ :item | item
 					name: 'Inspect';
-					action: [ replacementsList selectedItem inspect ] ] ] ].
+					action: [ replacementsList selectedItem inspect ] ];
+				addItem: [ :item | item
+					name: 'Browse implementations';
+					action: [ (DepImplementationsBrowser on: (projectHistory sortedMethods
+						select: [ :method | method isInNewVersion and: [
+								method selector = replacementsList selectedItem addedMethodCalls anyOne selector ] ])) openWithSpec ] ] ] ].
 	
 	generatedCode := self newCode
 		withoutLineNumbers;
