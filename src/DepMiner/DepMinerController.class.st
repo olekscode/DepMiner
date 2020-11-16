@@ -169,11 +169,55 @@ DepMinerController >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfid
 	
 	rules := refrain rules select: [ :rule | rule confidence >= aMinConfidence ].
 	recommendations rules: (self buildRulesFrom: rules).
+	
+	self recommendMethodsToDeprecate.
+	self recommendMethodsWithMissingRules.
 ]
 
 { #category : #accessing }
 DepMinerController >> projectHistory: anObject [
 	projectHistory := anObject
+]
+
+{ #category : #'as yet unclassified' }
+DepMinerController >> recommendMethodsToDeprecate [
+	| methodsToDeprecate methodsInNewVersion depRecommendations |
+	
+	methodsToDeprecate := projectHistory sortedMethods select: [ :method |
+		method wasDeleted and: [
+			method isDeprecated not and: [
+				recommendations relevantRules anySatisfy: [ :rule |
+					rule deletedMethodCalls anyOne selector = method selector ] ] ] ].
+	
+	methodsInNewVersion := projectHistory sortedMethods select: [ :method |
+		method isInNewVersion ].
+	
+	depRecommendations := methodsToDeprecate collect: [ :method |
+		method asDepRecommendation
+			chooseApplicableRulesFrom: recommendations relevantRules
+			basedOn: methodsInNewVersion;
+			yourself ].
+		
+	recommendations methodsToDeprecate: depRecommendations.
+]
+
+{ #category : #'as yet unclassified' }
+DepMinerController >> recommendMethodsWithMissingRules [
+	| methodsWithMissingRules methodsInNewVersion depRecommendations |
+	
+	methodsInNewVersion := projectHistory sortedMethods select: [ :method |
+		method isInNewVersion ].
+	
+	methodsWithMissingRules := methodsInNewVersion select: [ :method |
+		method isDeprecated and: [ method hasTransformationRule not ] ].
+	
+	depRecommendations := methodsWithMissingRules collect: [ :method |
+		method asDepRecommendation
+			chooseApplicableRulesFrom: recommendations relevantRules
+			basedOn: methodsInNewVersion;
+			yourself ].
+		
+	recommendations methodsWithMissingRules: depRecommendations.
 ]
 
 { #category : #accessing }

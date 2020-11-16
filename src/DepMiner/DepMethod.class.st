@@ -12,6 +12,29 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
+{ #category : #converting }
+DepMethod >> asDepRecommendation [
+	| recommendation |
+	
+	recommendation := DepRecommendation new
+		packageName: packageName;
+		className: className;
+		selector: selector;
+		sourceCode: sourceCode;
+		ast: ast;
+		deprecation: deprecation;
+		oldSourceCode: oldSourceCode;
+		oldAst: oldAst;
+		oldDeprecation: oldDeprecation;
+		yourself.
+		
+	wasInOldVersion ifTrue: [ recommendation markAsOldMethod ].
+	isInNewVersion ifTrue: [ recommendation markAsNewMethod ].
+	wasModified ifTrue: [ recommendation markAsModified ].
+	
+	^ recommendation
+]
+
 { #category : #accessing }
 DepMethod >> ast: anObject [
 	ast := anObject

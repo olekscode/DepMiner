@@ -414,33 +414,27 @@ DepMiner >> onOldVersionSelected: aCommit [
 ]
 
 { #category : #'as yet unclassified' }
-DepMiner >> onProposedDeprecationClicked: aMethod [
-	| applicableRules |
-	
-	applicableRules := recommendations automatableRules select: [ :rule |
-		rule deletedMethodCalls anyOne selector = aMethod selector ].
-	
+DepMiner >> onProposedDeprecationClicked: aRecommendation [
 	mainAreaNotebook removeAll.
 	
-	mainAreaNotebook addPage: (self newNotebookPage
-		title: 'Automatable rules';
-		presenterProvider: [
-			DepAutomatableRecommendationPresenter
-				forMethod: aMethod
-				applicableRules: applicableRules
-				projectHistory: projectHistory ];
-		yourself).
+	aRecommendation hasApplicableAutomatableRules ifTrue: [
+		mainAreaNotebook addPage: (self newNotebookPage
+			title: 'Automatable rules';
+			presenterProvider: [ DepAutomatableRecommendationPresenter on: aRecommendation ];
+			yourself) ].
+		
+	aRecommendation hasApplicableNonAutomatableRules ifTrue: [
+		mainAreaNotebook addPage: (self newNotebookPage
+			title: 'Non-automatable rules';
+			presenterProvider: [ DepNonAutomatableRecommendationPresenter on: aRecommendation ];
+			yourself) ].
 		
 	mainAreaNotebook selectPageIndex: 1.
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showMissingRules [
-	| methodsWithMissingRules |
-	
-	methodsWithMissingRules := projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated and: [ method hasTransformationRule not ] ] ].
-
-	missingRulesTree methods: methodsWithMissingRules.
+	missingRulesTree methods: recommendations methodsWithMissingRules.
 ]
 
 { #category : #'as yet unclassified' }
@@ -515,16 +509,7 @@ DepMiner >> showProjectHistoryStats [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showProposedDeprecations [
-	| methodsToDeprecate |
-	
-	methodsToDeprecate := projectHistory sortedMethods select: [ :method |
-		method wasDeleted and: [
-			method isDeprecated not and: [
-				recommendations automatableRules anySatisfy: [ :rule |
-					rule deletedMethodCalls anySatisfy: [ :methodCall |
-						methodCall selector = method selector ] ] ] ] ].
-
-	proposedDeprecationsTree methods: methodsToDeprecate.
+	proposedDeprecationsTree methods: recommendations methodsToDeprecate.
 ]
 
 { #category : #'as yet unclassified' }

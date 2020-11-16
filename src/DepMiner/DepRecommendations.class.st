@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'rules',
-		'selectorsToDeprecate'
+		'methodsToDeprecate',
+		'methodsWithMissingRules'
 	],
 	#category : #'DepMiner-Models'
 }
@@ -14,10 +15,24 @@ DepRecommendations >> automatableRules [
 	^ rules select: [ :rule | rule isAutomatable ]
 ]
 
-{ #category : #initialization }
-DepRecommendations >> initialize [
-	super initialize.
-	selectorsToDeprecate := Dictionary new.
+{ #category : #accessing }
+DepRecommendations >> methodsToDeprecate [
+	^ methodsToDeprecate
+]
+
+{ #category : #accessing }
+DepRecommendations >> methodsToDeprecate: anObject [
+	methodsToDeprecate := anObject
+]
+
+{ #category : #accessing }
+DepRecommendations >> methodsWithMissingRules [
+	^ methodsWithMissingRules
+]
+
+{ #category : #accessing }
+DepRecommendations >> methodsWithMissingRules: anObject [
+	methodsWithMissingRules := anObject
 ]
 
 { #category : #'as yet unclassified' }
@@ -34,19 +49,6 @@ DepRecommendations >> rules [
 { #category : #accessing }
 DepRecommendations >> rules: anObject [
 	rules := anObject.
-	
-	self relevantRules
-		select: [ :rule | rule hasTransformationRule ]
-		thenDo: [ :rule |
-			(selectorsToDeprecate
-				at: rule deletedMethodCalls anyOne selector
-				ifAbsentPut: [ OrderedCollection new ])
-				add: rule transformationRule ].
-]
-
-{ #category : #accessing }
-DepRecommendations >> selectorsToDeprecate [
-	^ selectorsToDeprecate
 ]
 
 { #category : #'as yet unclassified' }
