@@ -35,9 +35,7 @@ Class {
 		'recommendationsNotebook',
 		'proposedDeprecationsTree',
 		'missingRulesTree',
-		'replacementsList',
-		'generatedCode',
-		'generateButton'
+		'mainAreaNotebook'
 	],
 	#category : #'DepMiner-Spec-Views'
 }
@@ -126,23 +124,7 @@ DepMiner class >> defaultSpec [
 					add: #recommendationsNotebook;
 					yourself);
 				yourself);
-			add: (SpBoxLayout newVertical
-				add: (SpBoxLayout newHorizontal
-					spacing: spacing;
-					add: (SpBoxLayout newVertical
-						add: 'Replacements' height: self labelHeight;
-						add: #replacementsList;
-						yourself) width: 250;
-					add: (SpBoxLayout newVertical
-						add: 'Generated code' height: self labelHeight;
-						add: #generatedCode;
-						yourself);
-					yourself);
-				add: (SpBoxLayout newHorizontal
-					add: '';
-					add: #generateButton width: self buttonWidth;
-					yourself) height: self buttonHeight;
-				yourself);
+			add: #mainAreaNotebook;
 			yourself);
 		yourself.
 ]
@@ -328,30 +310,7 @@ DepMiner >> initializePresenters [
 			yourself);
 		yourself.
 	
-	replacementsList := self newList
-		display: [ :rule | rule addedMethodCalls anyOne selector ];
-		yourself.
-		
-	replacementsList contextMenu: [
-		SpMenuPresenter new 
-			addGroup: [ :group | group 
-				addItem: [ :item | item
-					name: 'Inspect';
-					action: [ replacementsList selectedItem inspect ] ];
-				addItem: [ :item | item
-					name: 'Browse implementations';
-					action: [ (DepImplementationsBrowser on: (projectHistory sortedMethods
-						select: [ :method | method isInNewVersion and: [
-								method selector = replacementsList selectedItem addedMethodCalls anyOne selector ] ])) openWithSpec ] ] ] ].
-	
-	generatedCode := self newCode
-		withoutLineNumbers;
-		beNotEditable;
-		yourself.
-	
-	generateButton := self newButton
-		label: 'Generate';
-		yourself.
+	mainAreaNotebook := self newNotebook.
 		
 	self showProjectHistoryStats.
 	self showRulesStats.
@@ -415,7 +374,19 @@ DepMiner >> onLoadProjectClicked [
 
 { #category : #events }
 DepMiner >> onMethodClicked: aMethod [
-	generatedCode text: aMethod sourceCode
+	mainAreaNotebook removeAll.
+
+	mainAreaNotebook addPage: (self newNotebookPage
+		title: 'Source code';
+		presenterProvider: [
+			self newCode
+				withoutLineNumbers;
+				beNotEditable;
+				text: aMethod sourceCode;
+				yourself ];
+		yourself).
+		
+	mainAreaNotebook selectPageIndex: 1.
 ]
 
 { #category : #'as yet unclassified' }
@@ -449,9 +420,18 @@ DepMiner >> onProposedDeprecationClicked: aMethod [
 	applicableRules := recommendations automatableRules select: [ :rule |
 		rule deletedMethodCalls anyOne selector = aMethod selector ].
 	
-	replacementsList items: applicableRules.
+	mainAreaNotebook removeAll.
+	
+	mainAreaNotebook addPage: (self newNotebookPage
+		title: 'Automatable rules';
+		presenterProvider: [
+			DepAutomatableRecommendationPresenter
+				forProjectHistory: projectHistory
+				method: aMethod
+				applicableRules: applicableRules ];
+		yourself).
 		
-	generatedCode text: aMethod sourceCode.
+	mainAreaNotebook selectPageIndex: 1.
 ]
 
 { #category : #'as yet unclassified' }
