@@ -91,3 +91,8 @@ DepRecommendationPresenter >> setModelBeforeInitialization: aRecommendation [
 DepRecommendationPresenter >> showReplacements [
 	self subclassResponsibility
 ]
+
+{ #category : #'as yet unclassified' }
+DepRecommendationPresenter >> whenGenerateButtonClicked: aBlock [
+	generateButton action: aBlock
+]

@@ -342,6 +342,11 @@ DepMiner >> loadWithSettings: aSettingsModel projectHistory: aProjectHistoryMode
 ]
 
 { #category : #'as yet unclassified' }
+DepMiner >> onGenerateClicked [
+	
+]
+
+{ #category : #'as yet unclassified' }
 DepMiner >> onLoadChangesClicked [
 	| oldVersionString newVersionString oldCommit newCommit |
 	
@@ -434,13 +439,19 @@ DepMiner >> onProposedDeprecationClicked: aRecommendation [
 	aRecommendation hasApplicableAutomatableRules ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Automatable rules';
-			presenterProvider: [ DepAutomatableRecommendationPresenter on: aRecommendation ];
+			presenterProvider: [
+				(DepAutomatableRecommendationPresenter on: aRecommendation)
+					whenGenerateButtonClicked: [ self onGenerateClicked ];
+					yourself ];
 			yourself) ].
 		
 	aRecommendation hasApplicableNonAutomatableRules ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Non-automatable rules';
-			presenterProvider: [ DepNonAutomatableRecommendationPresenter on: aRecommendation ];
+			presenterProvider: [
+				(DepNonAutomatableRecommendationPresenter on: aRecommendation)
+					whenGenerateButtonClicked: [ self onGenerateClicked ];
+					yourself ];
 			yourself) ].
 		
 	mainAreaNotebook selectPageIndex: 1.
