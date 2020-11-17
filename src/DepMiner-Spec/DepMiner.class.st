@@ -406,12 +406,11 @@ DepMiner >> onMethodClicked: aMethod [
 
 { #category : #'as yet unclassified' }
 DepMiner >> onMineRulesClicked [
-	| minCount minConfidence |
+	settings minCount: minCountSelect number.
+	settings minConfidence: minConfidenceSelect number.
 	
-	minCount := minCountSelect number.
-	minConfidence := minConfidenceSelect number.
+	controller mineRules.
 	
-	controller mineRulesWithMinCount: minCount minConfidence: minConfidence.
 	self showRecommendations.
 	self showRulesStats.
 ]
@@ -579,7 +578,7 @@ DepMiner >> showSettings [
 	newVersionInput text: (projectHistory commitDictionary at: settings newCommitSha) shortSha.
 	
 	minCountSelect number: settings minCount.
-	minCountSelect number: settings minConfidence.
+	minConfidenceSelect number: settings minConfidence.
 	
 	self showProjectHistoryStats.
 	self showRulesStats.

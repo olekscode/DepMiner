@@ -9,6 +9,8 @@ Class {
 
 { #category : #running }
 DepMethodTest >> setUp [
+	super setUp.
+	
 	method := DepMethod new
 		packageName: 'Core';
 		className: 'Collection';

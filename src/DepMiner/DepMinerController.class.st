@@ -162,12 +162,12 @@ DepMinerController >> mapRules: aCollectionOfRules toMethodChanges: aCollectionO
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> mineRulesWithMinCount: aMinCount minConfidence: aMinConfidence [
+DepMinerController >> mineRules [
 	| rules |
-	refrain minNumberOfRepetitions: aMinCount.
+	refrain minNumberOfRepetitions: settings minCount.
 	refrain mineRules.
 	
-	rules := refrain rules select: [ :rule | rule confidence >= aMinConfidence ].
+	rules := refrain rules select: [ :rule | rule confidence >= settings minConfidence ].
 	recommendations rules: (self buildRulesFrom: rules).
 	
 	self recommendMethodsToDeprecate.
