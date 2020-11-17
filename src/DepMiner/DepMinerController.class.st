@@ -87,7 +87,10 @@ DepMinerController >> loadChanges [
 		newSelectors: (clio newMethods collect: [ :method | method selector ]);
 		yourself.
 		
-	refrain entityCollector: methodCallCollector.
+	refrain
+		entityCollector: methodCallCollector;
+		maxNumberOfAddedAndDeletedEntitiesInMethodChange: 3.
+		
 	refrain loadMethodChanges.
 	
 	projectHistory methodChanges: refrain methodChanges.
