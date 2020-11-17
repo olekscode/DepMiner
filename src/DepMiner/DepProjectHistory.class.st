@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'commitDictionary',
 		'methodDictionary',
-		'methodChanges'
+		'methodChanges',
+		'relevantMethodChanges'
 	],
 	#category : #'DepMiner-Models'
 }
@@ -52,9 +53,14 @@ DepProjectHistory >> methodDictionary [
 	^ methodDictionary
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DepProjectHistory >> relevantMethodChanges [
-	^ methodChanges select: [ :each | each isRelevant ]
+	^ relevantMethodChanges
+]
+
+{ #category : #accessing }
+DepProjectHistory >> relevantMethodChanges: anObject [
+	relevantMethodChanges := anObject
 ]
 
 { #category : #accessing }

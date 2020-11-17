@@ -91,6 +91,7 @@ DepMinerController >> loadChanges [
 	refrain loadMethodChanges.
 	
 	projectHistory methodChanges: refrain methodChanges.
+	projectHistory relevantMethodChanges: refrain relevantMethodChanges.
 ]
 
 { #category : #'as yet unclassified' }
