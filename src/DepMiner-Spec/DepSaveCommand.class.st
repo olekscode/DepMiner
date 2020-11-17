@@ -24,8 +24,8 @@ DepSaveCommand >> execute [
 	| modelDictionary saveFileDialog |
 	
 	modelDictionary := { 
-		"'settings' -> context settings .
-		'projectHistory' -> context projectHistory ."
+		'settings' -> context settings .
+		'projectHistory' -> context projectHistory .
 		'recommendations' -> context recommendations
 	} asDictionary.
 	

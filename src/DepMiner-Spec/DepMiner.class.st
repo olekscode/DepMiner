@@ -327,6 +327,21 @@ DepMiner >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #'as yet unclassified' }
+DepMiner >> loadWithSettings: aSettingsModel projectHistory: aProjectHistoryModel recommendations: aRecommendationsModel [
+
+	settings := aSettingsModel.
+	projectHistory := aProjectHistoryModel.
+	recommendations := aRecommendationsModel.
+	
+	mainAreaNotebook removeAll.
+	
+	self showSettings.
+	self showOldVersion.
+	self showNewVersion.
+	self showRecommendations.
+]
+
+{ #category : #'as yet unclassified' }
 DepMiner >> onLoadChangesClicked [
 	| oldVersionString newVersionString oldCommit newCommit |
 	
@@ -553,6 +568,21 @@ DepMiner >> showRulesStats [
 	totalRulesCountLabel label: (totalNumberOfRules asString, ' rules were found').
 	relevantRulesCountLabel label: (numberOfRelevantRules asString, ' relevant rules (', ((fractionOfRelevantRules * 100) asFloat round: 1) asString, '%)').
 	automatableRulesCountLabel label: (numberOfAutomatableRules asString, ' automatable rules (', ((fractionOfAutomatableRules * 100) asFloat round: 1) asString, '%)').
+]
+
+{ #category : #'as yet unclassified' }
+DepMiner >> showSettings [
+	ownerNameInput text: settings ownerName.
+	projectNameInput text: settings projectName.
+	
+	oldVersionInput text: (projectHistory commitDictionary at: settings oldCommitSha) shortSha.
+	newVersionInput text: (projectHistory commitDictionary at: settings newCommitSha) shortSha.
+	
+	minCountSelect number: settings minCount.
+	minCountSelect number: settings minConfidence.
+	
+	self showProjectHistoryStats.
+	self showRulesStats.
 ]
 
 { #category : #building }
