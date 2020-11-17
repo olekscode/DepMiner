@@ -30,7 +30,7 @@ DepMethodChangeBrowser class >> defaultSpec [
 
 { #category : #specs }
 DepMethodChangeBrowser class >> preferredExtent [
-	^ 800@400
+	^ 1200@600
 ]
 
 { #category : #initialization }
@@ -65,6 +65,7 @@ DepMethodChangeBrowser >> initializePresenters [
 		yourself.
 		
 	self showMethodChangeTable.
+	self showMethodChange: methodChangeTable selectedItem.
 ]
 
 { #category : #initialization }
@@ -100,13 +101,7 @@ DepMethodChangeBrowser >> showMethodChangeTable [
 			evaluated: [ :each | each method selector ]);
 		addColumn: (SpStringTableColumn
 			title: 'Commit'
-			evaluated: [ :each | each commitSha ])";
-		addColumn: (SpStringTableColumn
-			title: 'Date'
-			evaluated: [ :each | each commit datetime asDate ]);
-		addColumn: (SpStringTableColumn
-			title: 'Time'
-			evaluated: [ :each | each commit datetime asTime ])".
+			evaluated: [ :each | each commitSha ]).
 			
 	methodChangeTable selectIndex: 1.
 ]
