@@ -1,14 +1,14 @@
 SmalltalkCISpec {
   #loading : [
     SCIMetacelloLoadSpec {
-      #baseline : 'MrMiner',
+      #baseline : 'DepMiner',
       #directory : 'src',
       #platforms : [ #pharo ]
     }
   ],
   #testing : {
     #coverage : {
-      #packages : [ 'MrMiner*' ]
+      #packages : [ 'DepMiner*' ]
     }
   }
 }
