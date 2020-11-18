@@ -8,7 +8,6 @@ Class {
 		'confidence',
 		'lift',
 		'methodChanges',
-		'feedback',
 		'transformationRule'
 	],
 	#category : #'DepMiner-Models'
@@ -67,16 +66,6 @@ DepAssociationRule >> deletedMethodCalls: anObject [
 	deletedMethodCalls := anObject
 ]
 
-{ #category : #accessing }
-DepAssociationRule >> feedback [
-	^ feedback
-]
-
-{ #category : #accessing }
-DepAssociationRule >> feedback: anObject [
-	feedback := anObject
-]
-
 { #category : #'as yet unclassified' }
 DepAssociationRule >> generateDeprecationFor: aMethod [
 	^ 'self
@@ -94,11 +83,6 @@ DepAssociationRule >> generateTransformationRule [
 	transformationRule := TransformationRule
 		antecedent: (self transformationRuleExpressionFor: deletedSelector)
 		consequent: (self transformationRuleExpressionFor: addedSelector).
-]
-
-{ #category : #testing }
-DepAssociationRule >> hasFeedback [
-	^ feedback isNotNil
 ]
 
 { #category : #accessing }
@@ -132,24 +116,9 @@ DepAssociationRule >> isAutomatable [
 ]
 
 { #category : #testing }
-DepAssociationRule >> isBad [
-	^ self hasFeedback and: [ feedback isGood = 'No' ]
-]
-
-{ #category : #testing }
-DepAssociationRule >> isGood [
-	^ self hasFeedback and: [ feedback isGood = 'Yes' ]
-]
-
-{ #category : #testing }
 DepAssociationRule >> isRelevant [
 	"Only one-to-one and one-to-many rules can be used in deprecations"
 	^ deletedMethodCalls size = 1
-]
-
-{ #category : #testing }
-DepAssociationRule >> isUncertain [
-	^ self hasFeedback and: [ feedback isGood = 'Not sure' ]
 ]
 
 { #category : #accessing }
