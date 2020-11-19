@@ -98,6 +98,13 @@ DepCommit >> shortSha [
 	^ sha copyFrom: 1 to: 7
 ]
 
+{ #category : #'as yet unclassified' }
+DepCommit >> tagOrShortSha [
+	^ tags
+		ifNotEmpty: [ tags anyOne ]
+		ifEmpty: [ self shortSha ]
+]
+
 { #category : #accessing }
 DepCommit >> tags [
 	^ tags

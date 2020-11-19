@@ -439,13 +439,13 @@ DepMiner >> onMineRulesClicked [
 
 { #category : #'as yet unclassified' }
 DepMiner >> onNewVersionSelected: aCommit [
-	newVersionInput text: aCommit shortSha.
+	newVersionInput text: aCommit tagOrShortSha.
 	settings newCommitSha: aCommit sha.
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> onOldVersionSelected: aCommit [
-	oldVersionInput text: aCommit shortSha.
+	oldVersionInput text: aCommit tagOrShortSha.
 	settings oldCommitSha: aCommit sha.
 ]
 
@@ -645,8 +645,8 @@ DepMiner >> showSettings [
 	ownerNameInput text: settings ownerName.
 	projectNameInput text: settings projectName.
 	
-	oldVersionInput text: (projectHistory commitDictionary at: settings oldCommitSha) shortSha.
-	newVersionInput text: (projectHistory commitDictionary at: settings newCommitSha) shortSha.
+	oldVersionInput text: (projectHistory commitDictionary at: settings oldCommitSha) tagOrShortSha.
+	newVersionInput text: (projectHistory commitDictionary at: settings newCommitSha) tagOrShortSha.
 	
 	minCountSelect number: settings minCount.
 	minConfidenceSelect number: settings minConfidence.
