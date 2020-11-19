@@ -5,7 +5,6 @@ Class {
 		'settings',
 		'projectHistory',
 		'recommendations',
-		'repository',
 		'refrain',
 		'clio'
 	],
@@ -50,7 +49,11 @@ DepMinerController >> candidateCommitsForOldVersion [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> extractAllCommitsFromRepository [
-	| iceCommits |
+	| repository iceCommits |
+	
+	[ repository := self getRepository ] on: Error do: [ :err |
+		self inform: err messageText.
+		^ self ].
 	
 	iceCommits := (repository allBranches flatCollect: [ :branch | branch commits ]) asSet.
 	projectHistory commitDictionary removeAll.
@@ -64,9 +67,35 @@ DepMinerController >> extractAllCommitsFromRepository [
 			ifPresent: [ :commit | commit tags add: tag name ] ].
 ]
 
+{ #category : #accessing }
+DepMinerController >> getRepository [
+	^ IceRepository registry
+		detect: [ :repo |
+			repo isValid and: [
+				repo location path parent basename = settings ownerName and: [
+					repo name = settings projectName ] ] ]
+		ifNone: [
+			Error signal: (String streamContents: [ :stream |
+				stream
+					nextPutAll: 'The repository ';
+					nextPutAll: settings ownerName;
+					nextPut: $/;
+					nextPutAll: settings projectName;
+					nextPutAll: ' was not found in the system. Please load it with Iceberg' ]) ].
+]
+
+{ #category : #testing }
+DepMinerController >> isProjectLoadedAtTheRightVersion [
+	"Answer true if the project that is being analysed is loaded into the system at the version specified by newCommitSha"
+	
+	
+]
+
 { #category : #'as yet unclassified' }
 DepMinerController >> loadChanges [
-	| methodCallCollector |
+	| repository methodCallCollector |
+	
+	repository := self getRepository.
 		
 	clio := Clio
 		forRepository: repository
@@ -143,16 +172,6 @@ DepMinerController >> loadOldVersion [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> loadProject [
-	"Load a project from GitHub or select the existing one"
-	
-	repository := IceRepository registry
-		detect: [ :repo |
-			repo isValid and: [
-				repo location path parent basename = settings ownerName and: [
-					repo name = settings projectName ] ] ]
-		ifFound: [ :repo | repo ]
-		ifNone: [ self loadGitHubRepository ].
-		
 	self extractAllCommitsFromRepository.
 	
 ]
