@@ -56,11 +56,13 @@ DepMethodChangeBrowser >> initializePresenters [
 	
 	oldCode := self newCode
 		withoutLineNumbers;
+		beForBehavior: Object;
 		beNotEditable;
 		yourself.
 		
 	newCode := self newCode
 		withoutLineNumbers;
+		beForBehavior: Object;
 		beNotEditable;
 		yourself.
 		

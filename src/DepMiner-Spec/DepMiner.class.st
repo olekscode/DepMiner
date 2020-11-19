@@ -595,7 +595,7 @@ DepMiner >> showProjectHistoryStats [
 		numberOfCommits := projectHistory commitDictionary size.
 		numberOfMethodChanges := projectHistory totalNumberOfMethodChanges.
 		numberOfRelevantMethodChanges := projectHistory relevantMethodChanges size.
-		fractionOfRelevantMethodChanges := numberOfRelevantMethodChanges / numberOfMethodChanges ].
+		fractionOfRelevantMethodChanges :=  numberOfMethodChanges = 0 ifTrue: [ 0 ] ifFalse: [ numberOfRelevantMethodChanges / numberOfMethodChanges ] ].
 	
 	numberOfCommitsLabel label: (numberOfCommits asString, ' commits between those two versions').
 	numberOfMethodChangesLabel label: (numberOfMethodChanges asString, ' method changes').
@@ -636,8 +636,8 @@ DepMiner >> showRulesStats [
 		totalNumberOfRules := recommendations rules size.
 		numberOfRelevantRules := recommendations relevantRules size.
 		numberOfAutomatableRules := recommendations transformationRules size.
-		fractionOfRelevantRules := numberOfRelevantRules / totalNumberOfRules.
-		fractionOfAutomatableRules := numberOfAutomatableRules / totalNumberOfRules ].
+		fractionOfRelevantRules := totalNumberOfRules = 0 ifTrue: [ 0 ] ifFalse: [ numberOfRelevantRules / totalNumberOfRules ].
+		fractionOfAutomatableRules :=  totalNumberOfRules = 0 ifTrue: [ 0 ] ifFalse: [ numberOfAutomatableRules / totalNumberOfRules ] ].
 	
 	totalRulesCountLabel label: (totalNumberOfRules asString, ' rules were found').
 	relevantRulesCountLabel label: (numberOfRelevantRules asString, ' relevant rules (', ((fractionOfRelevantRules * 100) asFloat round: 1) asString, '%)').
