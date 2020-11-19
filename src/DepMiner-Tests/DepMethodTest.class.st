@@ -20,6 +20,7 @@ DepMethodTest >> setUp [
 				deprecated: ''Use #doWithIndex: instead''
 				transformWith: ''`@rec withIndexDo: `@arg'' -> ''`@rec doWithIndex: `@arg''.
 			^ self doWithIndex: aBlock';
+		extractDeprecationsFromAst;
 		yourself.
 ]
 
@@ -33,8 +34,4 @@ DepMethodTest >> testSton [
 	recoveredObject := STON fromString: stonString.
 	
 	self assert: recoveredObject equals: originalObject.
-	
-	"We need to check ASTs separately because they are ignored by equality operator"
-	self assert: recoveredObject ast equals: originalObject ast.
-	self assert: recoveredObject oldAst equals: originalObject oldAst.
 ]

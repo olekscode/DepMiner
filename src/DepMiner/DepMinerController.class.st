@@ -155,7 +155,6 @@ DepMinerController >> loadModifiedMethodsUsing: aClio [
 		(projectHistory methodDictionary at: newMethod signature)
 			markAsModified;
 			oldSourceCode: oldMethod sourceCode;
-			oldAst: oldMethod ast;
 			oldDeprecation: oldMethod deprecation ].
 ]
 

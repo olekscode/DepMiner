@@ -6,22 +6,10 @@ Class {
 		'isInNewVersion',
 		'wasModified',
 		'oldSourceCode',
-		'oldAst',
 		'oldDeprecation'
 	],
 	#category : #'DepMiner-Models'
 }
-
-{ #category : #'instance creation' }
-DepMethod class >> fromSton: stonReader [
-	| method | 
-	method := super fromSton: stonReader.
-	
-	method parseSourceCode.
-	method parseOldSourceCode.
-
-	^ method
-]
 
 { #category : #converting }
 DepMethod >> asDepRecommendation [
@@ -32,10 +20,8 @@ DepMethod >> asDepRecommendation [
 		className: className;
 		selector: selector;
 		sourceCode: sourceCode;
-		ast: ast;
 		deprecation: deprecation;
 		oldSourceCode: oldSourceCode;
-		oldAst: oldAst;
 		oldDeprecation: oldDeprecation;
 		yourself.
 		
@@ -44,11 +30,6 @@ DepMethod >> asDepRecommendation [
 	wasModified ifTrue: [ recommendation markAsModified ].
 	
 	^ recommendation
-]
-
-{ #category : #accessing }
-DepMethod >> ast: anObject [
-	ast := anObject
 ]
 
 { #category : #accessing }
@@ -85,16 +66,6 @@ DepMethod >> markAsOldMethod [
 ]
 
 { #category : #accessing }
-DepMethod >> oldAst [
-	^ oldAst
-]
-
-{ #category : #accessing }
-DepMethod >> oldAst: anObject [
-	oldAst := anObject
-]
-
-{ #category : #accessing }
 DepMethod >> oldDeprecation [
 	^ oldDeprecation
 ]
@@ -117,20 +88,6 @@ DepMethod >> oldSourceCode: anObject [
 { #category : #'as yet unclassified' }
 DepMethod >> oldTransformationRule [
 	^ oldDeprecation transformationRule
-]
-
-{ #category : #parsing }
-DepMethod >> parseOldSourceCode [
-	oldSourceCode ifNotNil: [ 
-		oldAst := RBParser parseMethod: oldSourceCode ]
-]
-
-{ #category : #'ston persistence' }
-DepMethod >> stonOn: stonWriter [
-	stonWriter writeObject: (self copy
-		ast: nil;
-		oldAst: nil;
-		yourself).
 ]
 
 { #category : #accessing }
