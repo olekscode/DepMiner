@@ -53,6 +53,26 @@ DepProjectHistory >> methodDictionary [
 	^ methodDictionary
 ]
 
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> newMethods [
+	^ self sortedMethods select: [ :method | method isInNewVersion ]
+]
+
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> newSelectors [
+	^ (self newMethods collect: [ :method | method selector ]) asSet
+]
+
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> oldMethods [
+	^ self sortedMethods select: [ :method | method wasInOldVersion ]
+]
+
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> oldSelectors [
+	^ (self oldMethods collect: [ :method | method selector ]) asSet
+]
+
 { #category : #accessing }
 DepProjectHistory >> relevantMethodChanges [
 	^ relevantMethodChanges

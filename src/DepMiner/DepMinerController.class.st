@@ -4,9 +4,7 @@ Class {
 	#instVars : [
 		'settings',
 		'projectHistory',
-		'recommendations',
-		'refrain',
-		'clio'
+		'recommendations'
 	],
 	#category : #'DepMiner-Controllers'
 }
@@ -93,27 +91,35 @@ DepMinerController >> isProjectLoadedAtTheRightVersion [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> loadChanges [
-	| repository methodCallCollector |
+	| repository |
 	
 	repository := self getRepository.
 		
-	clio := Clio
-		forRepository: repository
-		between: settings oldCommitSha
-		and: settings newCommitSha.
-		
-	self loadOldVersion.
-	self loadNewVersion.
-	self loadModifiedMethods.
+	self loadMethodsFrom: repository.
+	self loadMethodChangesFrom: repository.
+]
+
+{ #category : #'as yet unclassified' }
+DepMinerController >> loadGitHubRepository [
+	[ ^ IceGitHubAPI new
+		beAnonymous;
+		getRepository: settings ownerName project: settings projectName ]
+		on: LGitNoCredentialsProvided
+		do: [ ^ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+DepMinerController >> loadMethodChangesFrom: aRepository [
+	| refrain methodCallCollector |
 	
 	refrain := Refrain
-		repository: repository
+		repository: aRepository
 		firstCommit: settings oldCommitSha
 		lastCommit: settings newCommitSha.
 	
 	methodCallCollector := DepSelectorCollector new
-		oldSelectors: (clio oldMethods collect: [ :method | method selector ]);
-		newSelectors: (clio newMethods collect: [ :method | method selector ]);
+		oldSelectors: projectHistory oldSelectors;
+		newSelectors: projectHistory newSelectors;
 		yourself.
 		
 	refrain
@@ -127,19 +133,24 @@ DepMinerController >> loadChanges [
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadGitHubRepository [
-	[ ^ IceGitHubAPI new
-		beAnonymous;
-		getRepository: settings ownerName project: settings projectName ]
-		on: LGitNoCredentialsProvided
-		do: [ ^ nil ]
+DepMinerController >> loadMethodsFrom: aRepository [
+	| clio |
+	
+	clio := Clio
+		forRepository: aRepository
+		between: settings oldCommitSha
+		and: settings newCommitSha.
+		
+	self loadOldVersionUsing: clio.
+	self loadNewVersionUsing: clio.
+	self loadModifiedMethodsUsing: clio.
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadModifiedMethods [
+DepMinerController >> loadModifiedMethodsUsing: aClio [
 	| oldMethod newMethod |
 	
-	clio modifiedMethods do: [ :assoc |
+	aClio modifiedMethods do: [ :assoc |
 		oldMethod := assoc key.
 		newMethod := assoc value.
 		
@@ -153,8 +164,8 @@ DepMinerController >> loadModifiedMethods [
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadNewVersion [
-	clio newMethods do: [ :method |
+DepMinerController >> loadNewVersionUsing: aClio [
+	aClio newMethods do: [ :method |
 		projectHistory addMethodIfDoesNotExist: method.
 			
 		(projectHistory methodDictionary at: method signature)
@@ -162,8 +173,8 @@ DepMinerController >> loadNewVersion [
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadOldVersion [
-	clio oldMethods do: [ :method |
+DepMinerController >> loadOldVersionUsing: aClio [
+	aClio oldMethods do: [ :method |
 		projectHistory addMethodIfDoesNotExist: method.
 			
 		(projectHistory methodDictionary at: method signature)
@@ -186,8 +197,19 @@ DepMinerController >> mapRules: aCollectionOfRules toMethodChanges: aCollectionO
 
 { #category : #'as yet unclassified' }
 DepMinerController >> mineRules [
-	| rules |
-	refrain minNumberOfRepetitions: settings minCount.
+	| repository refrain rules |
+	
+	repository := self getRepository.
+	
+	refrain := Refrain
+		repository: repository
+		firstCommit: settings oldCommitSha
+		lastCommit: settings newCommitSha.
+	
+	refrain
+		relevantMethodChanges: projectHistory relevantMethodChanges;
+		minNumberOfRepetitions: settings minCount.
+		
 	refrain mineRules.
 	
 	rules := refrain rules select: [ :rule | rule confidence >= settings minConfidence ].
