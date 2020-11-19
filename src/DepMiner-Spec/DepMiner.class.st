@@ -35,6 +35,7 @@ Class {
 		'recommendationsNotebook',
 		'proposedDeprecationsTree',
 		'missingRulesTree',
+		'onlyAutomatableRulesCheckbox',
 		'mainAreaNotebook'
 	],
 	#category : #'DepMiner-Spec-Views'
@@ -120,7 +121,10 @@ DepMiner class >> defaultSpec [
 					add: #newVersionNotebook;
 					yourself);
 				add: (SpBoxLayout newVertical
-					add: 'Recommendations' height: self labelHeight;
+					add: (SpBoxLayout newHorizontal
+						add: 'Recommendations';
+						add: #onlyAutomatableRulesCheckbox width: 180;
+						yourself) height: self labelHeight;
 					add: #recommendationsNotebook;
 					yourself);
 				yourself);
@@ -194,10 +198,18 @@ DepMiner >> connectPresenters [
 		newVersionAllMethodsTree .
 		newVersionAddedMethodsTree .
 		newVersionDeprecatedMethodsTree
-	} do: [ :tree | tree actionOnMethodClicked: [ :method | self onMethodClicked: method ] ].
+	} do: [ :tree |
+		tree actionOnMethodClicked: [ :method |
+			self onMethodClicked: method ] ].
 	
-	proposedDeprecationsTree actionOnMethodClicked: [ :method | self onProposedDeprecationClicked: method ].
+	{
+		proposedDeprecationsTree .
+		missingRulesTree
+	} do: [ :tree |
+		tree actionOnMethodClicked: [ :method |
+			self onRecommendationClicked: method ] ].
 	
+	onlyAutomatableRulesCheckbox whenChangedDo: [ self onOnlyAutomatableRulesStateChanged ].
 ]
 
 { #category : #initialization }
@@ -308,6 +320,10 @@ DepMiner >> initializePresenters [
 			title: 'Missing Rules';
 			presenterProvider: [ missingRulesTree ];
 			yourself);
+		yourself.
+		
+	onlyAutomatableRulesCheckbox := self newCheckBox
+		label: 'Show only automatable rules';
 		yourself.
 	
 	mainAreaNotebook := self newNotebook.
@@ -433,26 +449,28 @@ DepMiner >> onOldVersionSelected: aCommit [
 ]
 
 { #category : #'as yet unclassified' }
-DepMiner >> onProposedDeprecationClicked: aRecommendation [
+DepMiner >> onOnlyAutomatableRulesStateChanged [
+	| selectedPage selectedMethod |
+	
+	selectedPage := recommendationsNotebook selectedPage.
+	selectedMethod := selectedPage activePresenter selectedItem.
+	
+	self showRecommendations.
+	
+	recommendationsNotebook selectPage: selectedPage.
+	
+	selectedMethod ifNotNil: [ 
+		selectedPage activePresenter selectItem: selectedMethod ].
+]
+
+{ #category : #'as yet unclassified' }
+DepMiner >> onRecommendationClicked: aRecommendation [
 	mainAreaNotebook removeAll.
 	
-	aRecommendation hasApplicableAutomatableRules ifTrue: [
-		mainAreaNotebook addPage: (self newNotebookPage
-			title: 'Automatable rules';
-			presenterProvider: [
-				(DepAutomatableRecommendationPresenter on: aRecommendation)
-					whenGenerateButtonClicked: [ self onGenerateClicked ];
-					yourself ];
-			yourself) ].
-		
-	aRecommendation hasApplicableNonAutomatableRules ifTrue: [
-		mainAreaNotebook addPage: (self newNotebookPage
-			title: 'Non-automatable rules';
-			presenterProvider: [
-				(DepNonAutomatableRecommendationPresenter on: aRecommendation)
-					whenGenerateButtonClicked: [ self onGenerateClicked ];
-					yourself ];
-			yourself) ].
+	self showAutomatableRulesApplicableTo: aRecommendation.
+	
+	onlyAutomatableRulesCheckbox state ifFalse: [
+		self showNonAutomatableRulesApplicableTo: aRecommendation ].
 		
 	mainAreaNotebook selectPageIndex: 1.
 ]
@@ -473,8 +491,27 @@ DepMiner >> settings [
 ]
 
 { #category : #'as yet unclassified' }
+DepMiner >> showAutomatableRulesApplicableTo: aRecommendation [
+	aRecommendation hasApplicableAutomatableRules ifTrue: [
+		mainAreaNotebook addPage: (self newNotebookPage
+			title: 'Automatable rules';
+			presenterProvider: [
+				(DepAutomatableRecommendationPresenter on: aRecommendation)
+					whenGenerateButtonClicked: [ self onGenerateClicked ];
+					yourself ];
+			yourself) ].
+]
+
+{ #category : #'as yet unclassified' }
 DepMiner >> showMissingRules [
-	missingRulesTree methods: recommendations methodsWithMissingRules.
+	| methods |
+	methods := recommendations methodsWithMissingRules.
+	
+	onlyAutomatableRulesCheckbox state ifTrue: [ 
+		methods := methods select: [ :method |
+			method hasApplicableAutomatableRules ] ].
+	
+	missingRulesTree methods: methods.
 ]
 
 { #category : #'as yet unclassified' }
@@ -500,6 +537,18 @@ DepMiner >> showNewVersionAllMethods [
 DepMiner >> showNewVersionDeprecatedMethods [
 	newVersionDeprecatedMethodsTree methods:
 		(projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated ] ])
+]
+
+{ #category : #'as yet unclassified' }
+DepMiner >> showNonAutomatableRulesApplicableTo: aRecommendation [
+	aRecommendation hasApplicableNonAutomatableRules ifTrue: [
+		mainAreaNotebook addPage: (self newNotebookPage
+			title: 'Non-automatable rules';
+			presenterProvider: [
+				(DepNonAutomatableRecommendationPresenter on: aRecommendation)
+					whenGenerateButtonClicked: [ self onGenerateClicked ];
+					yourself ];
+			yourself) ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -549,7 +598,14 @@ DepMiner >> showProjectHistoryStats [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showProposedDeprecations [
-	proposedDeprecationsTree methods: recommendations methodsToDeprecate.
+	| methods |
+	methods := recommendations methodsToDeprecate.
+	
+	onlyAutomatableRulesCheckbox state ifTrue: [ 
+		methods := methods select: [ :method |
+			method hasApplicableAutomatableRules ] ].
+	
+	proposedDeprecationsTree methods: methods.
 ]
 
 { #category : #'as yet unclassified' }
