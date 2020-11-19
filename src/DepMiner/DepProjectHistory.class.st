@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'commitDictionary',
 		'methodDictionary',
-		'methodChanges',
+		'totalNumberOfMethodChanges',
 		'relevantMethodChanges'
 	],
 	#category : #'DepMiner-Models'
@@ -36,16 +36,6 @@ DepProjectHistory >> initialize [
 	super initialize.
 	commitDictionary := Dictionary new.
 	methodDictionary := Dictionary new.
-]
-
-{ #category : #accessing }
-DepProjectHistory >> methodChanges [
-	^ methodChanges
-]
-
-{ #category : #accessing }
-DepProjectHistory >> methodChanges: anObject [
-	methodChanges := anObject
 ]
 
 { #category : #accessing }
@@ -94,4 +84,14 @@ DepProjectHistory >> sortedCommits [
 DepProjectHistory >> sortedMethods [
 	^ methodDictionary values sorted: [ :a :b |
 		a signature > b signature ]
+]
+
+{ #category : #accessing }
+DepProjectHistory >> totalNumberOfMethodChanges [
+	^ totalNumberOfMethodChanges
+]
+
+{ #category : #accessing }
+DepProjectHistory >> totalNumberOfMethodChanges: anObject [
+	totalNumberOfMethodChanges := anObject
 ]

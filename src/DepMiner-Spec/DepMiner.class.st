@@ -349,6 +349,10 @@ DepMiner >> loadWithSettings: aSettingsModel projectHistory: aProjectHistoryMode
 	projectHistory := aProjectHistoryModel.
 	recommendations := aRecommendationsModel.
 	
+	controller settings: settings.
+	controller projectHistory: projectHistory.
+	controller recommendations: recommendations.
+	
 	mainAreaNotebook removeAll.
 	
 	self showSettings.
@@ -589,7 +593,7 @@ DepMiner >> showProjectHistoryStats [
 		fractionOfRelevantMethodChanges := 0. ]
 	ifNotNil: [
 		numberOfCommits := projectHistory commitDictionary size.
-		numberOfMethodChanges := projectHistory methodChanges size.
+		numberOfMethodChanges := projectHistory totalNumberOfMethodChanges.
 		numberOfRelevantMethodChanges := projectHistory relevantMethodChanges size.
 		fractionOfRelevantMethodChanges := numberOfRelevantMethodChanges / numberOfMethodChanges ].
 	

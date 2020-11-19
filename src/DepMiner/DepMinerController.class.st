@@ -49,7 +49,7 @@ DepMinerController >> candidateCommitsForOldVersion [
 DepMinerController >> extractAllCommitsFromRepository [
 	| repository iceCommits |
 	
-	[ repository := self getRepository ] on: Error do: [ :err |
+	[ repository := self getRepository ] on: DepRepositoryNotFoundError do: [ :err |
 		self inform: err messageText.
 		^ self ].
 	
@@ -73,13 +73,9 @@ DepMinerController >> getRepository [
 				repo location path parent basename = settings ownerName and: [
 					repo name = settings projectName ] ] ]
 		ifNone: [
-			Error signal: (String streamContents: [ :stream |
-				stream
-					nextPutAll: 'The repository ';
-					nextPutAll: settings ownerName;
-					nextPut: $/;
-					nextPutAll: settings projectName;
-					nextPutAll: ' was not found in the system. Please load it with Iceberg' ]) ].
+			DepRepositoryNotFoundError
+				signalForOwnerName: settings ownerName
+				projectName: settings projectName ].
 ]
 
 { #category : #testing }
@@ -128,7 +124,7 @@ DepMinerController >> loadMethodChangesFrom: aRepository [
 		
 	refrain loadMethodChanges.
 	
-	projectHistory methodChanges: refrain methodChanges.
+	projectHistory totalNumberOfMethodChanges: refrain methodChanges size.
 	projectHistory relevantMethodChanges: refrain relevantMethodChanges.
 ]
 
