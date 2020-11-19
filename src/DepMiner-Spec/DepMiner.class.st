@@ -417,6 +417,7 @@ DepMiner >> onMethodClicked: aMethod [
 		presenterProvider: [
 			self newCode
 				withoutLineNumbers;
+				beForBehavior: Object;
 				beNotEditable;
 				text: aMethod sourceCode;
 				yourself ];
@@ -506,6 +507,7 @@ DepMiner >> showAutomatableRulesApplicableTo: aRecommendation [
 DepMiner >> showMissingRules [
 	| methods |
 	methods := recommendations methodsWithMissingRules.
+	methods ifNil: [ ^ self ].
 	
 	onlyAutomatableRulesCheckbox state ifTrue: [ 
 		methods := methods select: [ :method |
@@ -600,6 +602,8 @@ DepMiner >> showProjectHistoryStats [
 DepMiner >> showProposedDeprecations [
 	| methods |
 	methods := recommendations methodsToDeprecate.
+	
+	methods ifNil: [ ^ self ].
 	
 	onlyAutomatableRulesCheckbox state ifTrue: [ 
 		methods := methods select: [ :method |

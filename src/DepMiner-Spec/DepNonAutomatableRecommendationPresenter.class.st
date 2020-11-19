@@ -19,6 +19,7 @@ DepNonAutomatableRecommendationPresenter class >> codeLayout [
 DepNonAutomatableRecommendationPresenter >> initializeCode [
 	sourceCode := self newCode
 		withoutLineNumbers;
+		beForBehavior: Object;
 		text: recommendation sourceCode;
 		yourself.
 ]

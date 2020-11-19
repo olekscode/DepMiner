@@ -23,7 +23,7 @@ DepRecommendationPresenter class >> defaultSpec [
 			add: (SpBoxLayout newVertical
 				add: 'Replacements' height: self labelHeight;
 				add: #replacementsList;
-				yourself) width: 250;
+				yourself) width: 200;
 			add: self codeLayout;
 			yourself);
 		add: (SpBoxLayout newHorizontal

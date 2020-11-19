@@ -2,8 +2,7 @@ Class {
 	#name : #DepAutomatableRecommendationPresenter,
 	#superclass : #DepRecommendationPresenter,
 	#instVars : [
-		'generatedCode',
-		'replacementCode'
+		'generatedCode'
 	],
 	#category : #'DepMiner-Spec-Views'
 }
@@ -11,10 +10,8 @@ Class {
 { #category : #specs }
 DepAutomatableRecommendationPresenter class >> codeLayout [ 
 	^ SpBoxLayout newVertical
-		add: 'Generated code' height: self labelHeight;
+		add: 'Source code with generated deprecation' height: self labelHeight;
 		add: #generatedCode;
-		add: 'Implementation of a proposed replacement' height: self labelHeight;
-		add: #replacementCode;
 		yourself
 ]
 
@@ -22,12 +19,8 @@ DepAutomatableRecommendationPresenter class >> codeLayout [
 DepAutomatableRecommendationPresenter >> initializeCode [
 	generatedCode := self newCode
 		withoutLineNumbers;
-		beNotEditable;
-		yourself.
-		
-	replacementCode := self newCode
-		withoutLineNumbers;
-		beNotEditable;
+		"beNotEditable;"
+		beForBehavior: Object;
 		yourself.
 ]
 
@@ -37,21 +30,12 @@ DepAutomatableRecommendationPresenter >> onReplacementSelectionChanged [
 	rule := replacementsList selectedItem.
 	
 	rule ifNotNil: [
-		self showCodeGeneratedBy: rule.
-		self showImplementationOfReplacementProposedBy: rule ].
+		self showCodeGeneratedBy: rule ].
 ]
 
 { #category : #'as yet unclassified' }
 DepAutomatableRecommendationPresenter >> showCodeGeneratedBy: aRule [
 	generatedCode text: (aRule snapshotOfSourceCodeWithGeneratedDeprecationFor: recommendation)
-]
-
-{ #category : #'as yet unclassified' }
-DepAutomatableRecommendationPresenter >> showImplementationOfReplacementProposedBy: aRule [
-	| replacementMethod |
-	replacementMethod := recommendation replacementMethodDefinedByAutomatableRule: aRule.
-	
-	replacementCode text: replacementMethod sourceCode.
 ]
 
 { #category : #'as yet unclassified' }
