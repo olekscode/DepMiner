@@ -34,10 +34,7 @@ DepMethodTest >> testSton [
 	
 	self assert: recoveredObject equals: originalObject.
 	
-	"After parsing a metod from a STON string, we need to parse its source code again."
-	recoveredObject parseSourceCode.
-	recoveredObject parseOldSourceCode.
-	
+	"We need to check ASTs separately because they are ignored by equality operator"
 	self assert: recoveredObject ast equals: originalObject ast.
 	self assert: recoveredObject oldAst equals: originalObject oldAst.
 ]

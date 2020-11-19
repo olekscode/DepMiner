@@ -12,6 +12,17 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
+{ #category : #'instance creation' }
+DepMethod class >> fromSton: stonReader [
+	| method | 
+	method := super fromSton: stonReader.
+	
+	method parseSourceCode.
+	method parseOldSourceCode.
+
+	^ method
+]
+
 { #category : #converting }
 DepMethod >> asDepRecommendation [
 	| recommendation |
