@@ -20,7 +20,7 @@ DepNonAutomatableRecommendationPresenter >> initializeCode [
 	sourceCode := self newCode
 		withoutLineNumbers;
 		beForBehavior: Object;
-		text: recommendation sourceCode;
+		text: recommendation method sourceCode;
 		yourself.
 ]
 

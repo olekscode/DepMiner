@@ -255,7 +255,8 @@ DepMinerController >> recommendMethodsToDeprecate [
 		method isInNewVersion ].
 	
 	depRecommendations := methodsToDeprecate collect: [ :method |
-		method asDepRecommendation
+		DepRecommendation new
+			method: method;
 			chooseApplicableRulesFrom: recommendations relevantRules
 			basedOn: methodsInNewVersion;
 			yourself ].
@@ -274,7 +275,8 @@ DepMinerController >> recommendMethodsWithMissingRules [
 		method isDeprecated and: [ method hasTransformationRule not ] ].
 	
 	depRecommendations := methodsWithMissingRules collect: [ :method |
-		method asDepRecommendation
+		DepRecommendation new
+			method: method;
 			chooseApplicableRulesFrom: recommendations relevantRules
 			basedOn: methodsInNewVersion;
 			yourself ].

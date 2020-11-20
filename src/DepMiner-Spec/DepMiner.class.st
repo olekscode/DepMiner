@@ -375,7 +375,7 @@ DepMiner >> onGenerateClicked [
 				nextPutAll: ' which is scecified as "New version"' ]).
 		^ self ].
 	
-	method := mainAreaNotebook selectedPage activePresenter recommendation.
+	method := mainAreaNotebook selectedPage activePresenter recommendation method.
 	
 	(controller isMethodLoadedIntoTheImage: method) ifFalse: [ 
 		self inform: 'Method ', method signature, ' was not found in the image.'.

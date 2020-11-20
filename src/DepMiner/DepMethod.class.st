@@ -11,27 +11,6 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
-{ #category : #converting }
-DepMethod >> asDepRecommendation [
-	| recommendation |
-	
-	recommendation := DepRecommendation new
-		packageName: packageName;
-		className: className;
-		selector: selector;
-		sourceCode: sourceCode;
-		deprecation: deprecation;
-		oldSourceCode: oldSourceCode;
-		oldDeprecation: oldDeprecation;
-		yourself.
-		
-	wasInOldVersion ifTrue: [ recommendation markAsOldMethod ].
-	isInNewVersion ifTrue: [ recommendation markAsNewMethod ].
-	wasModified ifTrue: [ recommendation markAsModified ].
-	
-	^ recommendation
-]
-
 { #category : #accessing }
 DepMethod >> deprecation: anObject [
 	deprecation := anObject

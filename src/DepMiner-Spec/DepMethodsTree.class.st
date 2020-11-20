@@ -46,28 +46,42 @@ DepMethodsTree >> methods: aCollectionOfMethods [
 
 { #category : #'as yet unclassified' }
 DepMethodsTree >> methodsToVersionTrees: aCollectionOfClioMethods [
-	| classes methodTree |
-		
-	classes := aCollectionOfClioMethods collect: [ :method |
-		DepMethodTreeModel new
-			name: method className;
-			iconName: #class;
-			yourself ].
-		
-	classes := classes asSet asArray sorted: [ :a :b | a name < b name ].
-		
+	| packages packageTrees packageTree classTree |
+	
+	packages := Dictionary new.
+	
+	"First we build a tree-like structure using dictionaries"
 	aCollectionOfClioMethods do: [ :method |
-		methodTree := DepMethodTreeLeafModel new
-			name: method selector;
-			value: method;
-			iconName: #method;
+		((packages at: method packageName ifAbsentPut: [ Dictionary new ])
+			at: method className ifAbsentPut: [ OrderedCollection new ])
+				add: method ].
+			
+	"Then we create an actual tree"
+	packageTrees := SortedCollection sortBlock: [ :a :b | a name < b name ].
+	
+	packages keysAndValuesDo: [ :packageName :classesDictionary |
+		packageTree := DepMethodTreeModel new
+			name: packageName;
+			iconName: #package;
 			yourself.
 			
-		classes
-			detect: [ :aClass | aClass name = method className ]
-			ifFound: [ :aClass | aClass addChild: methodTree ] ].
-		
-	^ classes
+		classesDictionary keysAndValuesDo: [ :className :methods |
+			classTree := DepMethodTreeModel new
+				name: className;
+				iconName: #class;
+				yourself.
+				
+			methods do: [ :method |
+				classTree addChild: (DepMethodTreeLeafModel new
+					name: method selector;
+					value: method;
+					iconName: #method;
+					yourself) ].
+			
+			packageTree addChild: classTree ].
+		packageTrees add: packageTree ].
+
+	^ packageTrees
 ]
 
 { #category : #events }

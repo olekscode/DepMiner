@@ -1,12 +1,27 @@
 Class {
 	#name : #DepRecommendation,
-	#superclass : #DepMethod,
+	#superclass : #Object,
 	#instVars : [
+		'method',
 		'automatableRulesDictionary',
 		'nonAutomatableRulesDictionary'
 	],
 	#category : #'DepMiner-Models'
 }
+
+{ #category : #comparing }
+DepRecommendation >> = anObject [
+
+	"Answer whether the receiver and anObject represent the same object."
+
+	self == anObject ifTrue: [ ^ true ].
+	self class = anObject class ifFalse: [ ^ false ].
+	^ automatableRulesDictionary = anObject automatableRulesDictionary 
+		  and: [ 
+			  method = anObject method and: [ 
+				  nonAutomatableRulesDictionary
+				  = anObject nonAutomatableRulesDictionary ] ]
+]
 
 { #category : #'as yet unclassified' }
 DepRecommendation >> applicableAutomatableRules [
@@ -18,6 +33,11 @@ DepRecommendation >> applicableNonAutomatableRules [
 	^ nonAutomatableRulesDictionary keys
 ]
 
+{ #category : #accessing }
+DepRecommendation >> automatableRulesDictionary [
+	^ automatableRulesDictionary
+]
+
 { #category : #'as yet unclassified' }
 DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules basedOn: aCollectionOfMethodsInNewVersion [
 
@@ -27,27 +47,27 @@ DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules based
 	nonAutomatableRulesDictionary := Dictionary new.
 	
 	methodsOfSameClass := aCollectionOfMethodsInNewVersion
-		select: [ :method | method className = className ].
+		select: [ :newVersionMethod | newVersionMethod className = method className ].
 		
 	methodsOfOtherClasses := aCollectionOfMethodsInNewVersion
-		reject: [ :method | method className = className ].
+		reject: [ :newVersionMethod | newVersionMethod className = method className ].
 		
 	applicableRules := aCollectionOfRelevantRules select: [ :rule |
-		rule deletedMethodCalls anyOne selector = selector ].
+		rule deletedMethodCalls anyOne selector = method selector ].
 
 	applicableRules do: [ :rule |
 		rule isAutomatable
 			ifTrue: [ 
 				methodsOfSameClass
-					detect: [ :method | method selector = rule addedMethodCalls anyOne selector ]
-					ifFound: [ :method | automatableRulesDictionary at: rule put: method ].
+					detect: [ :aMethod | aMethod selector = rule addedMethodCalls anyOne selector ]
+					ifFound: [ :aMethod | automatableRulesDictionary at: rule put: aMethod ].
 					
 				methodsOfOtherClasses
-					detect: [ :method | method selector = rule addedMethodCalls anyOne selector ]
-					ifFound: [ :method | nonAutomatableRulesDictionary at: rule put: { method } ] ]
+					detect: [ :aMethod | aMethod selector = rule addedMethodCalls anyOne selector ]
+					ifFound: [ :aMethod | nonAutomatableRulesDictionary at: rule put: { aMethod } ] ]
 			ifFalse: [ 
-				replacementMethods := aCollectionOfMethodsInNewVersion select: [ :method |
-					method selector = rule addedMethodCalls anyOne selector ].
+				replacementMethods := aCollectionOfMethodsInNewVersion select: [ :aMethod |
+					aMethod selector = rule addedMethodCalls anyOne selector ].
 						
 				nonAutomatableRulesDictionary at: rule put: replacementMethods ] ]
 ]
@@ -60,6 +80,30 @@ DepRecommendation >> hasApplicableAutomatableRules [
 { #category : #testing }
 DepRecommendation >> hasApplicableNonAutomatableRules [
 	^ nonAutomatableRulesDictionary isNotEmpty
+]
+
+{ #category : #comparing }
+DepRecommendation >> hash [
+
+	"Answer an integer value that is related to the identity of the receiver."
+
+	^ automatableRulesDictionary hash bitXor:
+		  (method hash bitXor: nonAutomatableRulesDictionary hash)
+]
+
+{ #category : #accessing }
+DepRecommendation >> method [
+	^ method
+]
+
+{ #category : #accessing }
+DepRecommendation >> method: anObject [
+	method := anObject
+]
+
+{ #category : #accessing }
+DepRecommendation >> nonAutomatableRulesDictionary [
+	^ nonAutomatableRulesDictionary
 ]
 
 { #category : #'as yet unclassified' }

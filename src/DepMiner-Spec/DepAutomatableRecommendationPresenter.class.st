@@ -19,7 +19,6 @@ DepAutomatableRecommendationPresenter class >> codeLayout [
 DepAutomatableRecommendationPresenter >> initializeCode [
 	generatedCode := self newCode
 		withoutLineNumbers;
-		"beNotEditable;"
 		beForBehavior: Object;
 		yourself.
 ]

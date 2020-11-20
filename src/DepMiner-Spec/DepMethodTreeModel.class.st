@@ -48,7 +48,7 @@ DepMethodTreeModel >> iconName: anObject [
 { #category : #initialization }
 DepMethodTreeModel >> initialize [
 	super initialize.
-	children := OrderedCollection new.
+	children := SortedCollection sortBlock: [ :a :b | a name < b name ].
 ]
 
 { #category : #accessing }

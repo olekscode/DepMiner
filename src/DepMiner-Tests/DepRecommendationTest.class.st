@@ -9,9 +9,10 @@ Class {
 
 { #category : #running }
 DepRecommendationTest >> setUp [
+	| method |
 	super setUp.
 	
-	recommendation := DepRecommendation new
+	method := DepMethod new
 		packageName: 'Core';
 		className: 'Collection';
 		selector: 'withIndexDo:';
@@ -21,6 +22,10 @@ DepRecommendationTest >> setUp [
 				transformWith: ''`@rec withIndexDo: `@arg'' -> ''`@rec doWithIndex: `@arg''.
 			^ self doWithIndex: aBlock';
 		extractDeprecationsFromAst;
+		yourself.
+	
+	recommendation := DepRecommendation new
+		method: method;
 		yourself.
 ]
 
