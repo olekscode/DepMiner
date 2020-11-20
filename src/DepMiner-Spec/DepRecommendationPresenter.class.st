@@ -82,6 +82,11 @@ DepRecommendationPresenter >> onReplacementSelectionChanged [
 	self subclassResponsibility
 ]
 
+{ #category : #accessing }
+DepRecommendationPresenter >> recommendation [
+	^ recommendation
+]
+
 { #category : #'accessing model' }
 DepRecommendationPresenter >> setModelBeforeInitialization: aRecommendation [
 	recommendation := aRecommendation

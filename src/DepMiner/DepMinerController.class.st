@@ -79,10 +79,32 @@ DepMinerController >> getRepository [
 ]
 
 { #category : #testing }
+DepMinerController >> isMethodLoadedIntoTheImage: aMethod [
+	"Answer true if the given method can be found in the image"
+	
+	| methodClass |
+	
+	methodClass := Smalltalk classNamed: aMethod className.
+	methodClass ifNil: [ ^ false ].
+	
+	[ methodClass methodNamed: aMethod selector asSymbol ]
+		on: KeyNotFound
+		do: [ ^ false ].
+		
+	^ true
+]
+
+{ #category : #testing }
 DepMinerController >> isProjectLoadedAtTheRightVersion [
 	"Answer true if the project that is being analysed is loaded into the system at the version specified by newCommitSha"
 	
+	| repository |
 	
+	[ repository := self getRepository ]
+		on: DepRepositoryNotFoundError
+		do: [ ^ false ].
+		
+	^ repository workingCopy referenceCommit id = settings newCommitSha
 ]
 
 { #category : #'as yet unclassified' }

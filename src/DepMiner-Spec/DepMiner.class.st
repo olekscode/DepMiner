@@ -363,7 +363,25 @@ DepMiner >> loadWithSettings: aSettingsModel projectHistory: aProjectHistoryMode
 
 { #category : #'as yet unclassified' }
 DepMiner >> onGenerateClicked [
+	| method |
 	
+	controller isProjectLoadedAtTheRightVersion ifFalse: [
+		self inform: (String streamContents: [ :stream |
+			stream
+				nextPutAll: 'Please open Iceberg, load project ';
+				nextPutAll: settings projectName;
+				nextPutAll: ', and checkout commit ';
+				nextPutAll: settings newCommitSha;
+				nextPutAll: ' which is scecified as "New version"' ]).
+		^ self ].
+	
+	method := mainAreaNotebook selectedPage activePresenter recommendation.
+	
+	(controller isMethodLoadedIntoTheImage: method) ifFalse: [ 
+		self inform: 'Method ', method signature, ' was not found in the image.'.
+		^ self ].
+	
+	self inform: 'Generating the code'.
 ]
 
 { #category : #'as yet unclassified' }
