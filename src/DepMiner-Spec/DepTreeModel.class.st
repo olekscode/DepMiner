@@ -1,5 +1,5 @@
 Class {
-	#name : #DepMethodTreeModel,
+	#name : #DepTreeModel,
 	#superclass : #Object,
 	#instVars : [
 		'iconName',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #comparing }
-DepMethodTreeModel >> = anObject [
+DepTreeModel >> = anObject [
 	"Answer whether the receiver and anObject represent the same object."
 
 	self == anObject ifTrue: [ ^ true ].
@@ -19,69 +19,69 @@ DepMethodTreeModel >> = anObject [
 ]
 
 { #category : #adding }
-DepMethodTreeModel >> addChild: aTree [
+DepTreeModel >> addChild: aTree [
 	children add: aTree
 ]
 
 { #category : #accessing }
-DepMethodTreeModel >> children [
+DepTreeModel >> children [
 	^ children
 ]
 
 { #category : #comparing }
-DepMethodTreeModel >> hash [
+DepTreeModel >> hash [
 	"Answer an integer value that is related to the identity of the receiver."
 
 	^ name hash
 ]
 
 { #category : #accessing }
-DepMethodTreeModel >> iconName [
+DepTreeModel >> iconName [
 	^ iconName
 ]
 
 { #category : #accessing }
-DepMethodTreeModel >> iconName: anObject [
+DepTreeModel >> iconName: anObject [
 	iconName := anObject
 ]
 
 { #category : #initialization }
-DepMethodTreeModel >> initialize [
+DepTreeModel >> initialize [
 	super initialize.
 	children := SortedCollection sortBlock: [ :a :b | a name < b name ].
 ]
 
 { #category : #accessing }
-DepMethodTreeModel >> name [
+DepTreeModel >> name [
 	^ name
 ]
 
 { #category : #accessing }
-DepMethodTreeModel >> name: anObject [
+DepTreeModel >> name: anObject [
 	name := anObject
 ]
 
 { #category : #private }
-DepMethodTreeModel >> numberOfMethods [
-	^ children inject: 0 into: [ :sum :each | sum + each numberOfMethods ]
+DepTreeModel >> numberOfLeaves [
+	^ children inject: 0 into: [ :sum :each | sum + each numberOfLeaves ]
 ]
 
 { #category : #accessing }
-DepMethodTreeModel >> printOn: aStream [
+DepTreeModel >> printOn: aStream [
 	aStream
 		nextPutAll: name;
 		space;
 		nextPut: $(;
-		nextPutAll: self numberOfMethods asString;
+		nextPutAll: self numberOfLeaves asString;
 		nextPut: $).
 ]
 
 { #category : #'as yet unclassified' }
-DepMethodTreeModel >> receiveClickActionFrom: aView [
-	aView onPackageOrClassClicked: self valueToInspect
+DepTreeModel >> receiveClickActionFrom: aView [
+	aView onTreeClicked: self valueToInspect
 ]
 
 { #category : #'as yet unclassified' }
-DepMethodTreeModel >> valueToInspect [
+DepTreeModel >> valueToInspect [
 	^ children collect: [ :child | child valueToInspect ]
 ]

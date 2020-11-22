@@ -199,14 +199,14 @@ DepMiner >> connectPresenters [
 		newVersionAddedMethodsTree .
 		newVersionDeprecatedMethodsTree
 	} do: [ :tree |
-		tree actionOnMethodClicked: [ :method |
+		tree actionOnLeafClicked: [ :method |
 			self onMethodClicked: method ] ].
 	
 	{
 		proposedDeprecationsTree .
 		missingRulesTree
 	} do: [ :tree |
-		tree actionOnMethodClicked: [ :method |
+		tree actionOnLeafClicked: [ :method |
 			self onRecommendationClicked: method ] ].
 	
 	onlyAutomatableRulesCheckbox whenChangedDo: [ self onOnlyAutomatableRulesStateChanged ].
@@ -270,9 +270,9 @@ DepMiner >> initializePresenters [
 		label: '(inspect recommendations)';
 		yourself.
 		
-	oldVersionAllMethodsTree := self instantiate: DepMethodsTree.	
-	oldVersionDeletedMethodsTree := self instantiate: DepMethodsTree.
-	oldVersionDeprecatedMethodsTree := self instantiate: DepMethodsTree.
+	oldVersionAllMethodsTree := self instantiate: DepMethodTreePresenter.	
+	oldVersionDeletedMethodsTree := self instantiate: DepMethodTreePresenter.
+	oldVersionDeprecatedMethodsTree := self instantiate: DepMethodTreePresenter.
 	
 	oldVersionNotebook := self newNotebook
 		addPage: (self newNotebookPage
@@ -289,9 +289,9 @@ DepMiner >> initializePresenters [
 			yourself);
 		yourself.
 		
-	newVersionAllMethodsTree := self instantiate: DepMethodsTree.
-	newVersionAddedMethodsTree := self instantiate: DepMethodsTree.
-	newVersionDeprecatedMethodsTree := self instantiate: DepMethodsTree.
+	newVersionAllMethodsTree := self instantiate: DepMethodTreePresenter.
+	newVersionAddedMethodsTree := self instantiate: DepMethodTreePresenter.
+	newVersionDeprecatedMethodsTree := self instantiate: DepMethodTreePresenter.
 	
 	newVersionNotebook := self newNotebook
 		addPage: (self newNotebookPage
@@ -308,8 +308,8 @@ DepMiner >> initializePresenters [
 			yourself);
 		yourself.
 	
-	proposedDeprecationsTree := self instantiate: DepMethodsTree.
-	missingRulesTree := self instantiate: DepMethodsTree.
+	proposedDeprecationsTree := self instantiate: DepRecommendationTreePresenter.
+	missingRulesTree := self instantiate: DepRecommendationTreePresenter.
 	
 	recommendationsNotebook := self newNotebook
 		addPage: (self newNotebookPage
@@ -535,7 +535,7 @@ DepMiner >> showMissingRules [
 		methods := methods select: [ :method |
 			method hasApplicableAutomatableRules ] ].
 	
-	missingRulesTree methods: methods.
+	missingRulesTree items: methods.
 ]
 
 { #category : #'as yet unclassified' }
@@ -547,19 +547,19 @@ DepMiner >> showNewVersion [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showNewVersionAddedMethods [
-	newVersionAddedMethodsTree methods:
+	newVersionAddedMethodsTree items:
 		(projectHistory sortedMethods select: [ :method | method wasAdded ]).
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showNewVersionAllMethods [
-	newVersionAllMethodsTree methods:
+	newVersionAllMethodsTree items:
 		(projectHistory sortedMethods select: [ :method | method isInNewVersion ])
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showNewVersionDeprecatedMethods [
-	newVersionDeprecatedMethodsTree methods:
+	newVersionDeprecatedMethodsTree items:
 		(projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated ] ])
 ]
 
@@ -584,19 +584,19 @@ DepMiner >> showOldVersion [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showOldVersionAllMethods [
-	oldVersionAllMethodsTree methods:
+	oldVersionAllMethodsTree items:
 		(projectHistory sortedMethods select: [ :method | method wasInOldVersion ])
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showOldVersionDeletedMethods [
-	oldVersionDeletedMethodsTree methods:
+	oldVersionDeletedMethodsTree items:
 		(projectHistory sortedMethods select: [ :method | method wasDeleted ])
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showOldVersionDeprecatedMethods [
-	oldVersionDeprecatedMethodsTree methods:
+	oldVersionDeprecatedMethodsTree items:
 		(projectHistory sortedMethods select: [ :method | method wasInOldVersion and: [ method wasDeprecatedInOldVersion ] ])
 ]
 
@@ -631,7 +631,7 @@ DepMiner >> showProposedDeprecations [
 		methods := methods select: [ :method |
 			method hasApplicableAutomatableRules ] ].
 	
-	proposedDeprecationsTree methods: methods.
+	proposedDeprecationsTree items: methods.
 ]
 
 { #category : #'as yet unclassified' }

@@ -45,6 +45,12 @@ DepMethod >> markAsOldMethod [
 ]
 
 { #category : #accessing }
+DepMethod >> name [
+	"Answer a string that will be displayed in the UI"
+	^ selector
+]
+
+{ #category : #accessing }
 DepMethod >> oldDeprecation [
 	^ oldDeprecation
 ]

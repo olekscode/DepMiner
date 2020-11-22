@@ -102,6 +102,12 @@ DepRecommendation >> method: anObject [
 ]
 
 { #category : #accessing }
+DepRecommendation >> name [
+	"Answer a string that will be displayed in the UI"
+	^ method selector
+]
+
+{ #category : #accessing }
 DepRecommendation >> nonAutomatableRulesDictionary [
 	^ nonAutomatableRulesDictionary
 ]
