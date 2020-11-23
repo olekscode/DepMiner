@@ -252,7 +252,7 @@ DepMinerController >> recommendMethodsToDeprecate [
 					rule deletedMethodCalls anyOne selector = method selector ] ] ] ].
 	
 	depRecommendations := methodsToDeprecate collect: [ :method |
-		DepRecommendation new
+		DepProposedDeprecationRecommendation new
 			method: method;
 			chooseApplicableRulesFrom: recommendations relevantRules
 			yourself ].
@@ -270,7 +270,7 @@ DepMinerController >> recommendMethodsWithMissingRules [
 				method hasTransformationRule not ] ] ].
 	
 	depRecommendations := methodsWithMissingRules collect: [ :method |
-		DepRecommendation new
+		DepMissingRuleRecommendation new
 			method: method;
 			chooseApplicableRulesFrom: recommendations relevantRules;
 			yourself ].
