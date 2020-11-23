@@ -34,19 +34,7 @@ DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules [
 
 { #category : #'as yet unclassified' }
 DepRecommendation >> generateSourceCodeUsing: aReplacement [
-	| generatedAstDeprecation generatedAstImplementation newAst |
-	
-	generatedAstDeprecation := RBParser parseExpression: aReplacement generateDeprecation.
-	generatedAstImplementation := RBParser parseExpression: aReplacement generateSourceCodeAfterDeprecation.
-	
-	newAst := method ast copy.
-	newAst statements:
-		{ generatedAstDeprecation },
-		(generatedAstImplementation isSequence
-			ifTrue: [ generatedAstImplementation statements ]
-			ifFalse: [ { generatedAstImplementation } ]).
-		
-	^ newAst formattedCode
+	self subclassResponsibility
 ]
 
 { #category : #testing }

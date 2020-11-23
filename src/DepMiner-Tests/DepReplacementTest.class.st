@@ -22,25 +22,6 @@ DepReplacementTest >> depMethodFrom: aCompiledMethod [
 ]
 
 { #category : #'as yet unclassified' }
-DepReplacementTest >> depRuleReplacing: aCollectionOfDeletedSelectors with: aCollectionOfAddedSelectors [
-	| deletedMethodCalls addedMethodCalls rule |
-	
-	deletedMethodCalls := aCollectionOfDeletedSelectors collect: [ :selector |
-		RefrainSelectorEntity new selector: selector; yourself ].
-	
-	addedMethodCalls := aCollectionOfAddedSelectors collect: [ :selector |
-		RefrainSelectorEntity new selector: selector; yourself ].
-	
-	rule := DepAssociationRule new
-		deletedMethodCalls: deletedMethodCalls;
-		addedMethodCalls: addedMethodCalls;
-		yourself.
-		
-	rule isAutomatable ifTrue: [ rule generateTransformationRule ].
-	^ rule
-]
-
-{ #category : #'as yet unclassified' }
 DepReplacementTest >> mockDeprecatedMethod [
 	"I am a method comment"
 	| a b |
@@ -145,7 +126,10 @@ DepReplacementTest >> setUp [
 DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableNoArguments [
 	| rule replacement generatedCode expectedCode |
 	
-	rule := self depRuleReplacing: #(mockMethod) with: #(replacement).
+	rule := DepAssociationRule
+		withDeletedSelectors: #(mockMethod)
+		addedSelectors: #(replacement).
+		
 	replacement := DepReplacement for: mockMethod definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.
@@ -161,7 +145,10 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableNoArgumen
 DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableOneArgument [
 	| rule replacement generatedCode expectedCode |
 	
-	rule := self depRuleReplacing: #(mockMethodWithArgument:) with: #(replacementWithArgument:).
+	rule := DepAssociationRule
+		withDeletedSelectors: #(mockMethodWithArgument:)
+		addedSelectors: #(replacementWithArgument:).
+	
 	replacement := DepReplacement for: mockMethodWithOneArgument definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.
@@ -177,9 +164,9 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableOneArgume
 DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableTwoArguments [
 	| rule replacement generatedCode expectedCode |
 	
-	rule := self
-		depRuleReplacing: #(mockMethodWithArgument:and:)
-		with: #(replacementWithArgument:and:).
+	rule := DepAssociationRule
+		withDeletedSelectors: #(mockMethodWithArgument:and:)
+		addedSelectors: #(replacementWithArgument:and:).
 		
 	replacement := DepReplacement for: mockMethodWithTwoArguments definedBy: rule.
 	
@@ -196,7 +183,10 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableTwoArgume
 DepReplacementTest >> testGenerateSourceCodeAfterDeprecationNonAutomatable [
 	| rule replacement generatedCode expectedCode |
 	
-	rule := self depRuleReplacing: #(mockMethod) with: #(replacementWithArgument:).
+	rule := DepAssociationRule
+		withDeletedSelectors: #(mockMethod)
+		addedSelectors: #(replacementWithArgument:).
+	
 	replacement := DepReplacement for: mockMethod definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.

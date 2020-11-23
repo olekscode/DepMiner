@@ -13,6 +13,26 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
+{ #category : #'as yet unclassified' }
+DepAssociationRule class >> withDeletedSelectors: aCollectionOfDeletedSelectors addedSelectors: aCollectionOfAddedSelectors [
+	"This method is used for testing"
+	| deletedMethodCalls addedMethodCalls rule |
+	
+	deletedMethodCalls := aCollectionOfDeletedSelectors collect: [ :selector |
+		RefrainSelectorEntity new selector: selector; yourself ].
+	
+	addedMethodCalls := aCollectionOfAddedSelectors collect: [ :selector |
+		RefrainSelectorEntity new selector: selector; yourself ].
+	
+	rule := self new
+		deletedMethodCalls: deletedMethodCalls;
+		addedMethodCalls: addedMethodCalls;
+		yourself.
+		
+	rule isAutomatable ifTrue: [ rule generateTransformationRule ].
+	^ rule
+]
+
 { #category : #comparing }
 DepAssociationRule >> = anObject [
 	anObject class = self class
