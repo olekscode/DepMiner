@@ -68,9 +68,21 @@ DepAssociationRule >> deletedMethodCalls: anObject [
 
 { #category : #'as yet unclassified' }
 DepAssociationRule >> generateDeprecation [
-	^ 'self
-		deprecated: ''Use #', addedMethodCalls anyOne selector, ' instead''
-		transformWith: ''', transformationRule antecedent, ''' -> ''', transformationRule consequent, '''.' 
+	^ String streamContents: [ :stream | 
+		stream
+			nextPutAll: 'self deprecated: ''Use #';
+			nextPutAll: addedMethodCalls anyOne selector;
+			nextPutAll: ' instead'''.
+			
+		self isAutomatable ifTrue: [
+			stream
+				nextPutAll: ' transformWith: ''';
+				nextPutAll: transformationRule antecedent;
+				nextPutAll: ''' -> ''';
+				nextPutAll: transformationRule consequent;
+				nextPut: $' ].
+			
+		stream nextPut: $. ]
 ]
 
 { #category : #'as yet unclassified' }

@@ -243,7 +243,7 @@ DepMinerController >> projectHistory: anObject [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> recommendMethodsToDeprecate [
-	| methodsToDeprecate methodsInNewVersion depRecommendations |
+	| methodsToDeprecate depRecommendations |
 	
 	methodsToDeprecate := projectHistory sortedMethods select: [ :method |
 		method wasDeleted and: [
@@ -251,14 +251,10 @@ DepMinerController >> recommendMethodsToDeprecate [
 				recommendations relevantRules anySatisfy: [ :rule |
 					rule deletedMethodCalls anyOne selector = method selector ] ] ] ].
 	
-	methodsInNewVersion := projectHistory sortedMethods select: [ :method |
-		method isInNewVersion ].
-	
 	depRecommendations := methodsToDeprecate collect: [ :method |
 		DepRecommendation new
 			method: method;
 			chooseApplicableRulesFrom: recommendations relevantRules
-			basedOn: methodsInNewVersion;
 			yourself ].
 		
 	recommendations methodsToDeprecate: depRecommendations.
@@ -266,19 +262,17 @@ DepMinerController >> recommendMethodsToDeprecate [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> recommendMethodsWithMissingRules [
-	| methodsWithMissingRules methodsInNewVersion depRecommendations |
+	| methodsWithMissingRules depRecommendations |
 	
-	methodsInNewVersion := projectHistory sortedMethods select: [ :method |
-		method isInNewVersion ].
-	
-	methodsWithMissingRules := methodsInNewVersion select: [ :method |
-		method isDeprecated and: [ method hasTransformationRule not ] ].
+	methodsWithMissingRules := projectHistory sortedMethods select: [ :method |
+		method isInNewVersion and: [
+			method isDeprecated and: [
+				method hasTransformationRule not ] ] ].
 	
 	depRecommendations := methodsWithMissingRules collect: [ :method |
 		DepRecommendation new
 			method: method;
-			chooseApplicableRulesFrom: recommendations relevantRules
-			basedOn: methodsInNewVersion;
+			chooseApplicableRulesFrom: recommendations relevantRules;
 			yourself ].
 		
 	recommendations methodsWithMissingRules: depRecommendations.

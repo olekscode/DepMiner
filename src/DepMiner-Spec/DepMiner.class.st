@@ -515,7 +515,7 @@ DepMiner >> settings [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showAutomatableRulesApplicableTo: aRecommendation [
-	aRecommendation hasApplicableAutomatableRules ifTrue: [
+	aRecommendation hasAutomatableReplacements ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Automatable rules';
 			presenterProvider: [
@@ -533,7 +533,7 @@ DepMiner >> showMissingRules [
 	
 	onlyAutomatableRulesCheckbox state ifTrue: [ 
 		methods := methods select: [ :method |
-			method hasApplicableAutomatableRules ] ].
+			method hasAutomatableReplacements ] ].
 	
 	missingRulesTree items: methods.
 ]
@@ -565,7 +565,7 @@ DepMiner >> showNewVersionDeprecatedMethods [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showNonAutomatableRulesApplicableTo: aRecommendation [
-	aRecommendation hasApplicableNonAutomatableRules ifTrue: [
+	aRecommendation hasNonAutomatableReplacements ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Non-automatable rules';
 			presenterProvider: [
@@ -629,7 +629,7 @@ DepMiner >> showProposedDeprecations [
 	
 	onlyAutomatableRulesCheckbox state ifTrue: [ 
 		methods := methods select: [ :method |
-			method hasApplicableAutomatableRules ] ].
+			method hasAutomatableReplacements ] ].
 	
 	proposedDeprecationsTree items: methods.
 ]

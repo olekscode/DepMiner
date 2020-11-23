@@ -25,20 +25,20 @@ DepAutomatableRecommendationPresenter >> initializeCode [
 
 { #category : #'as yet unclassified' }
 DepAutomatableRecommendationPresenter >> onReplacementSelectionChanged [
-	| rule |
-	rule := replacementsList selectedItem.
+	| replacement |
+	replacement := replacementsList selectedItem.
 	
-	rule ifNotNil: [
-		self showCodeGeneratedBy: rule ].
+	replacement ifNotNil: [
+		self showCodeGeneratedBy: replacement ].
 ]
 
 { #category : #'as yet unclassified' }
-DepAutomatableRecommendationPresenter >> showCodeGeneratedBy: aRule [
-	generatedCode text: (recommendation snapshotOfSourceCodeWithDeprecationGeneratedBy: aRule)
+DepAutomatableRecommendationPresenter >> showCodeGeneratedBy: aReplacement [
+	generatedCode text: (recommendation snapshotOfSourceCodeWithDeprecationGeneratedBy: aReplacement rule)
 ]
 
 { #category : #'as yet unclassified' }
 DepAutomatableRecommendationPresenter >> showReplacements [
-	replacementsList items: recommendation applicableAutomatableRules.
+	replacementsList items: recommendation automatableReplacements.
 	replacementsList selectIndex: 1.
 ]

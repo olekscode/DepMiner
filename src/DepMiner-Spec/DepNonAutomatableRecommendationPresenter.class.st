@@ -31,6 +31,6 @@ DepNonAutomatableRecommendationPresenter >> onReplacementSelectionChanged [
 
 { #category : #'as yet unclassified' }
 DepNonAutomatableRecommendationPresenter >> showReplacements [
-	replacementsList items: recommendation applicableNonAutomatableRules.
+	replacementsList items: recommendation nonAutomatableReplacements.
 	replacementsList selectIndex: 1.
 ]

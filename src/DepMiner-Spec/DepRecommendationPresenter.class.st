@@ -52,8 +52,8 @@ DepRecommendationPresenter >> initializePresenters [
 	
 	replacementsList := self newList.
 		
-	replacementsList display: [ :rule |
-		', ' join: (rule addedMethodCalls collect: [ :call | call selector ]) ].
+	replacementsList display: [ :replacement |
+		', ' join: (replacement rule addedMethodCalls collect: [ :call | call selector ]) ].
 	
 	replacementsList contextMenu: [
 		SpMenuPresenter new 
@@ -64,7 +64,7 @@ DepRecommendationPresenter >> initializePresenters [
 				addItem: [ :item | item
 					name: 'Explain why';
 					action: [
-						(DepMethodChangeBrowser on: replacementsList selectedItem)
+						(DepMethodChangeBrowser on: replacementsList selectedItem rule)
 							openWithSpec ] ] ] ].
 	
 	self initializeCode.
