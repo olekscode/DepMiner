@@ -34,7 +34,7 @@ DepAutomatableRecommendationPresenter >> onReplacementSelectionChanged [
 
 { #category : #'as yet unclassified' }
 DepAutomatableRecommendationPresenter >> showCodeGeneratedBy: aRule [
-	generatedCode text: (aRule snapshotOfSourceCodeWithGeneratedDeprecationFor: recommendation method)
+	generatedCode text: (recommendation snapshotOfSourceCodeWithDeprecationGeneratedBy: aRule)
 ]
 
 { #category : #'as yet unclassified' }

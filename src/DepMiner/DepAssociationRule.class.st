@@ -67,7 +67,7 @@ DepAssociationRule >> deletedMethodCalls: anObject [
 ]
 
 { #category : #'as yet unclassified' }
-DepAssociationRule >> generateDeprecationFor: aMethod [
+DepAssociationRule >> generateDeprecation [
 	^ 'self
 		deprecated: ''Use #', addedMethodCalls anyOne selector, ' instead''
 		transformWith: ''', transformationRule antecedent, ''' -> ''', transformationRule consequent, '''.' 
@@ -156,16 +156,6 @@ DepAssociationRule >> printOn: aStream [
 		nextPutAll: '} => {';
 		nextPutAll: (', ' join: addedMethodCalls);
 		nextPut: $}
-]
-
-{ #category : #'as yet unclassified' }
-DepAssociationRule >> snapshotOfSourceCodeWithGeneratedDeprecationFor: aMethod [
-	| newAst |
-	newAst := aMethod ast copy.
-	newAst statements:
-		(aMethod ast statements copyWithFirst:
-			(RBParser parseExpression: (self generateDeprecationFor: aMethod))).
-	^ newAst formattedCode
 ]
 
 { #category : #accessing }

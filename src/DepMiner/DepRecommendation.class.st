@@ -121,3 +121,13 @@ DepRecommendation >> replacementMethodDefinedByAutomatableRule: aRule [
 DepRecommendation >> replacementMethodsDefinedByNonAutomatableRule: aRule [
 	^ nonAutomatableRulesDictionary at: aRule
 ]
+
+{ #category : #'as yet unclassified' }
+DepRecommendation >> snapshotOfSourceCodeWithDeprecationGeneratedBy: aRule [
+	| newAst |
+	newAst := method ast copy.
+	newAst statements:
+		(method ast statements copyWithFirst:
+			(RBParser parseExpression: aRule generateDeprecation)).
+	^ newAst formattedCode
+]
