@@ -9,6 +9,12 @@ DepNonAutomatableReplacement >> generateDeprecationWithMessage: aDeprecationMess
 	^ 'self deprecated: ''', aDeprecationMessage, '''.'
 ]
 
+{ #category : #'as yet unclassified' }
+DepNonAutomatableReplacement >> generateSourceCodeAfterDeprecation [
+
+	^ (RBSequenceNode statements: method ast statements) formattedCode.
+]
+
 { #category : #testing }
 DepNonAutomatableReplacement >> isAutomatable [
 	^ false

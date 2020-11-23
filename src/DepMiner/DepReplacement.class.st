@@ -44,6 +44,11 @@ DepReplacement >> generateDeprecationWithMessage: aDeprecationMessage [
 	self subclassResponsibility
 ]
 
+{ #category : #'as yet unclassified' }
+DepReplacement >> generateSourceCodeAfterDeprecation [
+	self subclassResponsibility
+]
+
 { #category : #initialization }
 DepReplacement >> initializeMethod: aMethod rule: aRule [
 	method := aMethod.

@@ -34,11 +34,18 @@ DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules [
 
 { #category : #'as yet unclassified' }
 DepRecommendation >> generateSourceCodeUsing: aReplacement [
-	| newAst |
+	| generatedAstDeprecation generatedAstImplementation newAst |
+	
+	generatedAstDeprecation := RBParser parseExpression: aReplacement generateDeprecation.
+	generatedAstImplementation := RBParser parseExpression: aReplacement generateSourceCodeAfterDeprecation.
+	
 	newAst := method ast copy.
 	newAst statements:
-		(method ast statements copyWithFirst:
-			(RBParser parseExpression: aReplacement generateDeprecation)).
+		{ generatedAstDeprecation },
+		(generatedAstImplementation isSequence
+			ifTrue: [ generatedAstImplementation statements ]
+			ifFalse: [ { generatedAstImplementation } ]).
+		
 	^ newAst formattedCode
 ]
 
@@ -79,4 +86,9 @@ DepRecommendation >> name [
 { #category : #'as yet unclassified' }
 DepRecommendation >> nonAutomatableReplacements [
 	^ replacements reject: [ :each | each isAutomatable ]
+]
+
+{ #category : #accessing }
+DepRecommendation >> replacements [
+	^ replacements
 ]
