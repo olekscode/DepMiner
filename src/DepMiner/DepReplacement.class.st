@@ -22,6 +22,28 @@ DepReplacement class >> for: aMethod definedBy: aRule [
 		yourself.
 ]
 
+{ #category : #'as yet unclassified' }
+DepReplacement >> generateDeprecation [
+	^ self generateDeprecationWithMessage: self generateDeprecationMessage
+]
+
+{ #category : #'as yet unclassified' }
+DepReplacement >> generateDeprecationMessage [
+	| selectors proposedReplacements |
+	selectors := rule addedMethodCalls asOrderedCollection collect: [ :each | '#', each selector ].
+	
+	proposedReplacements := selectors size = 1
+		ifTrue: [ selectors first ]
+		ifFalse: [ (', ' join: selectors allButLast), ' and ', selectors last ].
+	
+	^ 'Use ', proposedReplacements, ' instead'
+]
+
+{ #category : #'as yet unclassified' }
+DepReplacement >> generateDeprecationWithMessage: aDeprecationMessage [
+	self subclassResponsibility
+]
+
 { #category : #initialization }
 DepReplacement >> initializeMethod: aMethod rule: aRule [
 	method := aMethod.

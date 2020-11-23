@@ -32,6 +32,16 @@ DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules [
 		thenCollect: [ :rule | DepReplacement for: method definedBy: rule ]
 ]
 
+{ #category : #'as yet unclassified' }
+DepRecommendation >> generateSourceCodeUsing: aReplacement [
+	| newAst |
+	newAst := method ast copy.
+	newAst statements:
+		(method ast statements copyWithFirst:
+			(RBParser parseExpression: aReplacement generateDeprecation)).
+	^ newAst formattedCode
+]
+
 { #category : #testing }
 DepRecommendation >> hasAutomatableReplacements [
 	^ replacements anySatisfy: [ :each | each isAutomatable ]
@@ -69,14 +79,4 @@ DepRecommendation >> name [
 { #category : #'as yet unclassified' }
 DepRecommendation >> nonAutomatableReplacements [
 	^ replacements reject: [ :each | each isAutomatable ]
-]
-
-{ #category : #'as yet unclassified' }
-DepRecommendation >> snapshotOfSourceCodeWithDeprecationGeneratedBy: aRule [
-	| newAst |
-	newAst := method ast copy.
-	newAst statements:
-		(method ast statements copyWithFirst:
-			(RBParser parseExpression: aRule generateDeprecation)).
-	^ newAst formattedCode
 ]
