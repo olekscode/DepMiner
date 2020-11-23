@@ -12,11 +12,6 @@ DepTreeLeafModel >> numberOfLeaves [
 	^ 1
 ]
 
-{ #category : #accessing }
-DepTreeLeafModel >> printOn: aStream [
-	aStream nextPutAll: name
-]
-
 { #category : #'as yet unclassified' }
 DepTreeLeafModel >> receiveClickActionFrom: aView [
 	aView onLeafClicked: self valueToInspect

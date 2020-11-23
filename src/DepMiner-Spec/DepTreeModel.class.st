@@ -68,12 +68,7 @@ DepTreeModel >> numberOfLeaves [
 
 { #category : #accessing }
 DepTreeModel >> printOn: aStream [
-	aStream
-		nextPutAll: name;
-		space;
-		nextPut: $(;
-		nextPutAll: self numberOfLeaves asString;
-		nextPut: $).
+	aStream nextPutAll: name.
 ]
 
 { #category : #'as yet unclassified' }
