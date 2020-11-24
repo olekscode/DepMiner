@@ -34,8 +34,7 @@ DepRecommendationPresenter class >> defaultSpec [
 			add: (SpBoxLayout newVertical
 				add: #numberOfAcceptedChangesLabel;
 				add: #inspectAcceptedChangesLink;
-				yourself) width: 130;
-			add: ' ' width: 30;
+				yourself) width: 180;
 			add: #saveButton width: self buttonWidth;
 			yourself) height: 1.3 * self buttonHeight;
 		yourself.
