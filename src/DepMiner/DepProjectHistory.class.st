@@ -36,11 +36,19 @@ DepProjectHistory >> commitThatMatches: aShaShortShaOrTag ifNone: anAbsentBlock 
 DepProjectHistory >> extractNewVersionClassPackages [	
 	newVersionClassPackagesDictionary removeAll.
 	
-	self newMethods do: [ :method |
-		method isExtension ifFalse: [
+	self newMethods
+		reject: [ :method | method isExtension ]
+		thenDo: [ :method |
 			newVersionClassPackagesDictionary
 				at: method className
-				ifAbsentPut: [ method packageName ] ] ].
+				ifAbsentPut: [ method packageName ] ].
+			
+	self newMethods
+		select: [ :method | method isExtension ]
+		thenDo: [ :method |
+			newVersionClassPackagesDictionary
+				at: method className
+				ifAbsentPut: [ method packageName ] ].
 ]
 
 { #category : #'as yet unclassified' }
