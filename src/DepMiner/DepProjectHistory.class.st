@@ -3,24 +3,13 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'commitDictionary',
-		'methodDictionary',
+		'methods',
 		'newVersionClassSelectorsDictionary',
 		'totalNumberOfMethodChanges',
 		'relevantMethodChanges'
 	],
 	#category : #'DepMiner-Models'
 }
-
-{ #category : #adding }
-DepProjectHistory >> addMethodIfDoesNotExist: aMethod [
-	methodDictionary at: aMethod signature
-		ifAbsentPut: [ aMethod asDepMethod ]
-]
-
-{ #category : #'as yet unclassified' }
-DepProjectHistory >> clearMethodDictionary [
-	methodDictionary removeAll
-]
 
 { #category : #accessing }
 DepProjectHistory >> commitDictionary [
@@ -41,7 +30,7 @@ DepProjectHistory >> commitThatMatches: aShaShortShaOrTag ifNone: anAbsentBlock 
 DepProjectHistory >> extractNewVersionClassSelectors [
 	newVersionClassSelectorsDictionary removeAll.
 	
-	methodDictionary valuesDo: [ :method |
+	methods do: [ :method |
 		(newVersionClassSelectorsDictionary
 			at: method className
 			ifAbsentPut: [ OrderedCollection new ])
@@ -52,18 +41,22 @@ DepProjectHistory >> extractNewVersionClassSelectors [
 DepProjectHistory >> initialize [
 	super initialize.
 	commitDictionary := Dictionary new.
-	methodDictionary := Dictionary new.
 	newVersionClassSelectorsDictionary := Dictionary new.
 ]
 
 { #category : #accessing }
-DepProjectHistory >> methodDictionary [
-	^ methodDictionary
+DepProjectHistory >> methods [
+	^ methods
+]
+
+{ #category : #accessing }
+DepProjectHistory >> methods: anObject [
+	methods := anObject
 ]
 
 { #category : #'as yet unclassified' }
 DepProjectHistory >> newMethods [
-	^ self sortedMethods select: [ :method | method isInNewVersion ]
+	^ self methods select: [ :method | method isInNewVersion ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -78,7 +71,7 @@ DepProjectHistory >> newVersionClassSelectorsDictionary [
 
 { #category : #'as yet unclassified' }
 DepProjectHistory >> oldMethods [
-	^ self sortedMethods select: [ :method | method wasInOldVersion ]
+	^ self methods select: [ :method | method wasInOldVersion ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -96,17 +89,16 @@ DepProjectHistory >> relevantMethodChanges: anObject [
 	relevantMethodChanges := anObject
 ]
 
+{ #category : #sorting }
+DepProjectHistory >> sortMethodsAndClearMethodDictionary [
+	"Method dictionary is only used for collecting methods. After all methods have been collected, they can be sorted and stored in an array"
+]
+
 { #category : #accessing }
 DepProjectHistory >> sortedCommits [
 	^ commitDictionary values sorted: [ :a :b |
 		a date > b date or: [
 			a date = b date and: [ a time > b time ] ] ]
-]
-
-{ #category : #accessing }
-DepProjectHistory >> sortedMethods [
-	^ methodDictionary values sorted: [ :a :b |
-		a signature > b signature ]
 ]
 
 { #category : #accessing }

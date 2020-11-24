@@ -522,19 +522,19 @@ DepMiner >> showNewVersion [
 { #category : #'as yet unclassified' }
 DepMiner >> showNewVersionAddedMethods [
 	newVersionAddedMethodsTree items:
-		(projectHistory sortedMethods select: [ :method | method wasAdded ]).
+		(projectHistory methods select: [ :method | method wasAdded ]).
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showNewVersionAllMethods [
 	newVersionAllMethodsTree items:
-		(projectHistory sortedMethods select: [ :method | method isInNewVersion ])
+		(projectHistory methods select: [ :method | method isInNewVersion ])
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showNewVersionDeprecatedMethods [
 	newVersionDeprecatedMethodsTree items:
-		(projectHistory sortedMethods select: [ :method | method isInNewVersion and: [ method isDeprecated ] ])
+		(projectHistory methods select: [ :method | method isInNewVersion and: [ method isDeprecated ] ])
 ]
 
 { #category : #'as yet unclassified' }
@@ -556,19 +556,19 @@ DepMiner >> showOldVersion [
 { #category : #'as yet unclassified' }
 DepMiner >> showOldVersionAllMethods [
 	oldVersionAllMethodsTree items:
-		(projectHistory sortedMethods select: [ :method | method wasInOldVersion ])
+		(projectHistory methods select: [ :method | method wasInOldVersion ])
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showOldVersionDeletedMethods [
 	oldVersionDeletedMethodsTree items:
-		(projectHistory sortedMethods select: [ :method | method wasDeleted ])
+		(projectHistory methods select: [ :method | method wasDeleted ])
 ]
 
 { #category : #'as yet unclassified' }
 DepMiner >> showOldVersionDeprecatedMethods [
 	oldVersionDeprecatedMethodsTree items:
-		(projectHistory sortedMethods select: [ :method | method wasInOldVersion and: [ method wasDeprecatedInOldVersion ] ])
+		(projectHistory methods select: [ :method | method wasInOldVersion and: [ method wasDeprecatedInOldVersion ] ])
 ]
 
 { #category : #'as yet unclassified' }

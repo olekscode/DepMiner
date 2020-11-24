@@ -9,6 +9,12 @@ Class {
 	#category : #'DepMiner-Controllers'
 }
 
+{ #category : #adding }
+DepMinerController >> addMethod: aMethod ifDoesNotExistInto: aMethodDictionary [
+	aMethodDictionary at: aMethod signature
+		ifAbsentPut: [ aMethod asDepMethod ]
+]
+
 { #category : #'as yet unclassified' }
 DepMinerController >> buildRulesFrom: aCollectionOfSimpleRules [
 	| rules |
@@ -138,53 +144,56 @@ DepMinerController >> loadMethodChangesFrom: aRepository [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> loadMethodsFrom: aRepository [
-	| clio |
+	| clio methodDictionary |
 	
 	clio := Clio
 		forRepository: aRepository
 		between: settings oldCommitSha
 		and: settings newCommitSha.
 		
-	projectHistory clearMethodDictionary.
+	methodDictionary := Dictionary new.
 		
-	self loadOldVersionUsing: clio.
-	self loadNewVersionUsing: clio.
-	self loadModifiedMethodsUsing: clio.
+	self loadOldVersionInto: methodDictionary using: clio.
+	self loadNewVersionInto: methodDictionary using: clio.
+	self loadModifiedMethodsInto: methodDictionary using: clio.
+	
+	projectHistory methods: (methodDictionary values sorted: [ :a :b |
+		a signature < b signature ]).
 	
 	projectHistory extractNewVersionClassSelectors.
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadModifiedMethodsUsing: aClio [
+DepMinerController >> loadModifiedMethodsInto: aMethodDictionary using: aClio [
 	| oldMethod newMethod |
 	
 	aClio modifiedMethods do: [ :assoc |
 		oldMethod := assoc key.
 		newMethod := assoc value.
 		
-		projectHistory addMethodIfDoesNotExist: newMethod.
+		self addMethod: newMethod ifDoesNotExistInto: aMethodDictionary.
 			
-		(projectHistory methodDictionary at: newMethod signature)
+		(aMethodDictionary at: newMethod signature)
 			markAsModified;
 			oldSourceCode: oldMethod sourceCode;
 			oldDeprecation: oldMethod deprecation ].
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadNewVersionUsing: aClio [
+DepMinerController >> loadNewVersionInto: aMethodDictionary using: aClio [
 	aClio newMethods do: [ :method |
-		projectHistory addMethodIfDoesNotExist: method.
+		self addMethod: method ifDoesNotExistInto: aMethodDictionary.
 			
-		(projectHistory methodDictionary at: method signature)
+		(aMethodDictionary at: method signature)
 			markAsNewMethod ].
 ]
 
 { #category : #'as yet unclassified' }
-DepMinerController >> loadOldVersionUsing: aClio [
+DepMinerController >> loadOldVersionInto: aMethodDictionary using: aClio [
 	aClio oldMethods do: [ :method |
-		projectHistory addMethodIfDoesNotExist: method.
+		self addMethod: method ifDoesNotExistInto: aMethodDictionary.
 			
-		(projectHistory methodDictionary at: method signature)
+		(aMethodDictionary at: method signature)
 			markAsOldMethod ].
 ]
 
@@ -235,7 +244,7 @@ DepMinerController >> projectHistory: anObject [
 DepMinerController >> recommendMethodsToDeprecate [
 	| methodsToDeprecate depRecommendations packagesInNewVersion newMethod |
 	
-	methodsToDeprecate := projectHistory sortedMethods select: [ :method |
+	methodsToDeprecate := projectHistory methods select: [ :method |
 		method wasDeleted and: [
 			method isDeprecated not and: [
 				recommendations relevantRules anySatisfy: [ :rule |
@@ -261,7 +270,7 @@ DepMinerController >> recommendMethodsToDeprecate [
 DepMinerController >> recommendMethodsWithMissingRules [
 	| methodsWithMissingRules depRecommendations |
 	
-	methodsWithMissingRules := projectHistory sortedMethods select: [ :method |
+	methodsWithMissingRules := projectHistory methods select: [ :method |
 		method isInNewVersion and: [
 			method isDeprecated and: [
 				method hasTransformationRule not ] ] ].
