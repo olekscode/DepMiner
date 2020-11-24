@@ -65,6 +65,20 @@ DepMinerController >> extractAllCommitsFromRepository [
 			ifPresent: [ :commit | commit tags add: tag name ] ].
 ]
 
+{ #category : #'as yet unclassified' }
+DepMinerController >> getDictionaryOfPackagesInNewVersion [
+	| packagesInNewVersion |
+	
+	packagesInNewVersion := Dictionary new.
+	
+	projectHistory newMethods do: [ :method |
+		packagesInNewVersion
+			at: method className
+			ifAbsentPut: [ method packageName ] ].
+		
+	^ packagesInNewVersion
+]
+
 { #category : #accessing }
 DepMinerController >> getRepository [
 	^ IceRepository registry
@@ -76,35 +90,6 @@ DepMinerController >> getRepository [
 			DepRepositoryNotFoundError
 				signalForOwnerName: settings ownerName
 				projectName: settings projectName ].
-]
-
-{ #category : #testing }
-DepMinerController >> isMethodLoadedIntoTheImage: aMethod [
-	"Answer true if the given method can be found in the image"
-	
-	| methodClass |
-	
-	methodClass := Smalltalk classNamed: aMethod className.
-	methodClass ifNil: [ ^ false ].
-	
-	[ methodClass methodNamed: aMethod selector asSymbol ]
-		on: KeyNotFound
-		do: [ ^ false ].
-		
-	^ true
-]
-
-{ #category : #testing }
-DepMinerController >> isProjectLoadedAtTheRightVersion [
-	"Answer true if the project that is being analysed is loaded into the system at the version specified by newCommitSha"
-	
-	| repository |
-	
-	[ repository := self getRepository ]
-		on: DepRepositoryNotFoundError
-		do: [ ^ false ].
-		
-	^ repository workingCopy referenceCommit id = settings newCommitSha
 ]
 
 { #category : #'as yet unclassified' }
@@ -243,7 +228,7 @@ DepMinerController >> projectHistory: anObject [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> recommendMethodsToDeprecate [
-	| methodsToDeprecate depRecommendations |
+	| methodsToDeprecate depRecommendations packagesInNewVersion newMethod |
 	
 	methodsToDeprecate := projectHistory sortedMethods select: [ :method |
 		method wasDeleted and: [
@@ -251,9 +236,15 @@ DepMinerController >> recommendMethodsToDeprecate [
 				recommendations relevantRules anySatisfy: [ :rule |
 					rule deletedMethodCalls anyOne selector = method selector ] ] ] ].
 	
+	packagesInNewVersion := self getDictionaryOfPackagesInNewVersion.
+	
 	depRecommendations := methodsToDeprecate collect: [ :method |
+		newMethod := method copy;
+			packageName: (packagesInNewVersion at: method className ifAbsent: [ '(deleted classes)' ]);
+			yourself.
+		
 		DepProposedDeprecationRecommendation new
-			method: method;
+			method: newMethod;
 			chooseApplicableRulesFrom: recommendations relevantRules
 			yourself ].
 		
