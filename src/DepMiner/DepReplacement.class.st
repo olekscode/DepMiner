@@ -10,13 +10,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 DepReplacement class >> for: aMethod definedBy: aRule [
-	| concreteSubclass |
-	
-	concreteSubclass := aRule isAutomatable
-		ifTrue: [ DepAutomatableReplacement ]
-		ifFalse: [ DepNonAutomatableReplacement ].
-	
-	^ concreteSubclass new
+	^ self new
 		initializeMethod: aMethod
 		rule: aRule;
 		yourself.

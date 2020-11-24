@@ -145,9 +145,13 @@ DepMinerController >> loadMethodsFrom: aRepository [
 		between: settings oldCommitSha
 		and: settings newCommitSha.
 		
+	projectHistory clearMethodDictionary.
+		
 	self loadOldVersionUsing: clio.
 	self loadNewVersionUsing: clio.
 	self loadModifiedMethodsUsing: clio.
+	
+	projectHistory extractNewVersionClassSelectors.
 ]
 
 { #category : #'as yet unclassified' }
@@ -247,6 +251,7 @@ DepMinerController >> recommendMethodsToDeprecate [
 		DepProposedDeprecationRecommendation new
 			method: newMethod;
 			chooseApplicableRulesFrom: recommendations relevantRules
+			basedOn: (projectHistory newVersionClassSelectorsDictionary at: newMethod className);
 			yourself ].
 		
 	recommendations methodsToDeprecate: depRecommendations.
@@ -264,7 +269,8 @@ DepMinerController >> recommendMethodsWithMissingRules [
 	depRecommendations := methodsWithMissingRules collect: [ :method |
 		DepMissingRuleRecommendation new
 			method: method;
-			chooseApplicableRulesFrom: recommendations relevantRules;
+			chooseApplicableRulesFrom: recommendations relevantRules
+			basedOn: (projectHistory newVersionClassSelectorsDictionary at: method className);
 			yourself ].
 		
 	recommendations methodsWithMissingRules: depRecommendations.

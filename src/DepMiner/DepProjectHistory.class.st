@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'commitDictionary',
 		'methodDictionary',
+		'newVersionClassSelectorsDictionary',
 		'totalNumberOfMethodChanges',
 		'relevantMethodChanges'
 	],
@@ -14,6 +15,11 @@ Class {
 DepProjectHistory >> addMethodIfDoesNotExist: aMethod [
 	methodDictionary at: aMethod signature
 		ifAbsentPut: [ aMethod asDepMethod ]
+]
+
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> clearMethodDictionary [
+	methodDictionary removeAll
 ]
 
 { #category : #accessing }
@@ -31,11 +37,23 @@ DepProjectHistory >> commitThatMatches: aShaShortShaOrTag ifNone: anAbsentBlock 
 			ifNone: [ anAbsentBlock value ] ]
 ]
 
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> extractNewVersionClassSelectors [
+	newVersionClassSelectorsDictionary removeAll.
+	
+	methodDictionary valuesDo: [ :method |
+		(newVersionClassSelectorsDictionary
+			at: method className
+			ifAbsentPut: [ OrderedCollection new ])
+			add: method selector ]
+]
+
 { #category : #initialization }
 DepProjectHistory >> initialize [
 	super initialize.
 	commitDictionary := Dictionary new.
 	methodDictionary := Dictionary new.
+	newVersionClassSelectorsDictionary := Dictionary new.
 ]
 
 { #category : #accessing }
@@ -51,6 +69,11 @@ DepProjectHistory >> newMethods [
 { #category : #'as yet unclassified' }
 DepProjectHistory >> newSelectors [
 	^ (self newMethods collect: [ :method | method selector ]) asSet
+]
+
+{ #category : #accessing }
+DepProjectHistory >> newVersionClassSelectorsDictionary [
+	^ newVersionClassSelectorsDictionary
 ]
 
 { #category : #'as yet unclassified' }

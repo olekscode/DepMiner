@@ -34,11 +34,11 @@ DepRecommendationTest >> setUp [
 		withDeletedSelectors: #(withIndexDo:)
 		addedSelectors: #(do: collect:).
 		
-	automatableReplacement := DepReplacement
+	automatableReplacement := DepAutomatableReplacement
 		for: method
 		definedBy: automatableRule.
 		
-	nonAutomatableReplacement := DepReplacement
+	nonAutomatableReplacement := DepNonAutomatableReplacement
 		for: method
 		definedBy: nonAutomatableRule.
 		

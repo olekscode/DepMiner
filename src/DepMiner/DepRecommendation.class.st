@@ -74,11 +74,16 @@ DepRecommendation >> canBeApplied [
 ]
 
 { #category : #'as yet unclassified' }
-DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules [
+DepRecommendation >> chooseApplicableRulesFrom: aCollectionOfRelevantRules basedOn: aCollectionOfRelevantSelectors [
 
 	replacements := aCollectionOfRelevantRules
 		select: [ :rule | rule deletedMethodCalls anyOne selector = method selector ]
-		thenCollect: [ :rule | DepReplacement for: method definedBy: rule ]
+		thenCollect: [ :rule |
+			(rule isAutomatable and: [
+				rule addedMethodCalls allSatisfy: [ :methodCall |
+					aCollectionOfRelevantSelectors includes: methodCall selector ] ])
+				ifTrue: [ DepAutomatableReplacement for: method definedBy: rule ]
+				ifFalse: [ DepNonAutomatableReplacement for: method definedBy: rule ] ]
 ]
 
 { #category : #'as yet unclassified' }

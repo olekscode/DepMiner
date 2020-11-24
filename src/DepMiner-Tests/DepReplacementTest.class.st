@@ -130,7 +130,7 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableNoArgumen
 		withDeletedSelectors: #(mockMethod)
 		addedSelectors: #(replacement).
 		
-	replacement := DepReplacement for: mockMethod definedBy: rule.
+	replacement := DepAutomatableReplacement for: mockMethod definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.
 	expectedCode := '^ self replacement'.
@@ -149,7 +149,7 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableOneArgume
 		withDeletedSelectors: #(mockMethodWithArgument:)
 		addedSelectors: #(replacementWithArgument:).
 	
-	replacement := DepReplacement for: mockMethodWithOneArgument definedBy: rule.
+	replacement := DepAutomatableReplacement for: mockMethodWithOneArgument definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.
 	expectedCode := '^ self replacementWithArgument: anArgument'.
@@ -168,7 +168,7 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationAutomatableTwoArgume
 		withDeletedSelectors: #(mockMethodWithArgument:and:)
 		addedSelectors: #(replacementWithArgument:and:).
 		
-	replacement := DepReplacement for: mockMethodWithTwoArguments definedBy: rule.
+	replacement := DepAutomatableReplacement for: mockMethodWithTwoArguments definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.
 	expectedCode := '^ self replacementWithArgument: anArgument and: anotherArgument'.
@@ -187,7 +187,7 @@ DepReplacementTest >> testGenerateSourceCodeAfterDeprecationNonAutomatable [
 		withDeletedSelectors: #(mockMethod)
 		addedSelectors: #(replacementWithArgument:).
 	
-	replacement := DepReplacement for: mockMethod definedBy: rule.
+	replacement := DepNonAutomatableReplacement for: mockMethod definedBy: rule.
 	
 	generatedCode := replacement generateSourceCodeAfterDeprecation.
 	expectedCode := 'a := 1.
