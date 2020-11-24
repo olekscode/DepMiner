@@ -20,8 +20,34 @@ DepRecommendation >> = anObject [
 ]
 
 { #category : #'as yet unclassified' }
+DepRecommendation >> applyWith: aReplacement [
+	| generatedCode methodClass protocol |
+	
+	self canBeApplied
+		ifFalse: [ self raiseCanNotBeAppliedException ].
+	
+	generatedCode := self generateSourceCodeUsing: aReplacement.
+	methodClass := Smalltalk classNamed: method className.
+	
+	protocol := [ (methodClass methodNamed: method selector asSymbol) protocol ]
+		on: KeyNotFound
+		do: [ 'generated' ].
+	
+	Author 
+		useAuthor: 'DepMiner'
+		during: [ methodClass compile: generatedCode classified: protocol ].
+		
+	self inform: ('Method ', method signature, ' was saved').
+]
+
+{ #category : #'as yet unclassified' }
 DepRecommendation >> automatableReplacements [
 	^ replacements select: [ :each | each isAutomatable ]
+]
+
+{ #category : #testing }
+DepRecommendation >> canBeApplied [
+	self subclassResponsibility
 ]
 
 { #category : #'as yet unclassified' }
@@ -55,6 +81,29 @@ DepRecommendation >> hash [
 	^ method hash bitXor: replacements hash
 ]
 
+{ #category : #testing }
+DepRecommendation >> isClassLoadedIntoTheImage: aClassName [
+	"Answer true if a class with a given name can be found in the image"
+	
+	^ (Smalltalk classNamed: aClassName) isNotNil
+]
+
+{ #category : #testing }
+DepRecommendation >> isMethodLoadedIntoTheImage: aMethod [
+	"Answer true if the given method can be found in the image"
+	
+	| methodClass |
+	
+	methodClass := Smalltalk classNamed: aMethod className.
+	methodClass ifNil: [ ^ false ].
+	
+	[ methodClass methodNamed: aMethod selector asSymbol ]
+		on: KeyNotFound
+		do: [ ^ false ].
+		
+	^ true
+]
+
 { #category : #accessing }
 DepRecommendation >> method [
 	^ method
@@ -74,6 +123,11 @@ DepRecommendation >> name [
 { #category : #'as yet unclassified' }
 DepRecommendation >> nonAutomatableReplacements [
 	^ replacements reject: [ :each | each isAutomatable ]
+]
+
+{ #category : #'as yet unclassified' }
+DepRecommendation >> raiseCanNotBeAppliedException [
+	self subclassResponsibility
 ]
 
 { #category : #accessing }

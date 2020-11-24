@@ -362,29 +362,6 @@ DepMiner >> loadWithSettings: aSettingsModel projectHistory: aProjectHistoryMode
 ]
 
 { #category : #'as yet unclassified' }
-DepMiner >> onGenerateClicked [
-	| method |
-	
-	controller isProjectLoadedAtTheRightVersion ifFalse: [
-		self inform: (String streamContents: [ :stream |
-			stream
-				nextPutAll: 'Please open Iceberg, load project ';
-				nextPutAll: settings projectName;
-				nextPutAll: ', and checkout commit ';
-				nextPutAll: settings newCommitSha;
-				nextPutAll: ' which is scecified as "New version"' ]).
-		^ self ].
-	
-	method := mainAreaNotebook selectedPage activePresenter recommendation method.
-	
-	(controller isMethodLoadedIntoTheImage: method) ifFalse: [ 
-		self inform: 'Method ', method signature, ' was not found in the image.'.
-		^ self ].
-	
-	self inform: 'Generating the code'.
-]
-
-{ #category : #'as yet unclassified' }
 DepMiner >> onLoadChangesClicked [
 	| oldVersionString newVersionString oldCommit newCommit |
 	
@@ -518,10 +495,7 @@ DepMiner >> showAutomatableRulesApplicableTo: aRecommendation [
 	aRecommendation hasAutomatableReplacements ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Automatable rules';
-			presenterProvider: [
-				(DepAutomatableRecommendationPresenter on: aRecommendation)
-					whenGenerateButtonClicked: [ self onGenerateClicked ];
-					yourself ];
+			presenterProvider: [ DepAutomatableRecommendationPresenter on: aRecommendation ];
 			yourself) ].
 ]
 
@@ -568,10 +542,7 @@ DepMiner >> showNonAutomatableRulesApplicableTo: aRecommendation [
 	aRecommendation hasNonAutomatableReplacements ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Non-automatable rules';
-			presenterProvider: [
-				(DepNonAutomatableRecommendationPresenter on: aRecommendation)
-					whenGenerateButtonClicked: [ self onGenerateClicked ];
-					yourself ];
+			presenterProvider: [ DepNonAutomatableRecommendationPresenter on: aRecommendation ];
 			yourself) ].
 ]
 

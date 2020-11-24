@@ -6,7 +6,7 @@ Class {
 		'replacementImplementations',
 		'replacementsList',
 		'generatedCode',
-		'generateButton'
+		'saveButton'
 	],
 	#category : #'DepMiner-Spec-Views'
 }
@@ -14,20 +14,21 @@ Class {
 { #category : #specs }
 DepRecommendationPresenter class >> defaultSpec [
 	^ SpBoxLayout newVertical
+		spacing: 3;
 		add: (SpBoxLayout newHorizontal
-			spacing: 2;
+			spacing: 5;
 			add: (SpBoxLayout newVertical
 				add: 'Replacements' height: self labelHeight;
 				add: #replacementsList;
 				yourself) width: 200;
 			add: (SpBoxLayout newVertical
-				add: 'Source code with generated deprecation' height: self labelHeight;
+				add: 'Generated code' height: self labelHeight;
 				add: #generatedCode;
 				yourself);
 			yourself);
 		add: (SpBoxLayout newHorizontal
 			add: '';
-			add: #generateButton width: self buttonWidth;
+			add: #saveButton width: self buttonWidth;
 			yourself) height: self buttonHeight;
 		yourself.
 ]
@@ -38,6 +39,8 @@ DepRecommendationPresenter >> connectPresenters [
 	
 	replacementsList whenSelectionChangedDo: [ :selectionMode |
 		self onReplacementSelectionChanged ].
+	
+	saveButton action: [ self onSaveClicked ].
 ]
 
 { #category : #initialization }
@@ -66,8 +69,8 @@ DepRecommendationPresenter >> initializePresenters [
 		beForBehavior: Object;
 		yourself.
 	
-	generateButton := self newButton
-		label: 'Generate';
+	saveButton  := self newButton
+		label: 'Save';
 		yourself.
 		
 	self showReplacements.
@@ -81,6 +84,16 @@ DepRecommendationPresenter >> onReplacementSelectionChanged [
 	
 	replacement ifNotNil: [
 		self showCodeGeneratedBy: replacement ].
+]
+
+{ #category : #'as yet unclassified' }
+DepRecommendationPresenter >> onSaveClicked [
+	replacementsList selectedItem
+		ifNil: [ self inform: 'Please select a replacement from the list' ]
+		ifNotNil: [ :replacement |
+			[ recommendation applyWith: replacement ]
+				on: DepRecommendationCanNotBeAppliedError
+				do: [ :err | self inform: err messageText ] ].
 ]
 
 { #category : #accessing }
@@ -107,9 +120,4 @@ DepRecommendationPresenter >> showCodeGeneratedBy: aReplacement [
 DepRecommendationPresenter >> showReplacements [
 	replacementsList items: self replacements.
 	replacementsList selectIndex: 1.
-]
-
-{ #category : #'as yet unclassified' }
-DepRecommendationPresenter >> whenGenerateButtonClicked: aBlock [
-	generateButton action: aBlock
 ]

@@ -4,6 +4,11 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
+{ #category : #testing }
+DepProposedDeprecationRecommendation >> canBeApplied [
+	^ self isClassLoadedIntoTheImage: method className
+]
+
 { #category : #'as yet unclassified' }
 DepProposedDeprecationRecommendation >> generateSourceCodeUsing: aReplacement [
 	| generatedDeprecationAst generatedImplementationAst newAst |
@@ -24,4 +29,9 @@ DepProposedDeprecationRecommendation >> generateSourceCodeUsing: aReplacement [
 			ifFalse: [ { generatedImplementationAst } ]).
 		
 	^ newAst formattedCode
+]
+
+{ #category : #'as yet unclassified' }
+DepProposedDeprecationRecommendation >> raiseCanNotBeAppliedException [
+	DepRecommendationCanNotBeAppliedError signal: ('The generated code can not be saved because the class ', method className, ' was not found in the image. Please make sure that you loaded the right version of the project').
 ]
