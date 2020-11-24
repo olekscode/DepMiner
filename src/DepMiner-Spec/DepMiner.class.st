@@ -36,7 +36,8 @@ Class {
 		'proposedDeprecationsTree',
 		'missingRulesTree',
 		'onlyAutomatableRulesCheckbox',
-		'mainAreaNotebook'
+		'mainAreaNotebook',
+		'acceptedChanges'
 	],
 	#category : #'DepMiner-Spec-Views'
 }
@@ -220,6 +221,8 @@ DepMiner >> initialize [
 	projectHistory := DepProjectHistory new.
 	recommendations := DepRecommendations new.
 	
+	acceptedChanges := OrderedCollection new.
+	
 	controller := DepMinerController new
 		settings: settings;
 		projectHistory: projectHistory;
@@ -348,6 +351,8 @@ DepMiner >> loadWithSettings: aSettingsModel projectHistory: aProjectHistoryMode
 	settings := aSettingsModel.
 	projectHistory := aProjectHistoryModel.
 	recommendations := aRecommendationsModel.
+	
+	acceptedChanges := OrderedCollection new.
 	
 	controller settings: settings.
 	controller projectHistory: projectHistory.
@@ -495,7 +500,10 @@ DepMiner >> showAutomatableRulesApplicableTo: aRecommendation [
 	aRecommendation hasAutomatableReplacements ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Automatable rules';
-			presenterProvider: [ DepAutomatableRecommendationPresenter on: aRecommendation ];
+			presenterProvider: [
+				(DepAutomatableRecommendationPresenter on: aRecommendation)
+					acceptedChanges: acceptedChanges;
+					yourself ];
 			yourself) ].
 ]
 
@@ -542,7 +550,10 @@ DepMiner >> showNonAutomatableRulesApplicableTo: aRecommendation [
 	aRecommendation hasNonAutomatableReplacements ifTrue: [
 		mainAreaNotebook addPage: (self newNotebookPage
 			title: 'Non-automatable rules';
-			presenterProvider: [ DepNonAutomatableRecommendationPresenter on: aRecommendation ];
+			presenterProvider: [
+				(DepNonAutomatableRecommendationPresenter on: aRecommendation)
+					acceptedChanges: acceptedChanges;
+					yourself ];
 			yourself) ].
 ]
 
