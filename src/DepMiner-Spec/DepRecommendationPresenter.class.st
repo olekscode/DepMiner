@@ -9,7 +9,8 @@ Class {
 		'saveButton',
 		'acceptedChanges',
 		'numberOfAcceptedChangesLabel',
-		'inspectAcceptedChangesLink'
+		'inspectAcceptedChangesLink',
+		'onSaveClickedCallback'
 	],
 	#category : #'DepMiner-Spec-Views'
 }
@@ -109,12 +110,16 @@ DepRecommendationPresenter >> onReplacementSelectionChanged [
 
 { #category : #'as yet unclassified' }
 DepRecommendationPresenter >> onSaveClicked [
+
 	replacementsList selectedItem
 		ifNil: [ self inform: 'Please select a replacement from the list' ]
-		ifNotNil: [ :replacement |
-			[ recommendation applyWith: replacement. self updateAcceptedChangesLog ]
+		ifNotNil: [ :replacement | 
+			[ 
+			recommendation applyWith: replacement.
+			self updateAcceptedChangesLog.
+			onSaveClickedCallback value ]
 				on: DepRecommendationCanNotBeAppliedError
-				do: [ :err | self inform: err messageText ] ].
+				do: [ :err | self inform: err messageText ] ]
 ]
 
 { #category : #accessing }
@@ -165,14 +170,9 @@ DepRecommendationPresenter >> updateAcceptedChangesLog [
 		yourself).
 		
 	self showNumberOfAcceptedChanges.
-	self writeAcceptedChangesLogToSton.
 ]
 
-{ #category : #'as yet unclassified' }
-DepRecommendationPresenter >> writeAcceptedChangesLogToSton [
-	| file |
-	file := 'acceptedChangesLog.ston' asFileReference.
-	
-	file writeStreamDo: [ :writeStream |
-		STON put: acceptedChanges onStream: writeStream  ]
+{ #category : #enumerating }
+DepRecommendationPresenter >> whenSaveClickedDo: aBlock [
+	onSaveClickedCallback := aBlock
 ]

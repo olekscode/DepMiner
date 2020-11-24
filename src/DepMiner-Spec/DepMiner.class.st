@@ -480,6 +480,11 @@ DepMiner >> onRecommendationClicked: aRecommendation [
 	mainAreaNotebook selectPageIndex: 1.
 ]
 
+{ #category : #writing }
+DepMiner >> onSaveClicked [
+	self writeAcceptedChangesLogToSton
+]
+
 { #category : #accessing }
 DepMiner >> projectHistory [
 	^ projectHistory
@@ -503,6 +508,7 @@ DepMiner >> showAutomatableRulesApplicableTo: aRecommendation [
 			presenterProvider: [
 				(DepAutomatableRecommendationPresenter on: aRecommendation)
 					acceptedChanges: acceptedChanges;
+					whenSaveClickedDo: [ self onSaveClicked ];
 					yourself ];
 			yourself) ].
 ]
@@ -553,6 +559,7 @@ DepMiner >> showNonAutomatableRulesApplicableTo: aRecommendation [
 			presenterProvider: [
 				(DepNonAutomatableRecommendationPresenter on: aRecommendation)
 					acceptedChanges: acceptedChanges;
+					whenSaveClickedDo: [ self onSaveClicked ];
 					yourself ];
 			yourself) ].
 ]
@@ -667,4 +674,13 @@ DepMiner >> toolbarActions [
 			register: (DepSaveCommand forSpecContext: self);
 			yourself);
 		yourself
+]
+
+{ #category : #writing }
+DepMiner >> writeAcceptedChangesLogToSton [
+	| file |
+	file := ('acceptedChangesLog-', settings projectName, '.ston') asFileReference.
+	
+	file writeStreamDo: [ :writeStream |
+		STON put: acceptedChanges onStream: writeStream  ]
 ]
