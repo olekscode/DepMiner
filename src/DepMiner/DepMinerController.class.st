@@ -72,9 +72,10 @@ DepMinerController >> getDictionaryOfPackagesInNewVersion [
 	packagesInNewVersion := Dictionary new.
 	
 	projectHistory newMethods do: [ :method |
-		packagesInNewVersion
-			at: method className
-			ifAbsentPut: [ method packageName ] ].
+		method isExtension ifFalse: [
+			packagesInNewVersion
+				at: method className
+				ifAbsentPut: [ method packageName ] ] ].
 		
 	^ packagesInNewVersion
 ]

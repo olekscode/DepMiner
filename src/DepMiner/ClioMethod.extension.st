@@ -8,5 +8,6 @@ ClioMethod >> asDepMethod [
 		selector: selector;
 		sourceCode: sourceCode;
 		deprecation: deprecation;
+		isExtension: isExtension;
 		yourself.
 ]
