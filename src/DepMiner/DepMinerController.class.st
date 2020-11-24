@@ -138,8 +138,8 @@ DepMinerController >> loadMethodsFrom: aRepository [
 		
 	methodDictionary := Dictionary new.
 		
-	self loadOldVersionInto: methodDictionary using: clio.
 	self loadNewVersionInto: methodDictionary using: clio.
+	self loadOldVersionInto: methodDictionary using: clio.
 	self loadModifiedMethodsInto: methodDictionary using: clio.
 	
 	projectHistory methods: (methodDictionary values sorted: [ :a :b |
