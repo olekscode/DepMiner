@@ -71,21 +71,6 @@ DepMinerController >> extractAllCommitsFromRepository [
 			ifPresent: [ :commit | commit tags add: tag name ] ].
 ]
 
-{ #category : #'as yet unclassified' }
-DepMinerController >> getDictionaryOfPackagesInNewVersion [
-	| packagesInNewVersion |
-	
-	packagesInNewVersion := Dictionary new.
-	
-	projectHistory newMethods do: [ :method |
-		method isExtension ifFalse: [
-			packagesInNewVersion
-				at: method className
-				ifAbsentPut: [ method packageName ] ] ].
-		
-	^ packagesInNewVersion
-]
-
 { #category : #accessing }
 DepMinerController >> getRepository [
 	^ IceRepository registry
@@ -161,6 +146,7 @@ DepMinerController >> loadMethodsFrom: aRepository [
 		a signature < b signature ]).
 	
 	projectHistory extractNewVersionClassSelectors.
+	projectHistory extractNewVersionClassPackages.
 ]
 
 { #category : #'as yet unclassified' }
@@ -242,19 +228,18 @@ DepMinerController >> projectHistory: anObject [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> recommendMethodsToDeprecate [
-	| methodsToDeprecate depRecommendations packagesInNewVersion newMethod |
+	| methodsToDeprecate depRecommendations newMethod |
 	
 	methodsToDeprecate := projectHistory methods select: [ :method |
 		method wasDeleted and: [
 			method isDeprecated not and: [
-				recommendations relevantRules anySatisfy: [ :rule |
-					rule deletedMethodCalls anyOne selector = method selector ] ] ] ].
-	
-	packagesInNewVersion := self getDictionaryOfPackagesInNewVersion.
+				(projectHistory classNamesInNewVersion includes: method className) and: [
+					recommendations relevantRules anySatisfy: [ :rule |
+						rule deletedMethodCalls anyOne selector = method selector ] ] ] ] ].
 	
 	depRecommendations := methodsToDeprecate collect: [ :method |
 		newMethod := method copy;
-			packageName: (packagesInNewVersion at: method className ifAbsent: [ '(deleted classes)' ]);
+			packageName: (projectHistory newVersionClassPackagesDictionary at: method className);
 			yourself.
 		
 		DepProposedDeprecationRecommendation new

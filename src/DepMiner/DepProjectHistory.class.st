@@ -5,11 +5,17 @@ Class {
 		'commitDictionary',
 		'methods',
 		'newVersionClassSelectorsDictionary',
+		'newVersionClassPackagesDictionary',
 		'totalNumberOfMethodChanges',
 		'relevantMethodChanges'
 	],
 	#category : #'DepMiner-Models'
 }
+
+{ #category : #'as yet unclassified' }
+DepProjectHistory >> classNamesInNewVersion [
+	^ newVersionClassSelectorsDictionary keys
+]
 
 { #category : #accessing }
 DepProjectHistory >> commitDictionary [
@@ -27,10 +33,21 @@ DepProjectHistory >> commitThatMatches: aShaShortShaOrTag ifNone: anAbsentBlock 
 ]
 
 { #category : #'as yet unclassified' }
+DepProjectHistory >> extractNewVersionClassPackages [	
+	newVersionClassPackagesDictionary removeAll.
+	
+	self newMethods do: [ :method |
+		method isExtension ifFalse: [
+			newVersionClassPackagesDictionary
+				at: method className
+				ifAbsentPut: [ method packageName ] ] ].
+]
+
+{ #category : #'as yet unclassified' }
 DepProjectHistory >> extractNewVersionClassSelectors [
 	newVersionClassSelectorsDictionary removeAll.
 	
-	methods do: [ :method |
+	self newMethods do: [ :method |
 		(newVersionClassSelectorsDictionary
 			at: method className
 			ifAbsentPut: [ OrderedCollection new ])
@@ -42,6 +59,7 @@ DepProjectHistory >> initialize [
 	super initialize.
 	commitDictionary := Dictionary new.
 	newVersionClassSelectorsDictionary := Dictionary new.
+	newVersionClassPackagesDictionary := Dictionary new.
 ]
 
 { #category : #accessing }
@@ -62,6 +80,11 @@ DepProjectHistory >> newMethods [
 { #category : #'as yet unclassified' }
 DepProjectHistory >> newSelectors [
 	^ (self newMethods collect: [ :method | method selector ]) asSet
+]
+
+{ #category : #accessing }
+DepProjectHistory >> newVersionClassPackagesDictionary [
+	^ newVersionClassPackagesDictionary
 ]
 
 { #category : #accessing }
