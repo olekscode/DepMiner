@@ -6,7 +6,7 @@ Class {
 
 { #category : #testing }
 DepMissingRuleRecommendation >> canBeApplied [
-	^ self isMethodLoadedIntoTheImage: method
+	^ self class isMethodLoadedIntoTheImage: method
 ]
 
 { #category : #'as yet unclassified' }

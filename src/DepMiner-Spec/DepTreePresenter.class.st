@@ -43,7 +43,7 @@ DepTreePresenter >> buildTreesFrom: aCollectionOfItems [
 			
 		classesDictionary keysAndValuesDo: [ :className :methods |
 			classTree := DepTreeModel new
-				name: className;
+				name: (self classNameToDisplayFor: className);
 				iconName: #class;
 				yourself.
 				
@@ -58,6 +58,11 @@ DepTreePresenter >> buildTreesFrom: aCollectionOfItems [
 		packageTrees add: packageTree ].
 
 	^ packageTrees
+]
+
+{ #category : #'as yet unclassified' }
+DepTreePresenter >> classNameToDisplayFor: aClassName [
+	self subclassResponsibility
 ]
 
 { #category : #initialization }

@@ -8,6 +8,29 @@ Class {
 	#category : #'DepMiner-Models'
 }
 
+{ #category : #testing }
+DepRecommendation class >> isClassLoadedIntoTheImage: aClassName [
+	"Answer true if a class with a given name can be found in the image"
+	
+	^ (Smalltalk classNamed: aClassName) isNotNil
+]
+
+{ #category : #testing }
+DepRecommendation class >> isMethodLoadedIntoTheImage: aMethod [
+	"Answer true if the given method can be found in the image"
+	
+	| methodClass |
+	
+	methodClass := Smalltalk classNamed: aMethod className.
+	methodClass ifNil: [ ^ false ].
+	
+	[ methodClass methodNamed: aMethod selector asSymbol ]
+		on: KeyNotFound
+		do: [ ^ false ].
+		
+	^ true
+]
+
 { #category : #comparing }
 DepRecommendation >> = anObject [
 
@@ -79,29 +102,6 @@ DepRecommendation >> hash [
 	"Answer an integer value that is related to the identity of the receiver."
 
 	^ method hash bitXor: replacements hash
-]
-
-{ #category : #testing }
-DepRecommendation >> isClassLoadedIntoTheImage: aClassName [
-	"Answer true if a class with a given name can be found in the image"
-	
-	^ (Smalltalk classNamed: aClassName) isNotNil
-]
-
-{ #category : #testing }
-DepRecommendation >> isMethodLoadedIntoTheImage: aMethod [
-	"Answer true if the given method can be found in the image"
-	
-	| methodClass |
-	
-	methodClass := Smalltalk classNamed: aMethod className.
-	methodClass ifNil: [ ^ false ].
-	
-	[ methodClass methodNamed: aMethod selector asSymbol ]
-		on: KeyNotFound
-		do: [ ^ false ].
-		
-	^ true
 ]
 
 { #category : #accessing }

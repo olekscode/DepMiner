@@ -6,7 +6,7 @@ Class {
 
 { #category : #testing }
 DepProposedDeprecationRecommendation >> canBeApplied [
-	^ self isClassLoadedIntoTheImage: method className
+	^ self class isClassLoadedIntoTheImage: method className
 ]
 
 { #category : #'as yet unclassified' }

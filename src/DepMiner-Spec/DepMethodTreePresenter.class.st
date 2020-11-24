@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DepMethodTreePresenter >> classNameToDisplayFor: aClassName [
+	^ aClassName
+]
+
+{ #category : #'as yet unclassified' }
 DepMethodTreePresenter >> methodToDisplayFor: anItem [
 	^ anItem
 ]
