@@ -233,9 +233,12 @@ DepMinerController >> recommendMethodsToDeprecate [
 	methodsToDeprecate := projectHistory methods select: [ :method |
 		method wasDeleted and: [
 			method isDeprecated not and: [
-				(projectHistory classNamesInNewVersion includes: method className) and: [
-					recommendations relevantRules anySatisfy: [ :rule |
-						rule deletedMethodCalls anyOne selector = method selector ] ] ] ] ].
+				projectHistory classNamesInNewVersion includes: method className ] ] ].
+	
+	"There must be at least one rule that can be applied to this method"
+	methodsToDeprecate := methodsToDeprecate select: [ :method |
+		recommendations relevantRules anySatisfy: [ :rule |
+			rule deletedMethodCalls anyOne selector = method selector ] ].
 	
 	depRecommendations := methodsToDeprecate collect: [ :method |
 		newMethod := method copy;
@@ -259,6 +262,11 @@ DepMinerController >> recommendMethodsWithMissingRules [
 		method isInNewVersion and: [
 			method isDeprecated and: [
 				method hasTransformationRule not ] ] ].
+	
+	"There must be at least one rule that can be applied to this method"
+	methodsWithMissingRules := methodsWithMissingRules select: [ :method |
+		recommendations relevantRules anySatisfy: [ :rule |
+			rule deletedMethodCalls anyOne selector = method selector ] ].
 	
 	depRecommendations := methodsWithMissingRules collect: [ :method |
 		DepMissingRuleRecommendation new
