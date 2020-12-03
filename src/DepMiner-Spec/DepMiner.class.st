@@ -116,11 +116,11 @@ DepMiner class >> defaultSpec [
 				add: (SpBoxLayout newVertical
 					add: 'Methods in the old version' height: self labelHeight;
 					add: #oldVersionNotebook;
-					yourself);
+					yourself) width: 250;
 				add: (SpBoxLayout newVertical
 					add: 'Methods in the new version' height: self labelHeight;
 					add: #newVersionNotebook;
-					yourself);
+					yourself) width: 250;
 				add: (SpBoxLayout newVertical
 					add: (SpBoxLayout newHorizontal
 						add: 'Recommendations';
