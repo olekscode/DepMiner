@@ -477,7 +477,8 @@ DepMiner >> onRecommendationClicked: aRecommendation [
 	onlyAutomatableRulesCheckbox state ifFalse: [
 		self showNonAutomatableRulesApplicableTo: aRecommendation ].
 		
-	mainAreaNotebook selectPageIndex: 1.
+	mainAreaNotebook pages ifNotEmpty: [
+		mainAreaNotebook selectPageIndex: 1 ].
 ]
 
 { #category : #writing }
