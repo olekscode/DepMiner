@@ -228,7 +228,7 @@ DepMinerController >> projectHistory: anObject [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> recommendMethodsToDeprecate [
-	| methodsToDeprecate depRecommendations newMethod |
+	| methodsToDeprecate depRecommendations newMethod relevantSelectors |
 	
 	methodsToDeprecate := projectHistory methods select: [ :method |
 		method wasDeleted and: [
@@ -244,11 +244,15 @@ DepMinerController >> recommendMethodsToDeprecate [
 		newMethod := method copy;
 			packageName: (projectHistory newVersionClassPackagesDictionary at: method className);
 			yourself.
+			
+		relevantSelectors := (Smalltalk classNamed: method className)
+			ifNotNil: [ :aClass | aClass allMethods collect: [ :each | each selector ] ]
+			ifNil: [ projectHistory newVersionClassSelectorsDictionary at: method className ].
 		
 		DepProposedDeprecationRecommendation new
 			method: newMethod;
 			chooseApplicableRulesFrom: recommendations relevantRules
-			basedOn: (projectHistory newVersionClassSelectorsDictionary at: newMethod className);
+			basedOn: relevantSelectors;
 			yourself ].
 		
 	recommendations methodsToDeprecate: depRecommendations.
@@ -256,7 +260,7 @@ DepMinerController >> recommendMethodsToDeprecate [
 
 { #category : #'as yet unclassified' }
 DepMinerController >> recommendMethodsWithMissingRules [
-	| methodsWithMissingRules depRecommendations |
+	| methodsWithMissingRules depRecommendations relevantSelectors |
 	
 	methodsWithMissingRules := projectHistory methods select: [ :method |
 		method isInNewVersion and: [
@@ -269,10 +273,14 @@ DepMinerController >> recommendMethodsWithMissingRules [
 			rule deletedMethodCalls anyOne selector = method selector ] ].
 	
 	depRecommendations := methodsWithMissingRules collect: [ :method |
+		relevantSelectors := (Smalltalk classNamed: method className)
+			ifNotNil: [ :aClass | aClass allMethods collect: [ :each | each selector ] ]
+			ifNil: [ projectHistory newVersionClassSelectorsDictionary at: method className ].
+		
 		DepMissingRuleRecommendation new
 			method: method;
 			chooseApplicableRulesFrom: recommendations relevantRules
-			basedOn: (projectHistory newVersionClassSelectorsDictionary at: method className);
+			basedOn: relevantSelectors;
 			yourself ].
 		
 	recommendations methodsWithMissingRules: depRecommendations.
