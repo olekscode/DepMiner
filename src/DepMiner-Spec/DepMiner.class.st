@@ -592,7 +592,7 @@ DepMiner >> showOldVersionDeprecatedMethods [
 
 { #category : #'as yet unclassified' }
 DepMiner >> showProjectHistoryStats [
-	| numberOfCommits numberOfMethodChanges numberOfRelevantMethodChanges fractionOfRelevantMethodChanges |
+	| numberOfCommits numberOfMethodChanges numberOfRelevantMethodChanges fractionOfRelevantMethodChanges oldCommit newCommit |
 	
 	recommendations ifNil: [ 
 		numberOfCommits := 0.
@@ -600,7 +600,15 @@ DepMiner >> showProjectHistoryStats [
 		numberOfRelevantMethodChanges := 0.
 		fractionOfRelevantMethodChanges := 0. ]
 	ifNotNil: [
-		numberOfCommits := projectHistory commitDictionary size.
+		oldCommit := projectHistory commitThatMatches: settings oldCommitSha ifNone: [ Error signal ].
+		newCommit := projectHistory commitThatMatches: settings newCommitSha ifNone: [ Error signal ].
+
+		numberOfCommits := (projectHistory sortedCommits select: [ :commit |
+			(commit date >  oldCommit date or: [
+				commit date = oldCommit date and: [ commit time >= oldCommit time ] ]) and: [
+				commit date < newCommit date or: [
+					commit date = newCommit date and: [ commit time <= newCommit time ] ] ] ]) size.
+
 		numberOfMethodChanges := projectHistory totalNumberOfMethodChanges.
 		numberOfRelevantMethodChanges := projectHistory relevantMethodChanges size.
 		fractionOfRelevantMethodChanges :=  numberOfMethodChanges = 0 ifTrue: [ 0 ] ifFalse: [ numberOfRelevantMethodChanges / numberOfMethodChanges ] ].
